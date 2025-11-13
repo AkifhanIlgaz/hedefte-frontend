@@ -52,8 +52,11 @@ export default function RegisterForm() {
       password: req.password,
       options: {
         data: {
-          firstName: req.firstName,
-          lastName: req.lastName,
+          personalInfo: {
+            firstName: req.firstName,
+            lastName: req.lastName,
+            email: req.email,
+          },
         },
         emailRedirectTo: `${window.location.origin}/dashboard`,
       },
