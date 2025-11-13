@@ -5,6 +5,7 @@ import {
   Check,
   Home,
   ListChecks,
+  User,
   Zap,
 } from "lucide-react";
 
@@ -41,7 +42,13 @@ export const siteConfig = {
       icon: Zap,
     },
   ],
-
+  sidebarFooterItems: [
+    {
+      label: "Profil",
+      href: "/profil",
+      icon: User,
+    },
+  ],
   navItems: [
     {
       label: "Anasayfa",
