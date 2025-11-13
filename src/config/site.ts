@@ -1,3 +1,13 @@
+import {
+  BarChart,
+  Calendar,
+  ChartNoAxesCombined,
+  Check,
+  Home,
+  ListChecks,
+  Zap,
+} from "lucide-react";
+
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
@@ -7,19 +17,28 @@ export const siteConfig = {
     {
       label: "Anasayfa",
       href: "/",
+      icon: Home,
     },
     {
       label: "Analizlerim",
       href: "/analiz",
+      icon: ChartNoAxesCombined,
     },
     {
       label: "Konu Takibi",
       href: "/takip",
+      icon: ListChecks,
+    },
+    {
+      label: "Çalışma Programı",
+      href: "/program",
+      icon: Calendar,
     },
 
     {
-      label: "Hizli Okuma",
+      label: "Hızlı Okuma",
       href: "/read",
+      icon: Zap,
     },
   ],
 

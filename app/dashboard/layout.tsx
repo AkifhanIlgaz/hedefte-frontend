@@ -75,7 +75,7 @@ export default function DashboardLayout({
               color="foreground"
               href={item.href}
             >
-              <Home className="size-4" />
+              <item.icon className="size-4 shrink-0" />
               {isSidebarOpen && (
                 <span className=" whitespace-nowrap overflow-hidden text-ellipsis">
                   {item.label}
