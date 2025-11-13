@@ -22,7 +22,7 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import clsx from "clsx";
-import { ChevronsLeft, ChevronsRight } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, Home } from "lucide-react";
 import { useState } from "react";
 
 export default function DashboardLayout({
@@ -34,73 +34,71 @@ export default function DashboardLayout({
 
   return (
     <div className="flex w-full min-h-screen">
-      <Drawer
-        hideCloseButton
-        backdrop="transparent"
-        size="xs"
-        placement="left"
-        isOpen={isSidebarOpen}
-        onOpenChange={setIsSidebarOpen}
-        classNames={{
-          base: "max-w-[16rem]",
-          header: "h-[3rem]",
-        }}
+      {/* Sidebar */}
+      <div
+        className={clsx(
+          "flex flex-col border-r border-default-300 bg-background transition-width duration-300 ease-in-out",
+          isSidebarOpen ? "w-64" : "w-16", // kapalıyken daralt
+        )}
       >
-        <DrawerContent>
-          {(onClose) => (
-            <div className="flex flex-col h-full border-r border-default-300 bg-background">
-              <DrawerHeader className="flex px-4 py-2 border-b border-default-500/50 justify-between ">
-                <div className="flex items-center">
-                  <Logo />
-                  <p className="font-bold text-md">HEDEFTE</p>
-                </div>
-              </DrawerHeader>
-              <DrawerBody className="px-2">
-                <ul className="flex flex-col gap-2 ">
-                  {siteConfig.dashboardNavItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      className={clsx(
-                        "block px-4 py-2 rounded-md transition-colors duration-200 cursor-pointer",
-                        "text-sm font-medium",
-                        "hover:bg-primary hover:text-primary-foreground",
-                      )}
-                      color="foreground"
-                      href={item.href}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </ul>
-              </DrawerBody>
-
-              <DrawerFooter className="flex flex-col gap-1"></DrawerFooter>
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between h-[3rem] px-4 border-b border-default-500/50">
+          {isSidebarOpen && (
+            <div className="flex items-center gap-2">
+              <Logo />
+              <p className="font-bold text-md">HEDEFTE</p>
             </div>
           )}
-        </DrawerContent>
-      </Drawer>
+
+          <Button
+            isIconOnly
+            size="sm"
+            variant="light"
+            onPress={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            {isSidebarOpen ? <ChevronsLeft /> : <ChevronsRight />}
+          </Button>
+        </div>
+
+        {/* Sidebar Links */}
+        <ul className="flex flex-col gap-2 p-2">
+          {siteConfig.dashboardNavItems.map((item) => (
+            <Link
+              key={item.href}
+              className={clsx(
+                "px-2 py-2 rounded-md transition-colors duration-300 cursor-pointer flex items-center gap-3",
+                "text-sm font-medium",
+                "hover:bg-primary hover:text-primary-foreground",
+                !isSidebarOpen &&
+                  "justify-center transition-colors duration-300",
+              )}
+              color="foreground"
+              href={item.href}
+            >
+              <Home className="size-4" />
+              {isSidebarOpen && (
+                <span className=" whitespace-nowrap overflow-hidden text-ellipsis">
+                  {item.label}
+                </span>
+              )}
+            </Link>
+          ))}
+        </ul>
+      </div>
+
+      {/* Main Content */}
       <div
-        className="flex-1 flex flex-col transition-all duration-300 ease-in-out"
+        className="flex-1 flex flex-col transition-all duration-300 ease-in-out relative"
         style={{
-          marginLeft: isSidebarOpen ? "16rem" : "0px",
+          marginLeft: isSidebarOpen ? undefined : 0,
         }}
       >
         {/* Navbar */}
         <div className="flex items-center justify-between h-[3rem] px-4 border-b border-default-300 bg-background">
           {!isSidebarOpen && (
             <div className="flex items-center gap-2">
-              <div className="flex items-center">
-                <Logo /> <p className="font-bold text-sm">HEDEFTE</p>
-              </div>
-              <Button
-                isIconOnly
-                onPress={() => setIsSidebarOpen(true)}
-                className="text-default-800"
-                size="sm"
-                variant="light"
-              >
-                <ChevronsRight />
-              </Button>
+              <Logo />
+              <p className="font-bold text-sm">HEDEFTE</p>
             </div>
           )}
 

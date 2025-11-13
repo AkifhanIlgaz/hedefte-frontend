@@ -17,13 +17,13 @@ export default function Testimonials() {
       comment:
         "Hızlı okuma modülü sayesinde paragraf sorularını çok daha hızlı ve doğru çözebiliyorum. Günlük egzersizler ve ilerleme takibi gerçekten fark yaratıyor. Bu platform sayesinde sınav temposuna daha hazır hissediyorum!",
     },
-    // {
-    //   initials: "AÖ",
-    //   name: "Ahmet Hilmi Özdemir",
-    //   field: "EA Öğrencisi",
-    //   comment:
-    //     "Deneme analizleri ve ilerleme grafikleri sayesinde hangi konularda geride olduğumu net görebiliyorum. Eksik konularımı çalışma programıma eklemek çok pratik ve günlük görevler sayesinde düzenli çalışabiliyorum. Forum kısmı da çok faydalı; diğer öğrencilerin deneyimlerini görmek motivasyonumu artırıyor. Platformu kullanmak gerçekten sınav temposuna adapte olmamısağladı.",
-    // },
+    {
+      initials: "AÖ",
+      name: "Ahmet Hilmi Özdemir",
+      field: "EA Öğrencisi",
+      comment:
+        "Deneme analizleri ve ilerleme grafikleri sayesinde hangi konularda geride olduğumu net görebiliyorum. Eksik konularımı çalışma programıma eklemek çok pratik ve günlük görevler sayesinde düzenli çalışabiliyorum. Forum kısmı da çok faydalı; diğer öğrencilerin deneyimlerini görmek motivasyonumu artırıyor. Platformu kullanmak gerçekten sınav temposuna adapte olmamısağladı.",
+    },
     // {
     //   initials: "FE",
     //   name: "Fatma Erdoğan",
