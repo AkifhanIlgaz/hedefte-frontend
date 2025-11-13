@@ -5,10 +5,10 @@ import clsx from "clsx";
 
 import { Providers } from "./providers";
 
-import { siteConfig } from "@/config/site";
-import { fontOutfit, fontSans } from "@/config/fonts";
-import { Navbar } from "@/components/navbar";
-import Footer from "@/components/footer";
+import { siteConfig } from "@/src/config/site";
+import { fontOutfit, fontSans } from "@/src/config/fonts";
+import { Navbar } from "@/src/shared/components/navbar";
+import Footer from "@/src/shared/components/footer";
 
 export const metadata: Metadata = {
   title: {

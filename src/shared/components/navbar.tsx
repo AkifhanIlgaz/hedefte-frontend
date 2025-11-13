@@ -15,8 +15,7 @@ import { button, link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
 
-import { siteConfig } from "@/config/site";
-import { ThemeSwitch } from "@/components/theme-switch";
+import { siteConfig } from "@/src/config/site";
 import {
   TwitterIcon,
   GithubIcon,
@@ -24,7 +23,9 @@ import {
   HeartFilledIcon,
   SearchIcon,
   Logo,
-} from "@/components/icons";
+} from "@/src/shared/components/icons";
+import { ThemeSwitch } from "./theme-switch";
+import { authRoutes } from "@/src/features/auth/auth.routes";
 
 export const Navbar = () => {
   const searchInput = (
@@ -94,20 +95,24 @@ export const Navbar = () => {
         </NavbarItem>
         <NavbarItem className="hidden md:flex">
           <Button
+            as={Link}
             className={button({
               color: "primary",
               variant: "ghost",
             })}
+            href={authRoutes.login}
           >
             Giriş Yap
           </Button>
         </NavbarItem>
         <NavbarItem className="hidden md:flex">
           <Button
+            as={Link}
             className={button({
               color: "primary",
               variant: "shadow",
             })}
+            href={authRoutes.register}
           >
             Üye Ol
           </Button>

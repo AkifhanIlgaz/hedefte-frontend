@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site";
+import { siteConfig } from "@/src/config/site";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
 import { DiscordIcon, GithubIcon, Logo, TwitterIcon } from "./icons";
