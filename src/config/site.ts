@@ -3,6 +3,26 @@ export type SiteConfig = typeof siteConfig;
 export const siteConfig = {
   name: "Hedefte",
   description: "Make beautiful websites regardless of your design experience.",
+  dashboardNavItems: [
+    {
+      label: "Anasayfa",
+      href: "/",
+    },
+    {
+      label: "Analizlerim",
+      href: "/analiz",
+    },
+    {
+      label: "Konu Takibi",
+      href: "/takip",
+    },
+
+    {
+      label: "Hizli Okuma",
+      href: "/read",
+    },
+  ],
+
   navItems: [
     {
       label: "Anasayfa",

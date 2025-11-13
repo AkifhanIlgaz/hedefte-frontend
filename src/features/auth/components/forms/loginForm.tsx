@@ -47,8 +47,7 @@ export default function LoginForm() {
     try {
       const res = await supabase.auth.signInWithPassword(credentials);
       if (res.error) throw res.error;
-
-      router.push("/protected");
+      router.push("/dashboard");
     } catch (error: unknown) {
       if (isAuthApiError(error)) {
         switch (error.code) {
