@@ -17,35 +17,35 @@ export const siteConfig = {
   dashboardNavItems: [
     {
       label: "Anasayfa",
-      href: "/",
+      href: "/dashboard",
       icon: Home,
     },
     {
       label: "Analizlerim",
-      href: "/analiz",
+      href: "/dashboard/analiz",
       icon: ChartNoAxesCombined,
     },
     {
       label: "Konu Takibi",
-      href: "/takip",
+      href: "/dashboard/takip",
       icon: ListChecks,
     },
     {
       label: "Çalışma Programı",
-      href: "/program",
+      href: "/dashboard/program",
       icon: Calendar,
     },
 
     {
       label: "Hızlı Okuma",
-      href: "/read",
+      href: "/dashboard/okuma",
       icon: Zap,
     },
   ],
   sidebarFooterItems: [
     {
       label: "Profil",
-      href: "/profil",
+      href: "/dashboard/profil",
       icon: User,
     },
   ],
