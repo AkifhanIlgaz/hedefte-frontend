@@ -1,6 +1,6 @@
 "use client";
 
-import ExamInfoCard from "@/src/features/profil/components/ExamInfoCard";
+import ProfileExamInfoCard from "@/src/features/profil/components/ProfileExamInfoCard";
 import PersonalInfoCard from "@/src/features/profil/components/PersonalInfoCard";
 import { Field } from "@/src/features/profil/data";
 import { createClient } from "@/src/lib/supabase/client";
@@ -13,7 +13,7 @@ export default function Page() {
   return (
     <div className="grid md:grid-cols-2 gap-4">
       <PersonalInfoCard />
-      <ExamInfoCard />
+      <ProfileExamInfoCard />
     </div>
   );
 }

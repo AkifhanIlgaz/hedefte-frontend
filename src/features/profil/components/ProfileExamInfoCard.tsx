@@ -21,7 +21,7 @@ import {
 } from "@heroui/autocomplete";
 import { addToast } from "@heroui/toast";
 
-export default function ExamInfoCard() {
+export default function ProfileExamInfoCard() {
   const [examInfo, setExamInfo] = useState<ExamInfo>({
     university: "",
     department: "",
