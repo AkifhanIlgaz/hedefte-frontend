@@ -34,4 +34,10 @@ export type Lesson = {
   icon: LucideIcon;
   bgClass: string;
   iconColor: string;
+  topics: string[];
+};
+
+export type TopicMistake = {
+  topicName: string;
+  mistakeCount: number;
 };
