@@ -9,3 +9,10 @@ export function cn(...inputs: ClassValue[]) {
 export const hasEnvVars =
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+export const hasUndefinedFields = (obj: object | undefined) => {
+  if (!obj) return true;
+  return Object.values(obj).some(
+    (v) => v === undefined || v === "" || v === null,
+  );
+};

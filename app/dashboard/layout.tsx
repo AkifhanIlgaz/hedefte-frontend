@@ -1,7 +1,10 @@
 "use client";
 
 import { siteConfig } from "@/src/config/site";
+import MissingProfileInfoModal from "@/src/features/profil/components/MissingProfileInfoModal";
+import { ExamInfo, PersonalInfo } from "@/src/features/profil/types";
 import { createClient } from "@/src/lib/supabase/client";
+import { hasUndefinedFields } from "@/src/lib/utils";
 import { Logo } from "@/src/shared/components/icons";
 import Sidebar from "@/src/shared/components/sidebar";
 import { ThemeSwitch } from "@/src/shared/components/theme-switch";
@@ -16,6 +19,11 @@ import {
   DrawerHeader,
   Input,
   Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Navbar,
   NavbarBrand,
   NavbarContent,
@@ -24,8 +32,16 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import clsx from "clsx";
-import { ChevronsLeft, ChevronsRight, Home, LogOut } from "lucide-react";
-import { useState } from "react";
+import {
+  ChevronsLeft,
+  ChevronsRight,
+  CircleAlert,
+  FileWarning,
+  Home,
+  LogOut,
+  TriangleAlert,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function DashboardLayout({
   children,
@@ -33,6 +49,30 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+
+      const personalInfo = data.user?.user_metadata["personalInfo"] as
+        | PersonalInfo
+        | undefined;
+
+      const examInfo = data.user?.user_metadata["examInfo"] as
+        | ExamInfo
+        | undefined;
+
+      if (hasUndefinedFields(personalInfo) || hasUndefinedFields(examInfo)) {
+        onOpen();
+      }
+
+      if (error) console.error("Kullanıcı bilgisi alınamadı:", error.message);
+    };
+
+    getUser();
+  }, []);
 
   return (
     <div className="flex w-full min-h-screen">
@@ -40,7 +80,7 @@ export default function DashboardLayout({
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpenAction={setIsSidebarOpen}
       />
-
+      <MissingProfileInfoModal isOpen={isOpen} onOpenChange={onOpenChange} />
       <div
         className={clsx(
           "flex-1 flex flex-col relative transition-all duration-300 ease-in-out",
