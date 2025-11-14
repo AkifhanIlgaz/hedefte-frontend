@@ -6,3 +6,9 @@ export type ExamInfo = {
   department: string;
   field: Field | string;
 };
+
+export type PersonalInfo = {
+  firstName: string;
+  lastName: string;
+  email: string;
+};

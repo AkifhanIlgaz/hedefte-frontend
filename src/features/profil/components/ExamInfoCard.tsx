@@ -43,13 +43,13 @@ export default function ExamInfoCard() {
       });
       if (error) throw error;
       addToast({
-        title: "Güncelleme başarılı",
+        title: "Güncelleme başarılı !",
         description: "Hedef ve sınav bilgileriniz başarıyla kaydedildi.",
         color: "success",
       });
     } catch (error: any) {
       addToast({
-        title: "Bir hata oluştu",
+        title: "Bir hata oluştu !",
         description: error?.message ?? "Lütfen daha sonra tekrar deneyin.",
         color: "danger",
       });
