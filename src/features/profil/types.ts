@@ -4,5 +4,5 @@ export type ExamInfo = {
   exam: string;
   university: string;
   department: string;
-  field: Field;
+  field: Field | string;
 };

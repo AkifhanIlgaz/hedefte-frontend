@@ -57,6 +57,7 @@ export default function RegisterForm() {
             lastName: req.lastName,
             email: req.email,
           },
+          examInfo: {},
         },
         emailRedirectTo: `${window.location.origin}/dashboard`,
       },

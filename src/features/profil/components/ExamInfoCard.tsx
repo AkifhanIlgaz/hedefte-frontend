@@ -19,19 +19,59 @@ import {
   AutocompleteItem,
   AutocompleteSection,
 } from "@heroui/autocomplete";
+import { addToast } from "@heroui/toast";
 
-interface ExamInfoCardProps {
-  examInfo?: ExamInfo;
-}
-
-export default function ExamInfoCard({ examInfo }: ExamInfoCardProps) {
-  const [selectedUniversity, setSelectedUniversity] = useState<string | null>(
-    examInfo?.university ?? null,
-  );
-  const [department, setDepartment] = useState(examInfo?.department ?? "");
-  const [exam, setExam] = useState(examInfo?.exam ?? "");
-  const [field, setField] = useState(examInfo?.field ?? "");
+export default function ExamInfoCard() {
+  const [examInfo, setExamInfo] = useState<ExamInfo>({
+    university: "",
+    department: "",
+    exam: "",
+    field: "",
+  });
   const [loading, setLoading] = useState(false);
+
+  const updateExamInfo = async () => {
+    setLoading(true);
+
+    const supabase = createClient();
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          examInfo,
+        },
+      });
+      if (error) throw error;
+      addToast({
+        title: "Güncelleme başarılı",
+        description: "Hedef ve sınav bilgileriniz başarıyla kaydedildi.",
+        color: "success",
+      });
+    } catch (error: any) {
+      addToast({
+        title: "Bir hata oluştu",
+        description: error?.message ?? "Lütfen daha sonra tekrar deneyin.",
+        color: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const getUser = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error) console.error("Kullanıcı bilgisi alınamadı:", error.message);
+
+      const examInfo = data.user?.user_metadata["examInfo"] as ExamInfo;
+
+      setExamInfo(examInfo);
+    };
+
+    getUser();
+  }, []);
 
   return (
     <Card className="p-3">
@@ -48,6 +88,13 @@ export default function ExamInfoCard({ examInfo }: ExamInfoCardProps) {
           label="Hedef Üniversite"
           labelPlacement="outside"
           size="sm"
+          selectedKey={examInfo?.university}
+          onSelectionChange={(key) => {
+            setExamInfo((prev) => ({
+              ...prev,
+              university: key as string,
+            }));
+          }}
           placeholder="Lütfen hedeflediğiniz üniversiteyi seçiniz."
         >
           {universities.map((university) => (
@@ -60,6 +107,13 @@ export default function ExamInfoCard({ examInfo }: ExamInfoCardProps) {
           label="Hedef Bölüm"
           labelPlacement="outside"
           size="sm"
+          selectedKey={examInfo?.department}
+          onSelectionChange={(key) => {
+            setExamInfo((prev) => ({
+              ...prev,
+              department: key as string,
+            }));
+          }}
           placeholder="Lütfen hedeflediğiniz bölümü seçiniz."
         >
           {departments.map((department) => (
@@ -72,6 +126,13 @@ export default function ExamInfoCard({ examInfo }: ExamInfoCardProps) {
           labelPlacement="outside"
           size="sm"
           maxListboxHeight={72}
+          selectedKey={examInfo?.exam}
+          onSelectionChange={(key) => {
+            setExamInfo((prev) => ({
+              ...prev,
+              exam: key as string,
+            }));
+          }}
           placeholder="Lütfen gireceğiniz sınavı seçiniz."
         >
           {exams.map((exam) => (
@@ -84,6 +145,13 @@ export default function ExamInfoCard({ examInfo }: ExamInfoCardProps) {
           label="Alan"
           labelPlacement="outside"
           size="sm"
+          selectedKey={examInfo?.field}
+          onSelectionChange={(key) => {
+            setExamInfo((prev) => ({
+              ...prev,
+              field: key as string,
+            }));
+          }}
           maxListboxHeight={144}
           placeholder="Lütfen sınava gireceğiniz alanı seçiniz."
         >
@@ -93,7 +161,12 @@ export default function ExamInfoCard({ examInfo }: ExamInfoCardProps) {
         </Autocomplete>
       </CardBody>
       <CardFooter className="flex w-full  justify-end">
-        <Button size="sm" color="primary">
+        <Button
+          size="sm"
+          color="primary"
+          onPress={updateExamInfo}
+          isLoading={loading}
+        >
           Kaydet
         </Button>
       </CardFooter>
