@@ -19,6 +19,15 @@
   --secondary: oklch(0.95 0.12 45); /* Yumuşak turuncu */
   --secondary-foreground: var(--foreground);
 
+  --danger: oklch(0.58 0.15 25); /* Modern kırmızı */
+  --danger-foreground: oklch(0.98 0 0);
+
+  --success: oklch(0.6 0.14 150); /* Canlı ve doğal yeşil */
+  --success-foreground: oklch(0.99 0 0);
+
+  --warning: oklch(0.9 0.12 95); /* Soft sarı/amber */
+  --warning-foreground: oklch(0.3 0.05 60);
+
   --muted: oklch(0.95 0 0); /* Soft gri */
   --muted-foreground: oklch(0.5 0 0);
 

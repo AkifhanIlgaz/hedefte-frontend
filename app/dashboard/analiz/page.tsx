@@ -1,3 +1,5 @@
+import { Link } from "@heroui/link";
+
 export default function Page() {
-  return <span>Analiz</span>;
+  return <Link href="/dashboard/analiz/ekle">Analiz Ekl</Link>;
 }
