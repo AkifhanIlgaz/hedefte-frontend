@@ -47,9 +47,14 @@ export default function TopicInfoCard({
               showValueLabel={true}
               strokeWidth={2}
               value={
-                (typedFields.reduce((acc, curr) => acc + curr.mistakeCount, 0) /
-                  (wrong + empty)) *
-                100
+                wrong + empty > 0
+                  ? (typedFields.reduce(
+                      (acc, curr) => acc + curr.mistakeCount,
+                      0,
+                    ) /
+                      (wrong + empty)) *
+                    100
+                  : 0
               }
             />
           }
