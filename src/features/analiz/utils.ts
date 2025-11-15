@@ -1,0 +1,21 @@
+import z from "zod";
+import { lessonAnalysisSchema } from "./schemas/add_exam.schema";
+import { LessonName, Lesson } from "./types";
+
+export const createLessonsSchema = (lessons: Record<LessonName, Lesson>) => {
+  return z.object(
+    Object.fromEntries(
+      Object.entries(lessons).map(([lessonName, info]) => {
+        return [
+          lessonName,
+          lessonAnalysisSchema.refine(
+            (data) => data.correct + data.wrong <= info.totalQuestions,
+            {
+              message: `${lessonName} dersinde doğru ve yanlış toplamı (${info.totalQuestions}) soruyu aşamaz.`,
+            },
+          ),
+        ];
+      }),
+    ),
+  );
+};

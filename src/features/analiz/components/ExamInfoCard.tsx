@@ -22,19 +22,16 @@ export default function GeneralExamInfoCard({
       </CardHeader>
       <CardBody>
         <div className="flex gap-5 items-end justify-center">
-          <Select
+          <Input
+            type="text"
             label="Sınav"
-            labelPlacement="outside"
-            placeholder="Lütfen çözdüğünüz denemenin türünü giriniz."
-            defaultSelectedKeys={new Set([exam])}
+            labelPlacement="outside-top"
+            value={exam}
+            isReadOnly
             classNames={{
               label: "text-xs font-semibold",
             }}
-          >
-            <SelectItem key={"TYT"}>TYT</SelectItem>
-            <SelectItem key={"AYT"}>AYT</SelectItem>
-            <SelectItem key={"LGS"}>LGS</SelectItem>
-          </Select>
+          />
           <DatePicker
             labelPlacement="outside"
             label="Deneme Tarihi"
