@@ -19,7 +19,7 @@ export default function TopicInfoCard({ topics }: TopicInfoCardProps) {
 
   return (
     <>
-      <Card className="p-3 max-h-fit">
+      <Card className="p-3 ">
         <CardHeader className="flex items-center justify-center">
           <CircularProgress
             classNames={{

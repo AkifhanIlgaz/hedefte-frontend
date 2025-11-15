@@ -6,10 +6,10 @@ import { Field } from "../../profil/data";
 import { createClient } from "@/src/lib/supabase/client";
 
 export const lessonAnalysisSchema = z.object({
-  correct: z.number(),
-  wrong: z.number(),
-  empty: z.number(),
-  time: z.number(),
+  correct: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
+  wrong: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
+  empty: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
+  time: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
 });
 
 export const addTytExamSchema = z

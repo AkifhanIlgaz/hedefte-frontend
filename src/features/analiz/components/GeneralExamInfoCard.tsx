@@ -20,10 +20,8 @@ export default function GeneralExamInfoCard({
 }: GeneralExamInfoCardProps) {
   const {
     register,
-
-    getValues,
     setValue,
-    clearErrors,
+    trigger,
     formState: { errors },
   } = useFormContext();
 
@@ -59,9 +57,8 @@ export default function GeneralExamInfoCard({
               }}
               onChange={(date) => {
                 if (date) {
-                  const dateObj = new Date(date.year, date.month, date.day);
-                  setValue("date", dateObj);
-                  clearErrors("date");
+                  setValue("date", date.toDate(`Europe/Istanbul`));
+                  trigger("date");
                 }
               }}
             />

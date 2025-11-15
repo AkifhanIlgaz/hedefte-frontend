@@ -11,7 +11,7 @@ export const createLessonsSchema = (lessons: Record<LessonName, Lesson>) => {
           lessonAnalysisSchema.refine(
             (data) => data.correct + data.wrong <= info.totalQuestions,
             {
-              message: `${lessonName} dersinde doğru ve yanlış toplamı (${info.totalQuestions}) soruyu aşamaz.`,
+              message: `Girdiğin doğru, yanlış ve boş sayılarının toplamı, (${info.totalQuestions}) soruyu aşamaz.`,
             },
           ),
         ];

@@ -4,6 +4,8 @@ import { NumberInput } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { LessonName } from "../types";
+import { AlertCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface NetInfoCardProps {
   lessonName: LessonName;
@@ -58,7 +60,7 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
           onInput={(e) => {
             form.setValue(
               `${lessonName}.correct`,
-              parseInt(e.currentTarget.value) ?? 0,
+              parseInt(e.currentTarget.value) || 0,
             );
             form.trigger();
           }}
@@ -85,7 +87,7 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
           onInput={(e) =>
             form.setValue(
               `${lessonName}.wrong`,
-              parseInt(e.currentTarget.value),
+              parseInt(e.currentTarget.value) || 0,
             )
           }
           classNames={{
@@ -110,7 +112,7 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
           onInput={(e) =>
             form.setValue(
               `${lessonName}.empty`,
-              parseInt(e.currentTarget.value),
+              parseInt(e.currentTarget.value) || 0,
             )
           }
           classNames={{
@@ -132,7 +134,10 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
           }
           isInvalid={!!form.formState.errors[`${lessonName}.time`]}
           onInput={(e) =>
-            form.setValue(`${lessonName}.time`, parseInt(e.currentTarget.value))
+            form.setValue(
+              `${lessonName}.time`,
+              parseInt(e.currentTarget.value) || 0,
+            )
           }
           classNames={{
             label: "text-xs",
@@ -140,8 +145,24 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
           }}
         />
       </CardBody>
-      <CardFooter>
-        <p>{form.formState.errors[`${lessonName}`]?.message as string}</p>
+      <CardFooter className="pt-0">
+        {form.formState.errors[lessonName] && (
+          <motion.p
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="
+               flex items-center gap-2 text-sm
+              text-danger-600 dark:text-danger-400
+              bg-danger-50 dark:bg-danger-950/40
+              p-2 rounded-lg
+            "
+          >
+            <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
+            {form.formState.errors[lessonName]?.message as string}
+          </motion.p>
+        )}
       </CardFooter>
     </Card>
   );
