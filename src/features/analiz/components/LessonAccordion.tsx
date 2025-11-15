@@ -20,12 +20,12 @@ export default function LessonAccordion({ lesson }: LessonAccordionProps) {
   );
 
   return (
-    <Accordion variant="splitted" selectionMode="single">
+    <Accordion variant="splitted" selectionMode="single" className=" ">
       <AccordionItem
         key="1"
         aria-label="Accordion 1"
         title={title}
-        className="data-[open=true]:pb-4 "
+        className="data-[open=true]:pb-4  "
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           <NetInfoCard lessonName={lesson.name} />

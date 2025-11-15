@@ -19,7 +19,7 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
   const net = (correct ?? 0) - (wrong ?? 0) * 0.25;
 
   return (
-    <Card className="p-3 max-h-fit">
+    <Card className="p-3 ">
       <CardHeader className="flex flex-col items-center justify-between">
         <div className="flex flex-col items-center">
           <h1 className="font-bold text-6xl">

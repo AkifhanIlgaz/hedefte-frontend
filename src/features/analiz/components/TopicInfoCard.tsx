@@ -34,31 +34,51 @@ export default function TopicInfoCard({
 
   return (
     <>
-      <Card className="p-3 ">
-        <CardHeader className="flex items-center justify-center">
-          {
-            <CircularProgress
-              classNames={{
-                svg: "w-36 h-36 drop-shadow-md",
-                indicator: "stroke-black dark:stroke-white",
-                track: "stroke-black/10 dark:stroke-white/10",
-                value: "text-3xl font-semibold text-black dark:text-white",
-              }}
-              showValueLabel={true}
-              strokeWidth={2}
-              value={
-                wrong + empty > 0
-                  ? (typedFields.reduce(
-                      (acc, curr) => acc + curr.mistakeCount,
-                      0,
-                    ) /
-                      (wrong + empty)) *
-                    100
-                  : 0
-              }
-            />
-          }
+      <Card className="p-3">
+        <CardHeader className="flex flex-col items-center justify-center ">
+          {(() => {
+            const totalMistakes = typedFields.reduce(
+              (acc, curr) => acc + curr.mistakeCount,
+              0,
+            );
+            const totalWrongEmpty = wrong + empty;
+            const isComplete =
+              totalMistakes >= totalWrongEmpty && totalWrongEmpty > 0;
+
+            return (
+              <>
+                <CircularProgress
+                  classNames={{
+                    svg: "w-36 h-36 drop-shadow-md",
+                    indicator: isComplete
+                      ? "stroke-success"
+                      : "stroke-black dark:stroke-white",
+                    track: isComplete
+                      ? "stroke-success/10"
+                      : "stroke-black/10 dark:stroke-white/10",
+                    value:
+                      "text-2xl font-semibold " +
+                      (isComplete
+                        ? "text-success"
+                        : "text-black dark:text-white"),
+                  }}
+                  showValueLabel={true}
+                  strokeWidth={2}
+                  value={
+                    totalWrongEmpty > 0
+                      ? (totalMistakes / totalWrongEmpty) * 100
+                      : 0
+                  }
+                  valueLabel={`${totalMistakes}/${totalWrongEmpty}`}
+                />
+                <span className="text-xs text-muted-foreground ">
+                  Yanlış/Boş girilen soru sayısı
+                </span>
+              </>
+            );
+          })()}
         </CardHeader>
+
         <CardBody className="flex items-center justify-end gap-4">
           <Select
             variant="bordered"
@@ -145,7 +165,7 @@ export default function TopicInfoCard({
           </div>
         </CardFooter>
       </Card>
-      <Card className="p-3 h-full ">
+      <Card className="p-3  ">
         <CardBody className="flex gap-3 overflow-x-hidden">
           <AnimatePresence initial={false}>
             {typedFields
