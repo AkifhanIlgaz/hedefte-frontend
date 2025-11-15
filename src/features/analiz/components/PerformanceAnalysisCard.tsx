@@ -1,16 +1,19 @@
 import { Card, CardHeader, CardBody } from "@heroui/card";
-import { eaLessons, tytLessons } from "../data";
+import { eaLessons, getLessons, tytLessons } from "../data";
 import LessonAccordion from "./LessonAccordion";
 import { Exam } from "../types";
+import { Field } from "../../profil/data";
 
 interface PerformanceAnalysisCardProps {
   exam: Exam;
+  field: Field;
 }
 
 export default function PerformanceAnalysisCard({
   exam,
+  field,
 }: PerformanceAnalysisCardProps) {
-  const lessons = exam === "TYT" ? tytLessons : eaLessons;
+  const lessons = getLessons(exam, field);
 
   return (
     <Card className="p-3">

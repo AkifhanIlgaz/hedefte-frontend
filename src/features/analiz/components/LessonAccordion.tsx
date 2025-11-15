@@ -28,7 +28,7 @@ export default function LessonAccordion({ lesson }: LessonAccordionProps) {
         className="data-[open=true]:pb-4 "
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-          <NetInfoCard />
+          <NetInfoCard lessonName={lesson.name} />
           <TopicInfoCard topics={lesson.topics} />
         </div>
       </AccordionItem>

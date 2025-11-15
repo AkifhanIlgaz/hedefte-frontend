@@ -1,6 +1,9 @@
 import z from "zod";
 import { eaLessons, mfLessons, tytLessons } from "../data";
 import { createLessonsSchema } from "../utils";
+import { Exam } from "../types";
+import { Field } from "../../profil/data";
+import { createClient } from "@/src/lib/supabase/client";
 
 export const lessonAnalysisSchema = z.object({
   correct: z.number(),
@@ -32,3 +35,9 @@ export const addEaExamSchema = z
     totalNet: z.number(),
   })
   .extend(createLessonsSchema(eaLessons).shape);
+
+export const getExamSchema = (exam: Exam, field?: Field) => {
+  if (exam === "TYT") return addTytExamSchema;
+  if (field === "Sayısal") return addMfExamSchema;
+  if (field === "Eşit Ağırlık") return addEaExamSchema;
+};

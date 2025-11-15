@@ -1,19 +1,20 @@
 import { AnimatedNumber } from "@/src/shared/components/animatedNumber";
-import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { NumberInput } from "@heroui/react";
 import { useEffect, useState } from "react";
+import { useFormContext } from "react-hook-form";
+import { LessonName } from "../types";
 
-export default function NetInfoCard() {
-  const [net, setNet] = useState<number>(0);
-  const [correct, setCorrect] = useState<number>();
-  const [wrong, setWrong] = useState<number>();
-  const [empty, setEmpty] = useState<number>();
-  const [time, setTime] = useState<number>();
+interface NetInfoCardProps {
+  lessonName: LessonName;
+}
 
-  useEffect(() => {
-    const newNet = (correct ?? 0) - (wrong ?? 0) * 0.25;
-    setNet(newNet);
-  }, [correct, wrong]);
+export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
+  const form = useFormContext();
+
+  const correct = form.watch(`${lessonName}.correct`) as number;
+  const wrong = form.watch(`${lessonName}.wrong`) as number;
+  const net = (correct ?? 0) - (wrong ?? 0) * 0.25;
 
   return (
     <Card className="p-3 max-h-fit">
@@ -29,9 +30,15 @@ export default function NetInfoCard() {
             />
           </h1>
           <div className="flex gap-5">
-            <span className="text-success">{correct} D</span>
-            <span className="text-danger">{wrong} Y</span>
-            <span className="text-default-600">{empty} B</span>
+            <span className="text-success">
+              {form.watch(`${lessonName}.correct`)} D
+            </span>
+            <span className="text-danger">
+              {form.watch(`${lessonName}.wrong`)} Y
+            </span>
+            <span className="text-default-600">
+              {form.watch(`${lessonName}.empty`)} B
+            </span>
           </div>
         </div>
       </CardHeader>
@@ -43,10 +50,18 @@ export default function NetInfoCard() {
           hideStepper
           variant="bordered"
           minValue={0}
-          value={correct}
-          onInput={(e) =>
-            setCorrect(e.currentTarget.value as unknown as number)
+          value={form.watch(`${lessonName}.correct`)}
+          errorMessage={
+            form.formState.errors[`${lessonName}.correct`]?.message as string
           }
+          isInvalid={!!form.formState.errors[`${lessonName}.correct`]}
+          onInput={(e) => {
+            form.setValue(
+              `${lessonName}.correct`,
+              parseInt(e.currentTarget.value) ?? 0,
+            );
+            form.trigger();
+          }}
           size="sm"
           classNames={{
             label: "text-xs",
@@ -62,8 +77,17 @@ export default function NetInfoCard() {
           size="sm"
           variant="bordered"
           minValue={0}
-          value={wrong}
-          onInput={(e) => setWrong(e.currentTarget.value as unknown as number)}
+          value={form.watch(`${lessonName}.wrong`)}
+          errorMessage={
+            form.formState.errors[`${lessonName}.wrong`]?.message as string
+          }
+          isInvalid={!!form.formState.errors[`${lessonName}.wrong`]}
+          onInput={(e) =>
+            form.setValue(
+              `${lessonName}.wrong`,
+              parseInt(e.currentTarget.value),
+            )
+          }
           classNames={{
             label: "text-xs",
             input: "text-center",
@@ -78,8 +102,17 @@ export default function NetInfoCard() {
           variant="bordered"
           size="sm"
           minValue={0}
-          value={empty}
-          onInput={(e) => setEmpty(e.currentTarget.value as unknown as number)}
+          value={form.watch(`${lessonName}.empty`)}
+          errorMessage={
+            form.formState.errors[`${lessonName}.empty`]?.message as string
+          }
+          isInvalid={!!form.formState.errors[`${lessonName}.empty`]}
+          onInput={(e) =>
+            form.setValue(
+              `${lessonName}.empty`,
+              parseInt(e.currentTarget.value),
+            )
+          }
           classNames={{
             label: "text-xs",
             input: "text-center",
@@ -93,15 +126,23 @@ export default function NetInfoCard() {
           hideStepper
           variant="bordered"
           size="sm"
-          minValue={0}
-          value={time}
-          onValueChange={setTime}
+          value={form.watch(`${lessonName}.time`)}
+          errorMessage={
+            form.formState.errors[`${lessonName}.time`]?.message as string
+          }
+          isInvalid={!!form.formState.errors[`${lessonName}.time`]}
+          onInput={(e) =>
+            form.setValue(`${lessonName}.time`, parseInt(e.currentTarget.value))
+          }
           classNames={{
             label: "text-xs",
             input: "text-center",
           }}
         />
       </CardBody>
+      <CardFooter>
+        <p>{form.formState.errors[`${lessonName}`]?.message as string}</p>
+      </CardFooter>
     </Card>
   );
 }

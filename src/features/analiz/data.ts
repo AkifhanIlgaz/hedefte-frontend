@@ -13,9 +13,12 @@ import {
 import {
   AytEaLessonName,
   AytMfLessonName,
+  Exam,
   Lesson,
   TytLessonName,
 } from "./types";
+import { Exactly } from "zod/v4/core/util.cjs";
+import { Field } from "../profil/data";
 
 export const tytLessons: Record<TytLessonName, Lesson> = {
   Türkçe: {
@@ -694,4 +697,11 @@ export const mfLessons: Record<AytMfLessonName, Lesson> = {
       "Canlılar ve Çevre",
     ],
   },
+};
+
+export const getLessons = (exam: Exam, field?: Field) => {
+  if (exam === "TYT") return tytLessons;
+  if (field === "Sayısal") return mfLessons;
+  if (field === "Eşit Ağırlık") return eaLessons;
+  return {};
 };
