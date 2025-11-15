@@ -1,5 +1,7 @@
 import { LucideIcon } from "lucide-react";
 
+export type Exam = "TYT" | "AYT";
+
 export const TytLessonNames = [
   "Türkçe",
   "Matematik",
@@ -12,21 +14,17 @@ export const TytLessonNames = [
   "Biyoloji",
 ] as const;
 
-export const AytLessonNames = [
-  "Edebiyat",
-  "Tarih",
-  "Coğrafya",
-  "Matematik",
-  "Fizik",
-  "Kimya",
-  "Biyoloji",
-];
+export const AytEaLessonNames = ["Edebiyat", "Tarih", "Coğrafya", "Matematik"];
+
+export const AytMfLessonNames = ["Matematik", "Fizik", "Kimya", "Biyoloji"];
 
 export type TytLessonName = (typeof TytLessonNames)[number];
 
-export type AytLessonName = (typeof AytLessonNames)[number];
+export type AytEaLessonName = (typeof AytEaLessonNames)[number];
 
-export type LessonName = TytLessonName | AytLessonName;
+export type AytMfLessonName = (typeof AytMfLessonNames)[number];
+
+export type LessonName = TytLessonName | AytEaLessonName | AytMfLessonName;
 
 export type Lesson = {
   name: LessonName;

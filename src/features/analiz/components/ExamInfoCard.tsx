@@ -2,8 +2,16 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { DatePicker } from "@heroui/react";
 import { Select, SelectItem } from "@heroui/select";
+import { useSearchParams } from "next/navigation";
+import { Exam } from "../types";
 
-export default function GeneralExamInfoCard() {
+interface GeneralExamInfoCardProps {
+  exam: Exam;
+}
+
+export default function GeneralExamInfoCard({
+  exam,
+}: GeneralExamInfoCardProps) {
   return (
     <Card className="p-3">
       <CardHeader className="flex flex-col items-start">
@@ -18,6 +26,7 @@ export default function GeneralExamInfoCard() {
             label="Sınav"
             labelPlacement="outside"
             placeholder="Lütfen çözdüğünüz denemenin türünü giriniz."
+            defaultSelectedKeys={new Set([exam])}
             classNames={{
               label: "text-xs font-semibold",
             }}

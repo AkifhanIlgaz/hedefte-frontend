@@ -1,8 +1,17 @@
 import { Card, CardHeader, CardBody } from "@heroui/card";
-import { tytLessons } from "../data";
+import { eaLessons, tytLessons } from "../data";
 import LessonAccordion from "./LessonAccordion";
+import { Exam } from "../types";
 
-export default function PerformanceAnalysisCard() {
+interface PerformanceAnalysisCardProps {
+  exam: Exam;
+}
+
+export default function PerformanceAnalysisCard({
+  exam,
+}: PerformanceAnalysisCardProps) {
+  const lessons = exam === "TYT" ? tytLessons : eaLessons;
+
   return (
     <Card className="p-3">
       <CardHeader className="flex flex-col items-start">
@@ -13,7 +22,7 @@ export default function PerformanceAnalysisCard() {
         </span>
       </CardHeader>
       <CardBody className="gap-3">
-        {Object.values(tytLessons).map((lesson) => (
+        {Object.values(lessons).map((lesson) => (
           <LessonAccordion lesson={lesson} key={lesson.name} />
         ))}
       </CardBody>

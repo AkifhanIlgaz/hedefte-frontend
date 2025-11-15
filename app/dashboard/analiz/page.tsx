@@ -3,8 +3,14 @@ import { Link } from "@heroui/link";
 
 export default function Page() {
   return (
-    <Button as={Link} href="/dashboard/analiz/ekle">
-      Analiz Ekle
-    </Button>
+    <div>
+      <Button as={Link} href="/dashboard/analiz/ekle?exam=TYT">
+        TYT Analiz Ekle
+      </Button>
+
+      <Button as={Link} href="/dashboard/analiz/ekle?exam=AYT">
+        AYT Analiz Ekle
+      </Button>
+    </div>
   );
 }
