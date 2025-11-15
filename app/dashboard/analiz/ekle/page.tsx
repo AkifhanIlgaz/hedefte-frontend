@@ -3,7 +3,7 @@ import GeneralExamInfoCard from "@/src/features/analiz/components/GeneralExamInf
 import PerformanceAnalysisCard from "@/src/features/analiz/components/PerformanceAnalysisCard";
 import { getLessons } from "@/src/features/analiz/data";
 import { getExamSchema } from "@/src/features/analiz/schemas/add_exam.schema";
-import { Exam } from "@/src/features/analiz/types";
+import { Exam, TopicMistake } from "@/src/features/analiz/types";
 import { Field } from "@/src/features/profil/data";
 import { createClient } from "@/src/lib/supabase/client";
 import { Button } from "@heroui/button";
@@ -23,7 +23,13 @@ export default function Page() {
   const defaultValues = Object.fromEntries(
     Object.keys(lessons).map((lessonName) => [
       lessonName,
-      { correct: 0, wrong: 0, empty: 0, time: 0 },
+      {
+        correct: 0,
+        wrong: 0,
+        empty: 0,
+        time: 0,
+        topicMistakes: [] as TopicMistake[],
+      },
     ]),
   );
   if (!myschema) return <p>Loading schema...</p>;

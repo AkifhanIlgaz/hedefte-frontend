@@ -62,7 +62,7 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
               `${lessonName}.correct`,
               parseInt(e.currentTarget.value) || 0,
             );
-            form.trigger();
+            form.trigger(`${lessonName}`);
           }}
           size="sm"
           classNames={{
@@ -84,12 +84,13 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
             form.formState.errors[`${lessonName}.wrong`]?.message as string
           }
           isInvalid={!!form.formState.errors[`${lessonName}.wrong`]}
-          onInput={(e) =>
+          onInput={(e) => {
             form.setValue(
               `${lessonName}.wrong`,
               parseInt(e.currentTarget.value) || 0,
-            )
-          }
+            );
+            form.trigger(`${lessonName}`);
+          }}
           classNames={{
             label: "text-xs",
             input: "text-center",
@@ -109,12 +110,13 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
             form.formState.errors[`${lessonName}.empty`]?.message as string
           }
           isInvalid={!!form.formState.errors[`${lessonName}.empty`]}
-          onInput={(e) =>
+          onInput={(e) => {
             form.setValue(
               `${lessonName}.empty`,
               parseInt(e.currentTarget.value) || 0,
-            )
-          }
+            );
+            form.trigger(`${lessonName}`);
+          }}
           classNames={{
             label: "text-xs",
             input: "text-center",

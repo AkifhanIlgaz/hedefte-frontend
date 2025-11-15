@@ -6,32 +6,53 @@ import { Select, SelectItem } from "@heroui/select";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { TopicMistake } from "../types";
+import { LessonName, TopicMistake } from "../types";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 interface TopicInfoCardProps {
   topics: string[];
+  lessonName: LessonName;
 }
 
-export default function TopicInfoCard({ topics }: TopicInfoCardProps) {
+export default function TopicInfoCard({
+  topics,
+  lessonName,
+}: TopicInfoCardProps) {
   const [selectedTopic, setSelectedTopic] = useState<string>("");
-  const [mistakesCount, setMistakesCount] = useState<number>(0);
-  const [topicMistakes, setTopicMistakes] = useState<Array<TopicMistake>>([]);
+  const [mistakesCount, setMistakesCount] = useState<number>(1);
+  const form = useFormContext();
+
+  const { fields, append, remove, update } = useFieldArray({
+    control: form.control,
+    name: `${lessonName}.topicMistakes`, // path dikkat
+  });
+
+  const typedFields = fields as (TopicMistake & { id: string })[];
+
+  const wrong = form.watch(`${lessonName}.wrong`) as number;
+  const empty = form.watch(`${lessonName}.empty`) as number;
 
   return (
     <>
       <Card className="p-3 ">
         <CardHeader className="flex items-center justify-center">
-          <CircularProgress
-            classNames={{
-              svg: "w-36 h-36 drop-shadow-md",
-              indicator: "stroke-black dark:stroke-white",
-              track: "stroke-black/10 dark:stroke-white/10",
-              value: "text-3xl font-semibold text-black dark:text-white",
-            }}
-            showValueLabel={true}
-            strokeWidth={2}
-            value={60}
-          />
+          {
+            <CircularProgress
+              classNames={{
+                svg: "w-36 h-36 drop-shadow-md",
+                indicator: "stroke-black dark:stroke-white",
+                track: "stroke-black/10 dark:stroke-white/10",
+                value: "text-3xl font-semibold text-black dark:text-white",
+              }}
+              showValueLabel={true}
+              strokeWidth={2}
+              value={
+                (typedFields.reduce((acc, curr) => acc + curr.mistakeCount, 0) /
+                  (wrong + empty)) *
+                100
+              }
+            />
+          }
         </CardHeader>
         <CardBody className="flex items-center justify-end gap-4">
           <Select
@@ -61,7 +82,7 @@ export default function TopicInfoCard({ topics }: TopicInfoCardProps) {
               size="sm"
               radius="full"
               variant="bordered"
-              minValue={0}
+              minValue={1}
               value={mistakesCount}
               onValueChange={setMistakesCount}
               classNames={{
@@ -90,15 +111,28 @@ export default function TopicInfoCard({ topics }: TopicInfoCardProps) {
                   });
                   return;
                 }
-                setTopicMistakes((prev) => [
-                  ...prev,
-                  {
+
+                const idx = typedFields.findIndex(
+                  (field) => field.topicName === selectedTopic,
+                );
+
+                if (idx === -1) {
+                  append({
                     topicName: selectedTopic,
                     mistakeCount: mistakesCount,
-                  },
-                ]);
+                  });
+                  setSelectedTopic("");
+                  setMistakesCount(1);
+                  return;
+                }
+
+                const f = typedFields[idx];
+
+                f.mistakeCount += mistakesCount;
+
+                update(idx, f);
                 setSelectedTopic("");
-                setMistakesCount(0);
+                setMistakesCount(1);
               }}
             >
               Ekle
@@ -109,18 +143,20 @@ export default function TopicInfoCard({ topics }: TopicInfoCardProps) {
       <Card className="p-3 h-full ">
         <CardBody className="flex gap-3 overflow-x-hidden">
           <AnimatePresence initial={false}>
-            {topicMistakes.map((topicMistake, idx) => (
-              <motion.div
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.25, ease: "easeInOut" }}
-                key={idx}
-              >
-                <div className="flex items-center gap-2">
-                  <div
-                    className="
+            {typedFields
+              .toSorted((a, b) => b.mistakeCount - a.mistakeCount)
+              .map((field, idx) => (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                  key={field.id}
+                >
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="
               w-full flex items-center justify-between
               rounded-xl border
               px-3 py-2
@@ -129,32 +165,31 @@ export default function TopicInfoCard({ topics }: TopicInfoCardProps) {
               border-danger-400/60 dark:border-danger-400/60
               shadow-sm
               "
-                  >
-                    <span className="opacity-80 font-bold">
-                      {topicMistake.topicName}
-                    </span>
-                    <span className="text-danger text-xs font-medium">
-                      {topicMistake.mistakeCount} yanlış
-                    </span>
+                    >
+                      <span className="opacity-80 font-bold">
+                        {field.topicName}
+                      </span>
+                      <span className="text-danger text-xs font-medium">
+                        {field.mistakeCount} yanlış
+                      </span>
+                    </div>
+                    <Button
+                      isIconOnly
+                      variant="shadow"
+                      color="danger"
+                      size="sm"
+                      onPress={() => {
+                        const idx = typedFields.findIndex(
+                          (field) => field.topicName === selectedTopic,
+                        );
+                        remove(idx);
+                      }}
+                    >
+                      <Trash2 className="size-3" />
+                    </Button>
                   </div>
-                  <Button
-                    isIconOnly
-                    variant="shadow"
-                    color="danger"
-                    size="sm"
-                    onPress={() => {
-                      setTopicMistakes(
-                        topicMistakes.filter(
-                          (tm) => tm.topicName !== topicMistake.topicName,
-                        ),
-                      );
-                    }}
-                  >
-                    <Trash2 className="size-3" />
-                  </Button>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
           </AnimatePresence>
         </CardBody>
       </Card>

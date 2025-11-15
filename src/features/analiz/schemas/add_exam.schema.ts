@@ -3,13 +3,18 @@ import { eaLessons, mfLessons, tytLessons } from "../data";
 import { createLessonsSchema } from "../utils";
 import { Exam } from "../types";
 import { Field } from "../../profil/data";
-import { createClient } from "@/src/lib/supabase/client";
+
+export const topicMistakesSchema = z.object({
+  topicName: z.string(),
+  mistakeCount: z.number(),
+});
 
 export const lessonAnalysisSchema = z.object({
   correct: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
   wrong: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
   empty: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
   time: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
+  topicMistakes: z.array(topicMistakesSchema),
 });
 
 export const addTytExamSchema = z
