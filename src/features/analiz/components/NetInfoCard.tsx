@@ -1,11 +1,10 @@
 import { AnimatedNumber } from "@/src/shared/components/animatedNumber";
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { NumberInput } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { AlertCircle } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { LessonName } from "../types";
-import { AlertCircle } from "lucide-react";
-import { motion } from "framer-motion";
 
 interface NetInfoCardProps {
   lessonName: LessonName;

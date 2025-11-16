@@ -1,8 +1,8 @@
 import z from "zod";
-import { eaLessons, mfLessons, tytLessons } from "../data";
-import { createLessonsSchema } from "../utils";
-import { Exam } from "../types";
 import { Field } from "../../profil/data";
+import { eaLessons, mfLessons, tytLessons } from "../data";
+import { Exam } from "../types";
+import { createLessonsSchema } from "../utils";
 
 export const topicMistakesSchema = z.object({
   topicName: z.string(),

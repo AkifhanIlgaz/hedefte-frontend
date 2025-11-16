@@ -1,5 +1,4 @@
-import { Button } from "@heroui/button";
-import { CheckCircle, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import Numbers from "./numbers";
 
 export default function Hero() {

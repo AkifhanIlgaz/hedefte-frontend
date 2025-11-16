@@ -1,47 +1,14 @@
 "use client";
 
-import { siteConfig } from "@/src/config/site";
 import MissingProfileInfoModal from "@/src/features/profil/components/MissingProfileInfoModal";
 import { ExamInfo, PersonalInfo } from "@/src/features/profil/types";
 import { createClient } from "@/src/lib/supabase/client";
 import { hasUndefinedFields } from "@/src/lib/utils";
-import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Logo } from "@/src/shared/components/icons";
 import Sidebar from "@/src/shared/components/sidebar";
 import { ThemeSwitch } from "@/src/shared/components/theme-switch";
-import {
-  Avatar,
-  AvatarGroup,
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  Input,
-  Link,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Tooltip,
-  useDisclosure,
-} from "@heroui/react";
+import { useDisclosure } from "@heroui/react";
 import clsx from "clsx";
-import {
-  ChevronsLeft,
-  ChevronsRight,
-  CircleAlert,
-  FileWarning,
-  Home,
-  LogOut,
-  TriangleAlert,
-} from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function DashboardLayout({

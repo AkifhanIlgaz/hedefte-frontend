@@ -1,29 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { Button } from "@heroui/button";
 
-import { Input } from "@heroui/input";
 import { Checkbox } from "@heroui/checkbox";
+import { Input } from "@heroui/input";
 
-import { authRoutes } from "../../auth.routes";
-import { authText } from "../../auth.text";
-import { LoginRequest, loginSchema } from "../../schemas";
-import { Link } from "@heroui/link";
-import { AuthMessage } from "../shared/authMessage";
-import AuthHeader from "../shared/header";
-import SignInWithGoogle from "../shared/signInWithGoogle";
-import AuthDivider from "../shared/divider";
 import { createClient } from "@/src/lib/supabase/client";
+import { Link } from "@heroui/link";
 import {
   isAuthApiError,
   SignInWithPasswordCredentials,
 } from "@supabase/supabase-js";
+import { authRoutes } from "../../auth.routes";
+import { authText } from "../../auth.text";
+import { LoginRequest, loginSchema } from "../../schemas";
+import { AuthMessage } from "../shared/authMessage";
+import AuthDivider from "../shared/divider";
+import AuthHeader from "../shared/header";
+import SignInWithGoogle from "../shared/signInWithGoogle";
 
 export default function LoginForm() {
   const router = useRouter();

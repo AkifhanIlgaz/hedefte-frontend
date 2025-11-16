@@ -10,6 +10,7 @@ import {
   Swords,
   Trees,
 } from "lucide-react";
+import { Field } from "../profil/data";
 import {
   AytEaLessonName,
   AytMfLessonName,
@@ -17,8 +18,6 @@ import {
   Lesson,
   TytLessonName,
 } from "./types";
-import { Exactly } from "zod/v4/core/util.cjs";
-import { Field } from "../profil/data";
 
 export const tytLessons: Record<TytLessonName, Lesson> = {
   Türkçe: {

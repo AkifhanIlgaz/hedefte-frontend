@@ -1,6 +1,6 @@
+import { GoogleIcon } from "@/src/shared/components/icons";
 import { Button } from "@heroui/button";
 import { authText } from "../../auth.text";
-import { DiscordIcon, GoogleIcon } from "@/src/shared/components/icons";
 
 export default function SignInWithGoogle() {
   return (

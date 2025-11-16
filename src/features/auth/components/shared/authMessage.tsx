@@ -1,6 +1,6 @@
 import { cn } from "@/src/lib/utils";
 import { Button } from "@heroui/button";
-import { Check, XCircle, Info, AlertTriangle, ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, XCircle } from "lucide-react";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 

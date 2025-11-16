@@ -1,6 +1,6 @@
 import z from "zod";
 import { lessonAnalysisSchema } from "./schemas/add_exam.schema";
-import { LessonName, Lesson } from "./types";
+import { Lesson, LessonName } from "./types";
 
 export const createLessonsSchema = (lessons: Record<LessonName, Lesson>) => {
   return z.object(

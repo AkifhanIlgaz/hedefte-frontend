@@ -1,13 +1,13 @@
 import { Button } from "@heroui/button";
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { CircularProgress } from "@heroui/progress";
 import { addToast, NumberInput } from "@heroui/react";
 import { Select, SelectItem } from "@heroui/select";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { LessonName, TopicMistake } from "../types";
 import { useFieldArray, useFormContext } from "react-hook-form";
+import { LessonName, TopicMistake } from "../types";
 
 interface TopicInfoCardProps {
   topics: string[];

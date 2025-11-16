@@ -1,36 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  AuthApiError,
-  AuthInvalidCredentialsError,
   isAuthApiError,
   SignUpWithPasswordCredentials,
 } from "@supabase/supabase-js";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { Button } from "@heroui/button";
 
 import { Input } from "@heroui/input";
-import { Checkbox } from "@heroui/checkbox";
 
+import { createClient } from "@/src/lib/supabase/client";
+import { Link } from "@heroui/link";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
-import {
-  LoginRequest,
-  loginSchema,
-  RegisterRequest,
-  registerSchema,
-} from "../../schemas";
-import { Link } from "@heroui/link";
-import { createClient } from "@/src/lib/supabase/client";
+import { RegisterRequest, registerSchema } from "../../schemas";
 import { AuthMessage } from "../shared/authMessage";
+import AuthDivider from "../shared/divider";
 import AuthHeader from "../shared/header";
 import SignInWithGoogle from "../shared/signInWithGoogle";
-import AuthDivider from "../shared/divider";
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);

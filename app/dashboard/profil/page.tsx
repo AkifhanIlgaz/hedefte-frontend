@@ -1,13 +1,7 @@
 "use client";
 
-import ProfileExamInfoCard from "@/src/features/profil/components/ProfileExamInfoCard";
 import PersonalInfoCard from "@/src/features/profil/components/PersonalInfoCard";
-import { Field } from "@/src/features/profil/data";
-import { createClient } from "@/src/lib/supabase/client";
-import { Button } from "@heroui/button";
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
-import { Input } from "@heroui/input";
-import { useEffect, useState } from "react";
+import ProfileExamInfoCard from "@/src/features/profil/components/ProfileExamInfoCard";
 
 export default function Page() {
   return (

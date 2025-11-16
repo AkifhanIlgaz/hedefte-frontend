@@ -1,5 +1,5 @@
-import { Card, CardHeader, CardFooter } from "@heroui/card";
 import { Button } from "@heroui/button";
+import { Card, CardFooter, CardHeader } from "@heroui/card";
 
 export default function Blogs() {
   const blogs = [

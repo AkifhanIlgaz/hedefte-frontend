@@ -3,23 +3,16 @@
 import {
   departments,
   exams,
-  Field,
   fields,
   universities,
 } from "@/src/features/profil/data";
 import { createClient } from "@/src/lib/supabase/client";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
-import { Input } from "@heroui/input";
-import { Key, useEffect, useState } from "react";
-import { ExamInfo } from "../types";
-import { Select, SelectItem, SelectSection } from "@heroui/select";
-import {
-  Autocomplete,
-  AutocompleteItem,
-  AutocompleteSection,
-} from "@heroui/autocomplete";
 import { addToast } from "@heroui/toast";
+import { useEffect, useState } from "react";
+import { ExamInfo } from "../types";
 
 export default function ProfileExamInfoCard() {
   const [examInfo, setExamInfo] = useState<ExamInfo>({

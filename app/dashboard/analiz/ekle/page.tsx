@@ -5,15 +5,13 @@ import { getLessons } from "@/src/features/analiz/data";
 import { getExamSchema } from "@/src/features/analiz/schemas/add_exam.schema";
 import { Exam, TopicMistake } from "@/src/features/analiz/types";
 import { Field } from "@/src/features/profil/data";
-import { createClient } from "@/src/lib/supabase/client";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
-import { Button } from "@heroui/button";
 import { addToast } from "@heroui/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import z, { toJSONSchema } from "zod";
+import z from "zod";
 
 export default function Page() {
   const searchParams = useSearchParams();

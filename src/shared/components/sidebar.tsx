@@ -3,28 +3,10 @@
 import { siteConfig } from "@/src/config/site";
 import { createClient } from "@/src/lib/supabase/client";
 import { Logo } from "@/src/shared/components/icons";
-import { ThemeSwitch } from "@/src/shared/components/theme-switch";
-import {
-  Avatar,
-  AvatarGroup,
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  Input,
-  Link,
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Tooltip,
-  useDisclosure,
-} from "@heroui/react";
+import { Button, Link } from "@heroui/react";
 import clsx from "clsx";
-import { ChevronsLeft, ChevronsRight, Home, LogOut } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { ChevronsLeft, ChevronsRight, LogOut } from "lucide-react";
+import { Dispatch, SetStateAction } from "react";
 import SidebarLink from "./sidebarLink";
 
 interface SidebarProps {

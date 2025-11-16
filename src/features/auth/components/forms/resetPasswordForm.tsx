@@ -1,30 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Check, Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Button } from "@heroui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAuthApiError } from "@supabase/supabase-js";
-import { Button } from "@heroui/button";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { Input } from "@heroui/input";
-import { Checkbox } from "@heroui/checkbox";
 
+import { createClient } from "@/src/lib/supabase/client";
+import { Link } from "@heroui/link";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
-import {
-  ForgotPasswordRequest,
-  forgotPasswordSchema,
-  LoginRequest,
-  loginSchema,
-  ResetPasswordRequest,
-  resetPasswordSchema,
-} from "../../schemas";
-import { Link } from "@heroui/link";
-import AuthHeader from "../shared/header";
-import { createClient } from "@/src/lib/supabase/client";
+import { ResetPasswordRequest, resetPasswordSchema } from "../../schemas";
 import { AuthMessage } from "../shared/authMessage";
+import AuthHeader from "../shared/header";
 
 export default function ResetPasswordForm() {
   const router = useRouter();

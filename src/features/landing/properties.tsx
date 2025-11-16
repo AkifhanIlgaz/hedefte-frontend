@@ -1,12 +1,11 @@
-import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import {
-  ChartColumn,
-  Zap,
-  Brain,
   BookOpen,
-  Users,
-  Target,
   Calendar,
+  ChartColumn,
+  Target,
+  Users,
+  Zap,
 } from "lucide-react";
 
 export default function Properties() {

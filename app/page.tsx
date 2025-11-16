@@ -1,18 +1,14 @@
 "use client";
 
-import { CheckCircle } from "lucide-react";
-import { Button } from "@heroui/button";
-import Hero from "@/src/features/landing/hero";
-import Numbers from "@/src/features/landing/numbers";
-import Properties from "@/src/features/landing/properties";
-import Testimonials from "@/src/features/landing/testimonials";
-import FAQ from "@/src/features/landing/faq";
 import Blogs from "@/src/features/landing/blogs";
+import FAQ from "@/src/features/landing/faq";
+import Hero from "@/src/features/landing/hero";
+import Properties from "@/src/features/landing/properties";
 import Subscription from "@/src/features/landing/subscription";
-import { Divider } from "@heroui/divider";
-import { createClient } from "@/src/lib/supabase/client";
-import { Navbar } from "@/src/shared/components/navbar";
+import Testimonials from "@/src/features/landing/testimonials";
 import Footer from "@/src/shared/components/footer";
+import { Navbar } from "@/src/shared/components/navbar";
+import { Divider } from "@heroui/divider";
 
 export default function Home() {
   return (

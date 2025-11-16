@@ -1,15 +1,9 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Input } from "@heroui/input";
-import { DatePicker, DateValue } from "@heroui/react";
-import { Select, SelectItem } from "@heroui/select";
-import { useSearchParams } from "next/navigation";
-import { Exam } from "../types";
-import { Controller, useFormContext } from "react-hook-form";
-import { useState } from "react";
-import { format } from "date-fns";
+import { DatePicker } from "@heroui/react";
 import { I18nProvider } from "@react-aria/i18n";
-import { error } from "console";
-import { parseDate } from "@internationalized/date";
+import { useFormContext } from "react-hook-form";
+import { Exam } from "../types";
 
 interface GeneralExamInfoCardProps {
   exam: Exam;

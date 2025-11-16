@@ -1,28 +1,21 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft, Check } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Check, Eye, EyeOff, Lock, Mail } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@heroui/button";
-import { isAuthApiError } from "@supabase/supabase-js";
 import { Input } from "@heroui/input";
-import { Checkbox } from "@heroui/checkbox";
+import { isAuthApiError } from "@supabase/supabase-js";
 
+import { createClient } from "@/src/lib/supabase/client";
+import { Link } from "@heroui/link";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
-import {
-  ForgotPasswordRequest,
-  forgotPasswordSchema,
-  LoginRequest,
-  loginSchema,
-} from "../../schemas";
-import { Link } from "@heroui/link";
-import AuthHeader from "../shared/header";
-import { createClient } from "@/src/lib/supabase/client";
+import { ForgotPasswordRequest, forgotPasswordSchema } from "../../schemas";
 import { AuthMessage } from "../shared/authMessage";
+import AuthHeader from "../shared/header";
 
 export default function ForgotPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);

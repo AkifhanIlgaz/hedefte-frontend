@@ -1,8 +1,6 @@
 import {
-  BarChart,
   Calendar,
   ChartNoAxesCombined,
-  Check,
   Home,
   ListChecks,
   User,

@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { IconSvgProps } from "@/types";
-import { Icon } from "next/dist/lib/metadata/types/metadata-types";
 
 export const Logo: React.FC<IconSvgProps> = ({
   size = 36,

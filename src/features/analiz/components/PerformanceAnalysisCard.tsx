@@ -1,18 +1,10 @@
-import { Card, CardHeader, CardBody } from "@heroui/card";
-import { eaLessons, getLessons, tytLessons } from "../data";
-import LessonAccordion from "./LessonAccordion";
-import { Exam } from "../types";
-import { Field } from "../../profil/data";
 import { Button } from "@heroui/button";
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Save } from "lucide-react";
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure,
-} from "@heroui/modal";
+import { Field } from "../../profil/data";
+import { getLessons } from "../data";
+import { Exam } from "../types";
+import LessonAccordion from "./LessonAccordion";
 
 interface PerformanceAnalysisCardProps {
   exam: Exam;
