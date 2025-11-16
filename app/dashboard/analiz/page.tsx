@@ -2,6 +2,7 @@
 
 import { Field } from "@/src/features/profil/data";
 import { createClient } from "@/src/lib/supabase/client";
+import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { useEffect, useState } from "react";
@@ -18,7 +19,11 @@ export default function Page() {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
+      <DashboardHeader
+        title="Deneme Analizlerim"
+        description="Çözdüğün denemelerinizi burada görebilirsiniz."
+      />
       <Button as={Link} href={`/dashboard/analiz/ekle?exam=TYT`}>
         TYT Analiz Ekle
       </Button>

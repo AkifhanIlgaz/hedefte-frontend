@@ -5,6 +5,7 @@ import MissingProfileInfoModal from "@/src/features/profil/components/MissingPro
 import { ExamInfo, PersonalInfo } from "@/src/features/profil/types";
 import { createClient } from "@/src/lib/supabase/client";
 import { hasUndefinedFields } from "@/src/lib/utils";
+import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Logo } from "@/src/shared/components/icons";
 import Sidebar from "@/src/shared/components/sidebar";
 import { ThemeSwitch } from "@/src/shared/components/theme-switch";
@@ -100,7 +101,7 @@ export default function DashboardLayout({
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto p-4">{children}</div>
+        <div className="flex-1 overflow-auto p-6 ">{children}</div>
       </div>
     </div>
   );
