@@ -10,10 +10,10 @@ export const topicMistakesSchema = z.object({
 });
 
 export const lessonAnalysisSchema = z.object({
-  correct: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
-  wrong: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
-  empty: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
-  time: z.union([z.string(), z.number()]).pipe(z.number().min(0)),
+  correct: z.number().min(0),
+  wrong: z.number().min(0),
+  empty: z.number().min(0),
+  time: z.number().min(0, "Lütfen zamanı giriniz."),
   topicMistakes: z.array(topicMistakesSchema),
 });
 

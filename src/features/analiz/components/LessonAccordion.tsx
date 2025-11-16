@@ -4,18 +4,27 @@ import { tytLessons } from "../data";
 import NetInfoCard from "./NetInfoCard";
 import TopicInfoCard from "./TopicInfoCard";
 import { Lesson } from "../types";
+import { useFormContext } from "react-hook-form";
 
 interface LessonAccordionProps {
   lesson: Lesson;
 }
 
 export default function LessonAccordion({ lesson }: LessonAccordionProps) {
+  const form = useFormContext();
+  const correct = form.watch(`${lesson.name}.correct`);
+  const wrong = form.watch(`${lesson.name}.wrong`);
+  const totalNet = (correct ?? 0) - (wrong ?? 0) * 0.25;
+
   const title = (
     <div className="flex items-center gap-3">
       <div className={clsx("p-2 rounded-full", lesson.bgClass)}>
         <lesson.icon className={clsx("size-4", lesson.iconColor)} />
       </div>
       <span className={clsx(`text-md`, lesson.iconColor)}>{lesson.name}</span>
+      <span className={clsx(`text-md`, lesson.iconColor)}>
+        {totalNet.toFixed(2)}
+      </span>
     </div>
   );
 

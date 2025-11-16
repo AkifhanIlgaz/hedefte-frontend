@@ -9,7 +9,8 @@ export const createLessonsSchema = (lessons: Record<LessonName, Lesson>) => {
         return [
           lessonName,
           lessonAnalysisSchema.refine(
-            (data) => data.correct + data.wrong <= info.totalQuestions,
+            (data) =>
+              data.correct + data.wrong + data.empty <= info.totalQuestions,
             {
               message: `Girdiğin doğru, yanlış ve boş sayılarının toplamı, (${info.totalQuestions}) soruyu aşamaz.`,
             },
