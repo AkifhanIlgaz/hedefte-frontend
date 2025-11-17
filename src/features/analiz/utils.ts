@@ -1,22 +1,39 @@
-import z from "zod";
-import { lessonAnalysisSchema } from "./schemas/add_exam.schema";
-import { Lesson, LessonName } from "./types";
+import { createClient } from "@/src/lib/supabase/client";
 
-export const createLessonsSchema = (lessons: Record<LessonName, Lesson>) => {
-  return z.object(
-    Object.fromEntries(
-      Object.entries(lessons).map(([lessonName, info]) => {
-        return [
-          lessonName,
-          lessonAnalysisSchema.refine(
-            (data) =>
-              data.correct + data.wrong + data.empty <= info.totalQuestions,
-            {
-              message: `Girdiğin doğru, yanlış ve boş sayılarının toplamı, (${info.totalQuestions}) soruyu aşamaz.`,
-            },
-          ),
-        ];
-      }),
-    ),
-  );
+export const buildPaginationUrl = (
+  baseUrl: string,
+  params: { page: number; rowsPerPage: number; interval: number },
+): string => {
+  const { page, rowsPerPage, interval } = params;
+
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    rowsPerPage: rowsPerPage.toString(),
+    interval: interval.toString(),
+  });
+
+  return `${baseUrl}?${queryParams.toString()}`;
+};
+
+export const fetcher = async (...args: [string, RequestInit?]) => {
+  const supabase = createClient();
+
+  const supabaseAccessToken = await supabase.auth
+    .getSession()
+    .then((res) => res.data.session?.access_token);
+
+  if (!supabaseAccessToken) {
+    throw new Error("Access token not found");
+  }
+
+  const [url, options] = args;
+  const updatedOptions = {
+    ...options,
+    headers: {
+      ...options?.headers,
+      Authorization: `Bearer ${supabaseAccessToken}`,
+    },
+  };
+
+  return fetch(url, updatedOptions).then((res) => res.json());
 };

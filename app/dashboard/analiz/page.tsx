@@ -1,5 +1,6 @@
 "use client";
 
+import TYTExamsTable from "@/src/features/analiz/components/TYTExamsTable";
 import { Field } from "@/src/features/profil/data";
 import { createClient } from "@/src/lib/supabase/client";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
@@ -31,6 +32,8 @@ export default function Page() {
       <Button as={Link} href={`/dashboard/analiz/ekle?exam=AYT&field=${field}`}>
         AYT Analiz Ekle
       </Button>
+
+      <TYTExamsTable />
     </div>
   );
 }

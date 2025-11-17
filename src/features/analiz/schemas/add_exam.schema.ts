@@ -1,8 +1,26 @@
 import z from "zod";
 import { Field } from "../../profil/data";
 import { eaLessons, mfLessons, tytLessons } from "../data";
-import { Exam } from "../types";
-import { createLessonsSchema } from "../utils";
+import { Exam, Lesson, LessonName } from "../types";
+
+const createLessonsSchema = (lessons: Record<LessonName, Lesson>) => {
+  return z.object(
+    Object.fromEntries(
+      Object.entries(lessons).map(([lessonName, info]) => {
+        return [
+          lessonName,
+          lessonAnalysisSchema.refine(
+            (data) =>
+              data.correct + data.wrong + data.empty <= info.totalQuestions,
+            {
+              message: `Girdiğin doğru, yanlış ve boş sayılarının toplamı, (${info.totalQuestions}) soruyu aşamaz.`,
+            },
+          ),
+        ];
+      }),
+    ),
+  );
+};
 
 export const topicMistakesSchema = z.object({
   topicName: z.string(),
