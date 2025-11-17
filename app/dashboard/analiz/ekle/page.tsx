@@ -5,6 +5,7 @@ import { getLessons } from "@/src/features/analiz/data";
 import { getExamSchema } from "@/src/features/analiz/schemas/add_exam.schema";
 import { Exam, TopicMistake } from "@/src/features/analiz/types";
 import { Field } from "@/src/features/profil/data";
+import { createClient } from "@/src/lib/supabase/client";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { addToast } from "@heroui/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,18 +43,57 @@ export default function Page() {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof myschema>) => {
+  const onSubmit = async (data: z.infer<typeof myschema>) => {
     console.log(data);
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      const supabase = createClient();
+
+      const supabaseAccessToken = await supabase.auth
+        .getSession()
+        .then((res) => res.data.session?.access_token);
+
+      if (!supabaseAccessToken) {
+        throw new Error("Access token not found");
+      }
+
+      // Send POST request to /api/analysis
+      const response = await fetch(
+        "http://localhost:8080/api/analysis/" + exam.toLowerCase(),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${supabaseAccessToken}`,
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to submit analysis: ${response.statusText}`);
+      }
+
+      // Handle success
       addToast({
         title: "Analiz başarıyla kaydedildi!",
         description: "Analiz başarıyla kaydedildi.",
         color: "success",
       });
-    }, 2000);
+
+      form.reset();
+    } catch (error) {
+      console.error(error);
+      addToast({
+        title: "Hata",
+        description: "Analiz kaydedilirken bir hata oluştu.",
+        color: "danger",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
