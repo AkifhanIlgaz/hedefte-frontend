@@ -1,5 +1,6 @@
 "use client";
 
+import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";
 import { Select, SelectItem } from "@heroui/select";
 import { Spinner } from "@heroui/spinner";
@@ -11,10 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/table";
+import { useQuery } from "@tanstack/react-query";
+import { CircleAlert } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import useSWR from "swr";
 import { TytLessonNames } from "../types";
-import { buildPaginationUrl, fetcher } from "../utils";
+import { fetcher } from "../utils";
 
 const columns = [
   { key: "name", label: "İsim" },
@@ -28,21 +30,23 @@ const columns = [
 
 export default function TYTExamsTable() {
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [timeInterval, setTimeInterval] = useState(1);
 
-  const url = buildPaginationUrl("http://localhost:8080/api/analysis/tyt", {
-    page: page,
-    rowsPerPage: rowsPerPage,
-    interval: 1, // monthly || -1 means all
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["analysis-tyt", page, rowsPerPage, timeInterval],
+    queryFn: () =>
+      fetcher(
+        `http://localhost:8080/api/analysis/tyt?page=${page}&rowsPerPage=${rowsPerPage}&timeInterval=${timeInterval}`,
+      ),
+    staleTime: 1000 * 60 * 5,
   });
 
-  const { data, isLoading, error } = useSWR(url, fetcher, {
-    keepPreviousData: true,
-  });
+  const loadingState = isLoading ? "loading" : "idle";
 
-  const loadingState =
-    isLoading || data?.payload.length === 0 ? "loading" : "idle";
+  const pages = useMemo(() => {
+    return data?.meta.total ? Math.ceil(data.meta.total / rowsPerPage) : 0;
+  }, [data?.meta.total, rowsPerPage]);
 
   const renderCell = useCallback((exam: any, columnKey: any) => {
     const cellValue = exam[columnKey];
@@ -56,7 +60,11 @@ export default function TYTExamsTable() {
       case "Fizik":
       case "Kimya":
       case "Biyoloji":
-        return cellValue.net.toFixed(2);
+        return (
+          <span className="text-xs font-semibold">
+            {cellValue.net.toFixed(2)}
+          </span>
+        );
 
       case "date":
         const formattedDate = new Intl.DateTimeFormat("tr-TR", {
@@ -64,11 +72,20 @@ export default function TYTExamsTable() {
           month: "long",
           year: "numeric",
         }).format(new Date(cellValue));
-        return formattedDate;
+        return <span className="text-md font-bold">{formattedDate}</span>;
       case "name":
+        return <span className="text-md font-bold">{cellValue}</span>;
       case "totalNet":
-        return cellValue;
-
+        return (
+          <Chip
+            color="primary"
+            classNames={{
+              content: "font-bold",
+            }}
+          >
+            {cellValue.toFixed(2)}
+          </Chip>
+        );
       default:
         return null;
     }
@@ -82,7 +99,7 @@ export default function TYTExamsTable() {
           showControls
           showShadow
           color="primary"
-          page={page}
+          page={pages}
           total={data?.meta.totalPages}
           onChange={(page) => setPage(page)}
         />
@@ -92,12 +109,28 @@ export default function TYTExamsTable() {
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex w-full items-end justify-end">
+      <div className="flex w-full items-end justify-end gap-2">
         <Select
           size="sm"
-          className="max-w-2xs"
+          className="max-w-xs"
           selectionMode="single"
-          selectedKeys={new Set([timeInterval.toString()])}
+          defaultSelectedKeys={new Set([rowsPerPage.toString()])}
+          onChange={(event) => {
+            const selectedKey = parseInt(event.target.value);
+            setRowsPerPage(selectedKey);
+          }}
+          disallowEmptySelection={true}
+        >
+          <SelectItem key={"10"}>Sayfa başı 10 deneme</SelectItem>
+          <SelectItem key={"20"}>Sayfa başı 20 deneme</SelectItem>
+          <SelectItem key={"50"}>Sayfa başı 50 deneme</SelectItem>
+          <SelectItem key={"100"}>Sayfa başı 100 deneme</SelectItem>
+        </Select>
+        <Select
+          size="sm"
+          className="max-w-xs"
+          selectionMode="single"
+          defaultSelectedKeys={new Set([timeInterval.toString()])}
           onChange={(event) => {
             const selectedKey = parseInt(event.target.value);
             setTimeInterval(selectedKey);
@@ -113,20 +146,38 @@ export default function TYTExamsTable() {
     );
   }, []);
 
+  const emptyContent = useMemo(() => {
+    return (
+      <div className="flex w-full flex-col items-center justify-end ">
+        <CircleAlert className="size-6 text-danger" />
+        <h2 className=" text-danger-500 font-semibold">
+          Seçtiğiniz zaman aralığı için bir deneme analizi bulunamadı !
+        </h2>
+      </div>
+    );
+  }, []);
+
   return (
     <Table
       aria-label="Example table with client async pagination"
+      isCompact
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       topContent={topContent}
+      isHeaderSticky
       topContentPlacement="outside"
     >
       <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+        {(column) => (
+          <TableColumn key={column.key} align="center">
+            {column.label}
+          </TableColumn>
+        )}
       </TableHeader>
       <TableBody
         items={data?.payload ?? []}
         loadingContent={<Spinner />}
+        emptyContent={emptyContent}
         loadingState={loadingState}
       >
         {(item: any) => (

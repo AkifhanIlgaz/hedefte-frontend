@@ -1,20 +1,5 @@
 import { createClient } from "@/src/lib/supabase/client";
 
-export const buildPaginationUrl = (
-  baseUrl: string,
-  params: { page: number; rowsPerPage: number; interval: number },
-): string => {
-  const { page, rowsPerPage, interval } = params;
-
-  const queryParams = new URLSearchParams({
-    page: page.toString(),
-    rowsPerPage: rowsPerPage.toString(),
-    interval: interval.toString(),
-  });
-
-  return `${baseUrl}?${queryParams.toString()}`;
-};
-
 export const fetcher = async (...args: [string, RequestInit?]) => {
   const supabase = createClient();
 
