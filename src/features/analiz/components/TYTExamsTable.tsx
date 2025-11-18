@@ -1,5 +1,6 @@
 "use client";
 
+import { useTYTExams } from "@/src/queries/useTytExams";
 import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";
 import { Select, SelectItem } from "@heroui/select";
@@ -12,11 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/table";
-import { useQuery } from "@tanstack/react-query";
 import { CircleAlert } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { TytLessonNames } from "../types";
-import { fetcher } from "../utils";
 
 const columns = [
   { key: "name", label: "İsim" },
@@ -33,15 +32,11 @@ export default function TYTExamsTable() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [timeInterval, setTimeInterval] = useState(1);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["analysis-tyt", page, rowsPerPage, timeInterval],
-    queryFn: () =>
-      fetcher(
-        `http://localhost:8080/api/analysis/tyt?page=${page}&rowsPerPage=${rowsPerPage}&timeInterval=${timeInterval}`,
-      ),
-    staleTime: 1000 * 60 * 5,
+  const { data, isLoading, isError } = useTYTExams({
+    page,
+    rowsPerPage,
+    timeInterval,
   });
-
   const loadingState = isLoading ? "loading" : "idle";
 
   const pages = useMemo(() => {
