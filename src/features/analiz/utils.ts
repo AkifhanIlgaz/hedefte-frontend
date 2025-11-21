@@ -20,5 +20,5 @@ export const fetcher = async (...args: [string, RequestInit?]) => {
     },
   };
 
-  return fetch(url, updatedOptions).then((res) => res.json());
+  return fetch(`${url}`, updatedOptions).then((res) => res.json());
 };

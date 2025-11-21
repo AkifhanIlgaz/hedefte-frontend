@@ -1,9 +1,8 @@
 "use client";
 
 import MissingProfileInfoModal from "@/src/features/profil/components/MissingProfileInfoModal";
-import { ExamInfo, PersonalInfo } from "@/src/features/profil/types";
+import { PersonalInfo } from "@/src/features/profil/types";
 import { createClient } from "@/src/lib/supabase/client";
-import { hasUndefinedFields } from "@/src/lib/utils";
 import { Logo } from "@/src/shared/components/icons";
 import Sidebar from "@/src/shared/components/sidebar";
 import { ThemeSwitch } from "@/src/shared/components/theme-switch";
@@ -18,6 +17,7 @@ export default function DashboardLayout({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [fullName, setFullName] = useState<string | null>(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -28,14 +28,10 @@ export default function DashboardLayout({
         | PersonalInfo
         | undefined;
 
-      const examInfo = data.user?.user_metadata["examInfo"] as
-        | ExamInfo
-        | undefined;
-
-      if (hasUndefinedFields(personalInfo) || hasUndefinedFields(examInfo)) {
-        onOpen();
+      if (personalInfo) {
+        console.log(`${personalInfo.firstName} ${personalInfo.lastName}`);
+        setFullName(`${personalInfo.firstName} ${personalInfo.lastName}`);
       }
-
       if (error) console.error("Kullanıcı bilgisi alınamadı:", error.message);
     };
 
@@ -63,8 +59,10 @@ export default function DashboardLayout({
             </div>
           )}
 
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 ml-auto text-sm">
             <ThemeSwitch />
+
+            {fullName}
           </div>
         </div>
 
