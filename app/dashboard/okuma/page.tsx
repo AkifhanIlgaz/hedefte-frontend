@@ -1,5 +1,6 @@
 "use client";
 
+import { useGeneralChartData } from "@/src/queries/useTytExams";
 import { eachDayOfInterval, format, startOfYear } from "date-fns";
 import React from "react";
 
@@ -12,6 +13,16 @@ const sampleData = [
 ];
 
 export default function Page() {
+  const { data, isLoading, isError } = useGeneralChartData({
+    chartType: "all_lessons",
+    examType: "TYT",
+    timeInterval: -1,
+  });
+
+  if (isLoading && isError) return;
+
+  console.log(data);
+
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-2">GitHub Tarzı Heatmap</h1>
