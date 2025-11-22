@@ -1,6 +1,6 @@
 "use client";
 
-import { useGeneralChartData } from "@/src/queries/useTytExams";
+import { useChartData } from "@/src/queries/useTytExams";
 import { eachDayOfInterval, format, startOfYear } from "date-fns";
 import React from "react";
 
@@ -12,8 +12,19 @@ const sampleData = [
   { date: "2025-11-15", count: 7 },
 ];
 
+interface GeneralChartData {
+  examCount: number;
+  maxNet: number;
+  averageNet: number;
+  exams: {
+    date: string;
+    name: string;
+    totalNet: number;
+  }[];
+}
+
 export default function Page() {
-  const { data, isLoading, isError } = useGeneralChartData({
+  const { data, isLoading, isError } = useChartData<GeneralChartData>({
     chartType: "all_lessons",
     examType: "TYT",
     timeInterval: -1,

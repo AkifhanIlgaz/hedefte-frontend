@@ -27,10 +27,17 @@ const columns = [
   { key: "totalNet", label: "Toplam Net" },
 ];
 
-export default function TYTExamsTable() {
+interface TYTExamsTableProps {
+  timeInterval: number;
+  setTimeInterval: (timeInterval: number) => void;
+}
+
+export default function TYTExamsTable({
+  timeInterval,
+  setTimeInterval,
+}: TYTExamsTableProps) {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [timeInterval, setTimeInterval] = useState(1);
 
   const { data, isLoading, isError } = useTYTExams({
     page,
@@ -125,7 +132,7 @@ export default function TYTExamsTable() {
           size="sm"
           className="max-w-xs"
           selectionMode="single"
-          defaultSelectedKeys={new Set([timeInterval.toString()])}
+          selectedKeys={new Set([timeInterval.toString()])}
           onChange={(event) => {
             const selectedKey = parseInt(event.target.value);
             setTimeInterval(selectedKey);
@@ -158,7 +165,6 @@ export default function TYTExamsTable() {
       isCompact
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
-      topContent={topContent}
       isHeaderSticky
       topContentPlacement="outside"
     >
