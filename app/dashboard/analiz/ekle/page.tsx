@@ -1,10 +1,10 @@
 "use client";
-import GeneralExamInfoCard from "@/src/features/analiz/components/GeneralExamInfoCard";
-import PerformanceAnalysisCard from "@/src/features/analiz/components/PerformanceAnalysisCard";
+import GeneralExamInfoCard from "@/src/features/analiz/components/cards/GeneralExamInfoCard";
+import PerformanceAnalysisCard from "@/src/features/analiz/components/cards/PerformanceAnalysisCard";
 import { getLessons } from "@/src/features/analiz/data";
 import { getExamSchema } from "@/src/features/analiz/schemas/add_exam.schema";
 import { Exam, TopicMistake } from "@/src/features/analiz/types";
-import { Field } from "@/src/features/profil/data";
+import { Field } from "@/src/features/profil/types";
 import { createClient } from "@/src/lib/supabase/client";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { addToast } from "@heroui/toast";

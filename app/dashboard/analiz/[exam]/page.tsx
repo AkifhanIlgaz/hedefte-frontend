@@ -1,10 +1,13 @@
 "use client";
 
-import GeneralAnalysisCard from "@/src/features/analiz/components/GeneralAnalysisCard";
-import LessonCard from "@/src/features/analiz/components/LessonCard";
-import TYTExamsTable from "@/src/features/analiz/components/TYTExamsTable";
+import GeneralAnalysisCard from "@/src/features/analiz/components/cards/GeneralAnalysisCard";
+import LessonCard from "@/src/features/analiz/components/cards/LessonCard";
+import ExamsTable from "@/src/features/analiz/components/tables/examsTable";
 import { tytLessons } from "@/src/features/analiz/data";
-import { useChartData } from "@/src/queries/useTytExams";
+import { Exam } from "@/src/features/analiz/types";
+import { ExamInfo, Field } from "@/src/features/profil/types";
+import { createClient } from "@/src/lib/supabase/client";
+import { useChartData } from "@/src/queries/useChartData";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
@@ -14,7 +17,7 @@ import { Tab, Tabs } from "@heroui/tabs";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { BarChart3, Plus } from "lucide-react";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -27,21 +30,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-function smoothData(
-  rawData: { date: string; totalNet: number }[],
-  windowSize = 3,
-) {
-  const smoothed: { date: string; totalNet: number }[] = [];
-
-  for (let i = 0; i < rawData.length; i++) {
-    const start = Math.max(0, i - windowSize + 1);
-    const slice = rawData.slice(start, i + 1);
-    const avg = slice.reduce((sum, d) => sum + d.totalNet, 0) / slice.length;
-    smoothed.push({ date: rawData[i].date, totalNet: avg });
-  }
-
-  return smoothed;
-}
 
 const barChartData = [
   {
@@ -140,12 +128,18 @@ export interface GeneralChartResponse {
   timestamp: string;
 }
 
-export default function Page() {
+export default function Page({
+  params,
+}: {
+  params: Promise<{ exam: string }>;
+}) {
+  const { exam } = use(params);
   const [timeInterval, setTimeInterval] = useState(1);
+  const [field, setField] = useState<Field | undefined>();
 
   const { data, isLoading, isError } = useChartData<GeneralChartResponse>({
     chartType: "general",
-    examType: "TYT",
+    examType: exam.toUpperCase() as Exam,
     timeInterval: timeInterval,
   });
 
@@ -153,7 +147,20 @@ export default function Page() {
 
   const { chartData, months } = prepareChartData(data?.payload.exams ?? []);
 
-  console.log(chartData);
+  useEffect(() => {
+    const getUser = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error) console.error("Kullanıcı bilgisi alınamadı:", error.message);
+
+      const examInfo = data.user?.user_metadata["examInfo"] as ExamInfo;
+
+      setField(examInfo.field as Field);
+    };
+
+    getUser();
+  }, []);
 
   return (
     <div className="flex flex-col gap-6 ">
@@ -223,8 +230,7 @@ export default function Page() {
                   accessibilityLayer
                   style={{
                     width: "100%",
-                    maxWidth: "700px",
-                    maxHeight: "70vh",
+
                     aspectRatio: 1.618,
                   }}
                 >
@@ -267,8 +273,6 @@ export default function Page() {
                 accessibilityLayer
                 style={{
                   width: "100%",
-                  maxWidth: "700px",
-                  maxHeight: "70vh",
                   aspectRatio: 1.618,
                 }}
                 responsive={true}
@@ -295,9 +299,10 @@ export default function Page() {
           </div>
         </Tab>
         <Tab key="photos" title="all_exams">
-          <TYTExamsTable
+          <ExamsTable
+            exam={exam as Exam}
             timeInterval={timeInterval}
-            setTimeInterval={setTimeInterval}
+            field={field}
           />
         </Tab>
       </Tabs>

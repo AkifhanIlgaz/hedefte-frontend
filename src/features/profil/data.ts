@@ -1,3 +1,5 @@
+import { Field } from "./types";
+
 export const universities = [
   "ABDULLAH GÜL ÜNİVERSİTESİ",
   "ADANA ALPARSLAN TÜRKEŞ BİLİM VE TEKNOLOJİ ÜNİVERSİTESİ",
@@ -1201,5 +1203,3 @@ export const departments = [
 export const exams = ["YKS", "LGS"];
 
 export const fields: Field[] = ["Sayısal", "Eşit Ağırlık"];
-
-export type Field = "Sayısal" | "Eşit Ağırlık";

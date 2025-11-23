@@ -1,5 +1,3 @@
-import { Field } from "./data";
-
 export type ExamInfo = {
   exam: string;
   university: string;
@@ -12,3 +10,5 @@ export type PersonalInfo = {
   lastName: string;
   email: string;
 };
+
+export type Field = "Sayısal" | "Eşit Ağırlık";
