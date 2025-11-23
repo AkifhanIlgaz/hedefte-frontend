@@ -39,3 +39,41 @@ export type TopicMistake = {
   topicName: string;
   mistakeCount: number;
 };
+
+export interface GeneralChartPayload {
+  examCount: number;
+  maxNet: number;
+  averageNet: number;
+  exams: {
+    date: string;
+    name: string;
+    totalNet: number;
+  }[];
+  lessons: Record<
+    LessonName,
+    {
+      maxNet: number;
+      averageTime: number;
+      averageNet: number;
+    }
+  >;
+}
+
+export interface LessonChartPayload {
+  examCount: number;
+  maxNet: number;
+  averageNet: number;
+  exams: {
+    date: string;
+    name: string;
+    totalNet: number;
+  }[];
+  topicMistakes: Record<string, number>;
+}
+
+export interface GeneralChartResponse<T> {
+  success: boolean;
+  message: string;
+  payload: T;
+  timestamp: string;
+}

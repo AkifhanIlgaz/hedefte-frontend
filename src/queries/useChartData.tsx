@@ -3,20 +3,22 @@ import { fetcher } from "../features/analiz/utils";
 
 interface UseChartDataParams {
   examType: "TYT" | "AYT";
-  chartType: "general" | "all_lessons";
+  chartType: "general" | "lesson";
+  lesson?: string;
   timeInterval: number;
 }
 
 export function useChartData<T>({
   examType,
   chartType,
+  lesson,
   timeInterval,
 }: UseChartDataParams) {
   return useQuery<T>({
-    queryKey: ["chart", examType, chartType, timeInterval],
+    queryKey: ["chart", examType, chartType, lesson, timeInterval],
     queryFn: () =>
       fetcher(
-        `analysis/charts?exam=${examType}&chartType=${chartType}&timeInterval=${timeInterval}`,
+        `analysis/charts?exam=${examType}&chartType=${chartType}&timeInterval=${timeInterval}${lesson ? `&lesson=${lesson}` : ""}`,
       ) as Promise<T>,
     staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
   });

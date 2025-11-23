@@ -6,7 +6,11 @@ import GeneralChart from "@/src/features/analiz/components/charts/generalChart";
 import LessonGeneralChart from "@/src/features/analiz/components/charts/lessonGeneralChart";
 import ExamsTable from "@/src/features/analiz/components/tables/examsTable";
 import { getLessons } from "@/src/features/analiz/data";
-import { Exam, LessonName } from "@/src/features/analiz/types";
+import {
+  Exam,
+  GeneralChartPayload,
+  GeneralChartResponse,
+} from "@/src/features/analiz/types";
 import { ExamInfo, Field } from "@/src/features/profil/types";
 import { createClient } from "@/src/lib/supabase/client";
 import { useChartData } from "@/src/queries/useChartData";
@@ -18,32 +22,6 @@ import { Tab, Tabs } from "@heroui/tabs";
 import { BarChart3, Plus } from "lucide-react";
 import { use, useEffect, useState } from "react";
 
-export interface GeneralChartPayload {
-  examCount: number;
-  maxNet: number;
-  averageNet: number;
-  exams: {
-    date: string;
-    name: string;
-    totalNet: number;
-  }[];
-  lessons: Record<
-    LessonName,
-    {
-      maxNet: number;
-      averageTime: number;
-      averageNet: number;
-    }
-  >;
-}
-
-export interface GeneralChartResponse {
-  success: boolean;
-  message: string;
-  payload: GeneralChartPayload;
-  timestamp: string;
-}
-
 export default function Page({
   params,
 }: {
@@ -53,7 +31,9 @@ export default function Page({
   const [timeInterval, setTimeInterval] = useState(-1);
   const [field, setField] = useState<Field | undefined>();
   const lessons = getLessons(exam.toUpperCase() as Exam, field);
-  const { data, isLoading, isError } = useChartData<GeneralChartResponse>({
+  const { data, isLoading, isError } = useChartData<
+    GeneralChartResponse<GeneralChartPayload>
+  >({
     chartType: "general",
     examType: exam.toUpperCase() as Exam,
     timeInterval: timeInterval,
