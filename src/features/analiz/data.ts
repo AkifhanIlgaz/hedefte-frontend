@@ -10,7 +10,7 @@ import {
   Swords,
   Trees,
 } from "lucide-react";
-import { Field } from "../profil/data";
+import { Field } from "../profil/types";
 import {
   AytEaLessonName,
   AytMfLessonName,

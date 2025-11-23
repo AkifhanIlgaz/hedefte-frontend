@@ -1,10 +1,10 @@
+import { Field } from "@/src/features/profil/types";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Save } from "lucide-react";
-import { Field } from "../../profil/data";
-import { getLessons } from "../data";
-import { Exam } from "../types";
-import LessonAccordion from "./LessonAccordion";
+import { getLessons } from "../../data";
+import { Exam } from "../../types";
+import LessonAccordion from "../LessonAccordion";
 
 interface PerformanceAnalysisCardProps {
   exam: Exam;

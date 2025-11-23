@@ -11,17 +11,6 @@ const sampleData = [
   { date: "2025-11-15", count: 7 },
 ];
 
-interface GeneralChartData {
-  examCount: number;
-  maxNet: number;
-  averageNet: number;
-  exams: {
-    date: string;
-    name: string;
-    totalNet: number;
-  }[];
-}
-
 export default function Page() {
   return (
     <div className="p-4">

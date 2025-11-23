@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { LessonName, TopicMistake } from "../types";
+import { LessonName, TopicMistake } from "../../types";
 
 interface TopicInfoCardProps {
   topics: string[];

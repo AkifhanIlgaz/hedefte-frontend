@@ -19,7 +19,7 @@ export const useExams = ({
     queryKey: ["analysis", exam, page, rowsPerPage, timeInterval],
     queryFn: () =>
       fetcher(
-        `http://localhost:8080/api/analysis/${exam}?page=${page}&rowsPerPage=${rowsPerPage}&timeInterval=${timeInterval}`,
+        `analysis/${exam}?page=${page}&rowsPerPage=${rowsPerPage}&timeInterval=${timeInterval}`,
       ),
     staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
   });

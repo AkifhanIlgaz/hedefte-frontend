@@ -16,7 +16,7 @@ export function useChartData<T>({
     queryKey: ["chart", examType, chartType, timeInterval],
     queryFn: () =>
       fetcher(
-        `http://localhost:8080/api/analysis/charts?exam=${examType}&chartType=${chartType}&timeInterval=${timeInterval}`,
+        `analysis/charts?exam=${examType}&chartType=${chartType}&timeInterval=${timeInterval}`,
       ) as Promise<T>,
     staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
   });

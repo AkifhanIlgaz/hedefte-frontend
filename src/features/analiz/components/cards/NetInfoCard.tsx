@@ -4,7 +4,7 @@ import { NumberInput } from "@heroui/react";
 import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
 import { useFormContext } from "react-hook-form";
-import { LessonName } from "../types";
+import { LessonName } from "../../types";
 
 interface NetInfoCardProps {
   lessonName: LessonName;

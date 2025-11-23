@@ -2,8 +2,8 @@ import { Accordion, AccordionItem } from "@heroui/accordion";
 import clsx from "clsx";
 import { useFormContext } from "react-hook-form";
 import { Lesson } from "../types";
-import NetInfoCard from "./NetInfoCard";
-import TopicInfoCard from "./TopicInfoCard";
+import NetInfoCard from "./cards/NetInfoCard";
+import TopicInfoCard from "./cards/TopicInfoCard";
 
 interface LessonAccordionProps {
   lesson: Lesson;

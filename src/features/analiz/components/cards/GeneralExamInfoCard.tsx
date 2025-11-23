@@ -3,7 +3,7 @@ import { Input } from "@heroui/input";
 import { DatePicker } from "@heroui/react";
 import { I18nProvider } from "@react-aria/i18n";
 import { useFormContext } from "react-hook-form";
-import { Exam } from "../types";
+import { Exam } from "../../types";
 
 interface GeneralExamInfoCardProps {
   exam: Exam;

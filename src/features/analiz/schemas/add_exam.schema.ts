@@ -1,5 +1,5 @@
 import z from "zod";
-import { Field } from "../../profil/data";
+import { Field } from "../../profil/types";
 import { eaLessons, mfLessons, tytLessons } from "../data";
 import { Exam, Lesson, LessonName } from "../types";
 

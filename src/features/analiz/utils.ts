@@ -27,7 +27,10 @@ export const fetcher = async (...args: [string, RequestInit?]) => {
     },
   };
 
-  return fetch(`${url}`, updatedOptions).then((res) => res.json());
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  console.log(`${baseUrl}/${url}`);
+
+  return fetch(`${baseUrl}/${url}`, updatedOptions).then((res) => res.json());
 };
 
 export const getLessonNames = (exam: Exam, field?: Field) => {

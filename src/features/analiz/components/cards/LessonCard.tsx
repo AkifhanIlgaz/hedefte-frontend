@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Lesson } from "../types";
+import { Lesson } from "../../types";
 
 export default function LessonCard({ lesson }: { lesson: Lesson }) {
   return (
