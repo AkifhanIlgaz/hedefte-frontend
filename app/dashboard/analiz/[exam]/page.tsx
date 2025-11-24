@@ -104,12 +104,12 @@ export default function Page({
           <GeneralAnalysisCard
             title="Ortalama Net"
             icon={BarChart3}
-            value={data?.payload.averageNet}
+            value={data?.payload.averageNet.toFixed(2)}
           />
           <GeneralAnalysisCard
             title="Maksimum Net"
             icon={BarChart3}
-            value={data?.payload.maxNet}
+            value={data?.payload.maxNet.toFixed(2)}
           />
         </div>
 

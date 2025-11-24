@@ -34,7 +34,7 @@ export const fetcher = async (...args: [string, RequestInit?]) => {
 };
 
 export const getLessonNames = (exam: Exam, field?: Field) => {
-  if (exam === "TYT") return TytLessonNames;
+  if (exam.toUpperCase() === "TYT") return TytLessonNames;
 
   return field === "Sayısal" ? AytMfLessonNames : AytEaLessonNames;
 };

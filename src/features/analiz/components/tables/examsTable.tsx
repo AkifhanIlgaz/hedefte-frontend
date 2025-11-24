@@ -104,6 +104,8 @@ export default function ExamsTable({
     }
   }, []);
 
+  console.log(data);
+
   return (
     <Table
       aria-label="Example table with client async pagination"

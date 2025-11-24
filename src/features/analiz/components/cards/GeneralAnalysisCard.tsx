@@ -3,7 +3,7 @@ import { LucideIcon } from "lucide-react";
 
 interface GeneralAnalysisCardProps {
   title: string;
-  value?: number;
+  value?: number | string;
   icon: LucideIcon;
 }
 

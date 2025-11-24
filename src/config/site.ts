@@ -1,5 +1,6 @@
 import {
   Calendar,
+  ChartArea,
   ChartNoAxesCombined,
   Home,
   ListChecks,
@@ -19,10 +20,16 @@ export const siteConfig = {
       icon: Home,
     },
     {
-      label: "Analizlerim",
-      href: "/dashboard/analiz",
+      label: "TYT Analizlerim",
+      href: "/dashboard/analiz/tyt",
+      icon: ChartArea,
+    },
+    {
+      label: "AYT Analizlerim",
+      href: "/dashboard/analiz/ayt",
       icon: ChartNoAxesCombined,
     },
+
     {
       label: "Konu Takibi",
       href: "/dashboard/takip",
