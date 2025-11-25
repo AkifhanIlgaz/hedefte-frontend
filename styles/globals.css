@@ -8,6 +8,9 @@
   --foreground: oklch(
     0.15 0 0
   ); /* Koyu gri / siyah yerine göz dostu koyu ton */
+
+  --bg-neutral: oklch(0.98 0.01 90);
+
   --card: oklch(0.99 0.01 90); /* Hafif açık kart arka planı */
   --card-foreground: var(--foreground);
   --popover: oklch(0.98 0.01 90);
@@ -16,8 +19,8 @@
   --primary: oklch(0.6 0.15 230); /* Canlı mavi-turkuaz */
   --primary-foreground: oklch(0.99 0 0);
 
-  --secondary: oklch(0.95 0.12 45); /* Yumuşak turuncu */
-  --secondary-foreground: var(--foreground);
+  --secondary: oklch(0.15 0 0); /* Hafif açık slate tonu */
+  --secondary-foreground: oklch(0.85 0.02 240);
 
   --danger: oklch(0.58 0.15 25); /* Modern kırmızı */
   --danger-foreground: oklch(0.98 0 0);
@@ -60,13 +63,14 @@
   --popover: oklch(0.15 0 0);
   --popover-foreground: var(--foreground);
 
+  --bg-neutral: oklch(0.15 0 0);
+
   --primary: oklch(0.55 0.12 230);
   --primary-foreground: oklch(0.95 0 0);
 
-  --secondary: oklch(0.4 0.1 45);
-  --secondary-foreground: oklch(0.95 0 0);
+  --secondary: oklch(0.95 0 0); /* Koyu slate tonu */
+  --secondary-foreground: oklch(0.2 0.02 240) --muted: oklch(0.25 0 0);
 
-  --muted: oklch(0.25 0 0);
   --muted-foreground: oklch(0.7 0 0);
 
   --accent: oklch(0.6 0.15 120);

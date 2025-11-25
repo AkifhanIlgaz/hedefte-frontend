@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@heroui/button";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
