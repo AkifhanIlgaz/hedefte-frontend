@@ -9,41 +9,10 @@ import {
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, EllipsisVertical, Info, Trash } from "lucide-react";
-import { tytLessons } from "../../analiz/data";
-import { TytLessonName } from "../../analiz/types";
+import { Session } from "../types";
+import { getBadgeColor, getLessonStyles } from "../utils";
 
-type StudySession = {
-  id: string;
-  date: Date;
-  exam: string; // Örn: TYT, AYT, Yazılı
-  lesson: string; // Örn: Matematik
-  type: string; // Örn: Konu, Soru, Deneme
-  goal: string; // Örn: 50 soru çözülecek
-  isCompleted: boolean;
-};
-
-export default function SessionItem({ session }: { session: StudySession }) {
-  // Animation variants
-  const variants = {
-    hidden: { opacity: 0, y: 20 }, // Initial state (hidden)
-    visible: { opacity: 1, y: 0 }, // Visible state (enter)
-    exit: { opacity: 0, y: -20 }, // Exit state (leave)
-  };
-
-  // Renk kodları - Sınav tipine göre
-  const getBadgeColor = (type: string) => {
-    switch (type) {
-      case "TYT":
-        return "bg-primary-100 text-primary-700 hover:bg-primary-200 border-primary-200";
-      case "AYT":
-        return "bg-secondary-100 text-secondary-700 hover:bg-secondary-200 border-secondary-200";
-      case "YDT":
-        return "bg-accent-100 text-accent-700 hover:bg-accent-200 border-accent-200";
-      default:
-        return "bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200";
-    }
-  };
-
+export default function SessionItem({ session }: { session: Session }) {
   return (
     <AnimatePresence initial={true}>
       <motion.div
@@ -67,10 +36,7 @@ export default function SessionItem({ session }: { session: StudySession }) {
                 </Chip>
                 <Chip
                   size="sm"
-                  className={clsx(
-                    tytLessons[session.lesson as TytLessonName].iconColor,
-                    tytLessons[session.lesson as TytLessonName].bgClass,
-                  )}
+                  className={clsx(getLessonStyles(session.lesson))}
                 >
                   {session.lesson}
                 </Chip>
@@ -95,7 +61,7 @@ export default function SessionItem({ session }: { session: StudySession }) {
                     color="default"
                     startContent={<Info className="size-4" />}
                   >
-                    Ayrintilar
+                    Ayrıntılar
                   </DropdownItem>
 
                   <DropdownItem

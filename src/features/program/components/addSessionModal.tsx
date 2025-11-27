@@ -16,13 +16,13 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { ChangeEvent, Key } from "react";
 import { useForm } from "react-hook-form";
-import { tytLessons } from "../../analiz/data";
-import { TytLessonNames } from "../../analiz/types";
+import { Exam, LessonName, TytLessonNames } from "../../analiz/types";
 import { fetcher } from "../../analiz/utils";
 import {
   AddSessionRequest,
   addSessionSchema,
 } from "../schemas/add_session.schema";
+import { getTopics } from "../utils";
 
 const EXAM_TYPES = ["TYT", "AYT"];
 const STUDY_TYPES = [
@@ -83,11 +83,10 @@ export default function AddSessionModal({
         color: "danger",
       });
     } finally {
+      form.reset();
       onOpenChange(false);
     }
   };
-
-  console.log(form.formState.errors);
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
@@ -179,7 +178,10 @@ export default function AddSessionModal({
                   errorMessage={form.formState.errors.topic?.message}
                   isInvalid={!!form.formState.errors.topic}
                 >
-                  {tytLessons.Türkçe.topics.map((topic) => (
+                  {getTopics(
+                    form.watch("exam", undefined) as Exam,
+                    form.watch("lesson", undefined) as LessonName,
+                  ).map((topic) => (
                     <AutocompleteItem key={topic}>{topic}</AutocompleteItem>
                   ))}
                 </Autocomplete>

@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { GeneralResponse, Session } from "../features/analiz/types";
+import { GeneralResponse } from "../features/analiz/types";
 import { fetcher } from "../features/analiz/utils";
+import { Session } from "../features/program/types";
 
 interface UseSessionsParams {
   date: Date;

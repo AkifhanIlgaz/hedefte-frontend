@@ -25,7 +25,6 @@ export default function IntervalSelection({
 }: IntervalSelectionProps) {
   const [startDate, setStartDate] = useState(startOfDay(new Date()));
 
-  // Haftalık günleri oluştur
   useEffect(() => {
     const start = startOfWeek(startDate, { weekStartsOn: 1 });
     const end = endOfWeek(startDate, { weekStartsOn: 1 });
