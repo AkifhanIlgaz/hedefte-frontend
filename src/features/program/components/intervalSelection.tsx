@@ -73,7 +73,7 @@ export default function IntervalSelection({
           <ChevronsRight className="h-4 w-4 text-secondary" />
         </Button>
       </div>
-      <Button color="primary" onPress={handleToday} variant="ghost">
+      <Button color="primary" onPress={handleToday} variant="solid">
         Bugüne Dön
       </Button>
     </div>

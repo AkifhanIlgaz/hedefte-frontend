@@ -1,17 +1,11 @@
+import { useSessions } from "@/src/queries/useSessions";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { useDisclosure } from "@heroui/modal";
-import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { format, isSameDay } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Calendar, Plus } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import {
-  AddSessionRequest,
-  addSessionSchema,
-} from "../schemas/add_session.schema";
 import AddSessionModal from "./addSessionModal";
 import SessionItem from "./sessionItem";
 
@@ -74,17 +68,12 @@ const exampleSessions: StudySession[] = [
 ];
 
 export default function DayCard({ date }: { date: Date }) {
-  const [sessions, setSessions] = useState(exampleSessions);
   const isToday = isSameDay(date, new Date());
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const form = useForm<AddSessionRequest>({
-    resolver: zodResolver(addSessionSchema),
-    defaultValues: {
-      date: date,
-      isCompleted: false,
-    },
+  const { sessions, isLoading, isError, addSessionToCache } = useSessions({
+    date,
   });
 
   // Progress calculation
@@ -93,21 +82,11 @@ export default function DayCard({ date }: { date: Date }) {
   const progress =
     totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
-  const toggleSession = (id: string) => {
-    setSessions(
-      sessions.map((s) =>
-        s.id === id ? { ...s, isCompleted: !s.isCompleted } : s,
-      ),
-    );
-  };
-
-  const deleteSession = (id: string) => {
-    setSessions(sessions.filter((s) => s.id !== id));
-  };
+  if (isLoading || isError) return;
 
   return (
     <Card
-      className={clsx("flex flex-col h-full ", {
+      className={clsx("max-h-fit ", {
         "shadow-lg shadow-success-500": isToday,
       })}
     >
@@ -133,40 +112,23 @@ export default function DayCard({ date }: { date: Date }) {
           date={date}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
+          addSessionToCache={addSessionToCache}
         />
       </CardHeader>
 
-      <CardBody className="flex-1 pt-4">
-        {/* Progress bar line */}
-        {totalCount > 0 && (
-          <div className="mb-4 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div
-              className={clsx(
-                "h-full transition-all duration-500 rounded-full",
-                progress === 100 ? "bg-green-500" : "bg-blue-500",
-              )}
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        )}
-
+      <CardBody className="  pt-4">
         {sessions.length === 0 ? (
-          <div className=" flex flex-col items-center justify-center text-slate-400 text-sm ">
+          <div className=" flex flex-col h-fit items-center justify-center text-slate-400 text-sm ">
             <Calendar className="h-8 w-8 mb-2 opacity-20" />
             Henüz oturum eklenmedi.
           </div>
         ) : (
           <div className="space-y-3">
             {sessions
-              .slice() // Orijinal diziyi değiştirmemek için bir kopya oluştur
+              ?.slice() // Orijinal diziyi değiştirmemek için bir kopya oluştur
               .sort((a, b) => Number(a.isCompleted) - Number(b.isCompleted)) // Tamamlanmamışlar üstte, tamamlanmışlar altta
               .map((session) => (
-                <SessionItem
-                  key={session.id}
-                  session={session}
-                  onToggle={() => toggleSession(session.id)}
-                  onDelete={() => deleteSession(session.id)}
-                />
+                <SessionItem key={session.id} session={session} />
               ))}
           </div>
         )}

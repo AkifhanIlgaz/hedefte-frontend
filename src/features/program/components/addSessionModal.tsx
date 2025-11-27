@@ -9,13 +9,16 @@ import {
   ModalHeader,
 } from "@heroui/modal";
 import { Select, SelectItem } from "@heroui/select";
+import { addToast } from "@heroui/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import { tytLessons } from "../../analiz/data";
-import { TytLessonNames } from "../../analiz/types";
+import { Session, TytLessonNames } from "../../analiz/types";
+import { fetcher } from "../../analiz/utils";
 import {
   AddSessionRequest,
   addSessionSchema,
@@ -33,12 +36,14 @@ const STUDY_TYPES = [
 interface AddSessionModalProps {
   date: Date;
   isOpen: boolean;
+  addSessionToCache: (session: Session) => void;
   onOpenChange: (isOpen: boolean) => void;
 }
 
 export default function AddSessionModal({
   date,
   isOpen,
+  addSessionToCache,
   onOpenChange,
 }: AddSessionModalProps) {
   const form = useForm<AddSessionRequest>({
@@ -48,12 +53,43 @@ export default function AddSessionModal({
       isCompleted: false,
     },
   });
+  const queryClient = useQueryClient();
 
-  const handleSubmit = (data: AddSessionRequest) => {
-    console.log(data);
+  const updateSessions = (data: AddSessionRequest) => {
+    queryClient.setQueryData(["sessions", date.toISOString()], (old: any) => {
+      if (!old) return [data];
+      return [...old, data];
+    });
   };
 
-  console.log(form.formState.errors);
+  const handleSubmit = async (data: AddSessionRequest) => {
+    console.log(data);
+    try {
+      const response = await fetcher("sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response?.success) {
+        addToast({
+          title: "Başarılı!",
+          description: "Oturum başarıyla eklendi.",
+          color: "success",
+        });
+      } else {
+        throw new Error(response?.message || "Bilinmeyen bir hata oluştu.");
+      }
+    } catch (error: any) {
+      addToast({
+        title: "Hata!",
+        description: error.message || "Bir hata oluştu, lütfen tekrar deneyin.",
+        color: "danger",
+      });
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
@@ -138,8 +174,8 @@ export default function AddSessionModal({
                   labelPlacement="outside"
                   isVirtualized
                   placeholder="Lütfen yanlış yaptığınız veya boş bıraktığınız konuyu seçiniz."
-                  onSelect={(e: ChangeEvent<HTMLInputElement>) => {
-                    form.setValue("topic", e.target.value);
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    form.setValue("topic", e.currentTarget.value);
                     form.trigger("topic");
                   }}
                   errorMessage={form.formState.errors.topic?.message}
@@ -156,6 +192,7 @@ export default function AddSessionModal({
                   label="Hedef & Amac"
                   labelPlacement="outside"
                   placeholder="Lütfen yanlış yaptığınız veya boş bıraktığınız konuyu seçiniz."
+                  {...form.register("goal")}
                 ></Textarea>
               </ModalBody>
               <ModalFooter>

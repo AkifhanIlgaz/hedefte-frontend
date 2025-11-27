@@ -71,7 +71,19 @@ export interface LessonChartPayload {
   topicMistakes: Record<string, number>;
 }
 
-export interface GeneralChartResponse<T> {
+export interface Session {
+  id: string;
+  userId: string;
+  exam: "TYT" | "AYT";
+  type: string;
+  lesson: string;
+  topic: string;
+  goal: string;
+  date: Date;
+  isCompleted: boolean;
+}
+
+export interface GeneralResponse<T> {
   success: boolean;
   message: string;
   payload: T;

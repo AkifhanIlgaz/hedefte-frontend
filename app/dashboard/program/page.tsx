@@ -18,7 +18,7 @@ export default function Page() {
       />
 
       <IntervalSelection weekDays={weekDays} weekDaysAction={setWeekDays} />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-6 auto-rows-auto-auto">
         {weekDays.map((day) => (
           <DayCard key={day.toString()} date={day} />
         ))}

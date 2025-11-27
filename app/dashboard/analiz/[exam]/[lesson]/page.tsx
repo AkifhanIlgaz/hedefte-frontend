@@ -4,7 +4,7 @@ import GeneralChart from "@/src/features/analiz/components/charts/generalChart";
 import TopicMistakeChart from "@/src/features/analiz/components/charts/topicMistakeChart";
 import {
   Exam,
-  GeneralChartResponse,
+  GeneralResponse,
   LessonChartPayload,
 } from "@/src/features/analiz/types";
 import { useChartData } from "@/src/queries/useChartData";
@@ -22,7 +22,7 @@ export default function Page({
   const lesson = decodeURIComponent(encodedLesson);
   const [timeInterval, setTimeInterval] = useState(-1);
   const { data, isLoading, isError } = useChartData<
-    GeneralChartResponse<LessonChartPayload>
+    GeneralResponse<LessonChartPayload>
   >({
     chartType: "lesson",
     examType: exam.toUpperCase() as Exam,

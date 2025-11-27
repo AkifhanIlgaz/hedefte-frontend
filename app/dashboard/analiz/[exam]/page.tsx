@@ -9,7 +9,7 @@ import { getLessons } from "@/src/features/analiz/data";
 import {
   Exam,
   GeneralChartPayload,
-  GeneralChartResponse,
+  GeneralResponse,
 } from "@/src/features/analiz/types";
 import { ExamInfo, Field } from "@/src/features/profil/types";
 import { createClient } from "@/src/lib/supabase/client";
@@ -32,7 +32,7 @@ export default function Page({
   const [field, setField] = useState<Field | undefined>();
   const lessons = getLessons(exam.toUpperCase() as Exam, field);
   const { data, isLoading, isError } = useChartData<
-    GeneralChartResponse<GeneralChartPayload>
+    GeneralResponse<GeneralChartPayload>
   >({
     chartType: "general",
     examType: exam.toUpperCase() as Exam,
