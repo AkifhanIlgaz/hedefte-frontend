@@ -107,13 +107,13 @@ export default function AddSessionModal({
               <ModalBody>
                 <Select
                   variant="bordered"
-                  label="Sinav"
+                  label="Sınav"
                   labelPlacement="outside"
                   isVirtualized
                   selectionMode="single"
                   disallowEmptySelection
                   maxListboxHeight={80}
-                  placeholder="Lütfen yanlış yaptığınız veya boş bıraktığınız konuyu seçiniz."
+                  placeholder="Lütfen çalışacağınız sınavı seçiniz."
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     form.setValue("exam", e.target.value);
                     form.trigger("exam");
@@ -132,7 +132,7 @@ export default function AddSessionModal({
                   isVirtualized
                   selectionMode="single"
                   disallowEmptySelection
-                  placeholder="Lütfen yanlış yaptığınız veya boş bıraktığınız konuyu seçiniz."
+                  placeholder="Lütfen çalışma yapacağınız dersi seçiniz."
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     form.setValue("lesson", e.target.value);
                     form.trigger("lesson");
@@ -146,13 +146,13 @@ export default function AddSessionModal({
                 </Select>
                 <Select
                   variant="bordered"
-                  label="Tur"
+                  label="Çalışma Türü"
                   labelPlacement="outside"
                   isVirtualized
                   selectionMode="single"
                   disallowEmptySelection
                   maxListboxHeight={160}
-                  placeholder="Lütfen yanlış yaptığınız veya boş bıraktığınız konuyu seçiniz."
+                  placeholder="Lütfen hangi tür çalışma yapacağınızı seçiniz."
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     form.setValue("type", e.target.value);
                     form.trigger("type");
@@ -170,7 +170,7 @@ export default function AddSessionModal({
                   label="Konu"
                   labelPlacement="outside"
                   isVirtualized
-                  placeholder="Lütfen yanlış yaptığınız veya boş bıraktığınız konuyu seçiniz."
+                  placeholder="Lütfen çalışma yapacağınız konuyu seçiniz."
                   onSelectionChange={(value: Key | null) => {
                     form.setValue("topic", value as string);
                     form.trigger("topic");
@@ -189,18 +189,18 @@ export default function AddSessionModal({
                 <Textarea
                   variant="bordered"
                   className="col-span-2"
-                  label="Hedef & Amac"
+                  label="Hedef & Amaç"
                   labelPlacement="outside"
-                  placeholder="Lütfen yanlış yaptığınız veya boş bıraktığınız konuyu seçiniz."
+                  placeholder="Her çalışmanın spesifik bir amacı ve hedefi olmalıdır. Örneğin, trigonometride toplam-fark formüllerinde takıldığım soru tiplerinin çözümünü izleyip, her soruyu hoca çözmeden önce kendim deneyerek 1 saatte bu eksiği kapatacağım."
                   {...form.register("goal")}
                 ></Textarea>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
+                <Button color="danger" onPress={onClose}>
+                  İptal
                 </Button>
                 <Button color="primary" type="submit">
-                  Action
+                  Oturum Ekle
                 </Button>
               </ModalFooter>
             </form>
