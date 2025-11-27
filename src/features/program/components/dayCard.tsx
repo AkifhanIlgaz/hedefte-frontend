@@ -2,6 +2,7 @@ import { useSessions } from "@/src/queries/useSessions";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { useDisclosure } from "@heroui/modal";
+import { Spinner } from "@heroui/spinner";
 import clsx from "clsx";
 import { format, isSameDay } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -82,8 +83,6 @@ export default function DayCard({ date }: { date: Date }) {
   const progress =
     totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
-  if (isLoading || isError) return;
-
   return (
     <Card
       className={clsx("max-h-fit ", {
@@ -116,11 +115,12 @@ export default function DayCard({ date }: { date: Date }) {
         />
       </CardHeader>
 
-      <CardBody className="  pt-4">
-        {sessions.length === 0 ? (
-          <div className=" flex flex-col h-fit items-center justify-center text-slate-400 text-sm ">
-            <Calendar className="h-8 w-8 mb-2 opacity-20" />
-            Henüz oturum eklenmedi.
+      <CardBody className="pt-4">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center text-slate-400 text-sm">
+            <Spinner className="h-8 w-8 mb-2" />{" "}
+            {/* Replace Loader with Spinner */}
+            Oturumlar yükleniyor...
           </div>
         ) : (
           <div className="space-y-3">
@@ -130,6 +130,12 @@ export default function DayCard({ date }: { date: Date }) {
               .map((session) => (
                 <SessionItem key={session.id} session={session} />
               ))}
+          </div>
+        )}
+        {!isLoading && sessions.length === 0 && (
+          <div className="flex flex-col h-fit items-center justify-center text-slate-400 text-sm">
+            <Calendar className="h-8 w-8 mb-2 opacity-20" />
+            Henüz oturum eklenmedi.
           </div>
         )}
       </CardBody>
