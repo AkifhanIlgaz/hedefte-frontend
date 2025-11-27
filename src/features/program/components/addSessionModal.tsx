@@ -14,10 +14,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { ChangeEvent } from "react";
+import { ChangeEvent, Key } from "react";
 import { useForm } from "react-hook-form";
 import { tytLessons } from "../../analiz/data";
-import { Session, TytLessonNames } from "../../analiz/types";
+import { TytLessonNames } from "../../analiz/types";
 import { fetcher } from "../../analiz/utils";
 import {
   AddSessionRequest,
@@ -36,16 +36,15 @@ const STUDY_TYPES = [
 interface AddSessionModalProps {
   date: Date;
   isOpen: boolean;
-  addSessionToCache: (session: Session) => void;
   onOpenChange: (isOpen: boolean) => void;
 }
 
 export default function AddSessionModal({
   date,
   isOpen,
-  addSessionToCache,
   onOpenChange,
 }: AddSessionModalProps) {
+  const queryClient = useQueryClient();
   const form = useForm<AddSessionRequest>({
     resolver: zodResolver(addSessionSchema),
     defaultValues: {
@@ -53,17 +52,8 @@ export default function AddSessionModal({
       isCompleted: false,
     },
   });
-  const queryClient = useQueryClient();
-
-  const updateSessions = (data: AddSessionRequest) => {
-    queryClient.setQueryData(["sessions", date.toISOString()], (old: any) => {
-      if (!old) return [data];
-      return [...old, data];
-    });
-  };
 
   const handleSubmit = async (data: AddSessionRequest) => {
-    console.log(data);
     try {
       const response = await fetcher("sessions", {
         method: "POST",
@@ -79,6 +69,10 @@ export default function AddSessionModal({
           description: "Oturum başarıyla eklendi.",
           color: "success",
         });
+        queryClient.invalidateQueries({
+          queryKey: ["sessions", date.toISOString()],
+          exact: false,
+        });
       } else {
         throw new Error(response?.message || "Bilinmeyen bir hata oluştu.");
       }
@@ -88,8 +82,12 @@ export default function AddSessionModal({
         description: error.message || "Bir hata oluştu, lütfen tekrar deneyin.",
         color: "danger",
       });
+    } finally {
+      onOpenChange(false);
     }
   };
+
+  console.log(form.formState.errors);
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
@@ -174,8 +172,8 @@ export default function AddSessionModal({
                   labelPlacement="outside"
                   isVirtualized
                   placeholder="Lütfen yanlış yaptığınız veya boş bıraktığınız konuyu seçiniz."
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    form.setValue("topic", e.currentTarget.value);
+                  onSelectionChange={(value: Key | null) => {
+                    form.setValue("topic", value as string);
                     form.trigger("topic");
                   }}
                   errorMessage={form.formState.errors.topic?.message}

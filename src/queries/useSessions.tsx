@@ -19,27 +19,13 @@ export const useSessions = ({ date }: UseSessionsParams) => {
     staleTime: 1000 * 60 * 60 * 24 * 7, // 1 week
   });
 
-  console.log(data);
-  const addSessionToCache = (newSession: Session) => {
-    queryClient.setQueryData<GeneralResponse<Session[]>>(
-      ["sessions", formattedDate],
-      (oldData) => {
-        if (!oldData?.success) return oldData;
-        return {
-          ...oldData,
-          payload: [...(oldData.payload ?? []), newSession],
-        };
-      },
-    );
-  };
   if (!data?.success) {
-    return { sessions: [] as Session[], isLoading, isError, addSessionToCache };
+    return { sessions: [] as Session[], isLoading, isError };
   }
 
   return {
     sessions: data.payload ?? [],
     isLoading,
     isError,
-    addSessionToCache,
   };
 };

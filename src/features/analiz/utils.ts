@@ -28,7 +28,6 @@ export const fetcher = async (...args: [string, RequestInit?]) => {
   };
 
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  console.log(`${baseUrl}/${url}`);
 
   return fetch(`${baseUrl}/${url}`, updatedOptions).then((res) => res.json());
 };

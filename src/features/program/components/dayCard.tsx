@@ -73,7 +73,7 @@ export default function DayCard({ date }: { date: Date }) {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const { sessions, isLoading, isError, addSessionToCache } = useSessions({
+  const { sessions, isLoading, isError } = useSessions({
     date,
   });
 
@@ -111,7 +111,6 @@ export default function DayCard({ date }: { date: Date }) {
           date={date}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
-          addSessionToCache={addSessionToCache}
         />
       </CardHeader>
 
