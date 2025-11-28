@@ -61,12 +61,12 @@ export default function DayCard({ date }: { date: Date }) {
               ?.slice() // Orijinal diziyi değiştirmemek için bir kopya oluştur
               .sort((a, b) => Number(a.isCompleted) - Number(b.isCompleted)) // Tamamlanmamışlar üstte, tamamlanmışlar altta
               .map((session) => (
-                <SessionItem key={session.id} session={session} />
+                <SessionItem key={session.id} session={session} date={date} />
               ))}
           </div>
         )}
         {!isLoading && sessions.length === 0 && (
-          <div className="flex flex-col h-fit items-center justify-center text-slate-400 text-sm">
+          <div className="flex flex-col h-fit items-center justify-center text-slate-400 text-sm ">
             <Calendar className="h-8 w-8 mb-2 opacity-20" />
             Henüz oturum eklenmedi.
           </div>

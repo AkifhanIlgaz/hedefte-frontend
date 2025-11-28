@@ -6,13 +6,90 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@heroui/dropdown";
+import { addToast } from "@heroui/toast";
+import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, EllipsisVertical, Info, Trash } from "lucide-react";
+import { GeneralResponse } from "../../analiz/types";
+import { fetcher } from "../../analiz/utils";
 import { Session } from "../types";
 import { getBadgeColor, getLessonStyles } from "../utils";
 
-export default function SessionItem({ session }: { session: Session }) {
+export default function SessionItem({
+  session,
+  date,
+}: {
+  session: Session;
+  date: Date;
+}) {
+  const queryClient = useQueryClient();
+  const deleteSession = async () => {
+    try {
+      const response: GeneralResponse<any> = await fetcher(
+        `sessions/${session.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (response.success) {
+        addToast({
+          title: "Başarılı",
+          description: "Oturum başarıyla silindi.",
+          color: "success",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["sessions", date.toISOString()],
+          exact: false,
+        });
+      } else {
+        throw new Error(response.message || "Oturum silinemedi.");
+      }
+    } catch (error: any) {
+      addToast({
+        title: "Hata",
+        description: error.message || "Bir hata oluştu.",
+        color: "danger",
+      });
+    }
+  };
+
+  const toggleCompletion = async () => {
+    try {
+      const response: GeneralResponse<any> = await fetcher(
+        `sessions/complete/${session.id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...session,
+            isCompleted: !session.isCompleted,
+          }),
+        },
+      );
+      console.log(response);
+      if (response.success) {
+        queryClient.invalidateQueries({
+          queryKey: ["sessions", date.toISOString()],
+          exact: false,
+        });
+      } else {
+        throw new Error(response.message || "Oturum silinemedi.");
+      }
+    } catch (error: any) {
+      addToast({
+        title: "Hata",
+        description: error.message || "Bir hata oluştu.",
+        color: "danger",
+      });
+    }
+  };
   return (
     <AnimatePresence initial={true}>
       <motion.div
@@ -27,6 +104,7 @@ export default function SessionItem({ session }: { session: Session }) {
             session.isCompleted && "bg-success-50 border-success-500 ",
           )}
           isPressable
+          onPress={toggleCompletion}
         >
           <CardHeader className="flex items-center justify-between gap-2">
             <div className="flex flex-col gap-2">
@@ -54,7 +132,11 @@ export default function SessionItem({ session }: { session: Session }) {
                 <DropdownTrigger>
                   <EllipsisVertical className="text-default-400 size-5" />
                 </DropdownTrigger>
-                <DropdownMenu>
+                <DropdownMenu
+                  onAction={(key) => {
+                    if (key === "delete") deleteSession();
+                  }}
+                >
                   <DropdownItem
                     key="view"
                     variant="solid"
