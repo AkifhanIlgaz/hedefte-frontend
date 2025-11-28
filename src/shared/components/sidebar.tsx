@@ -71,7 +71,7 @@ export default function Sidebar({
           {isSidebarOpen && (
             <div className="flex items-center gap-2">
               <Logo />
-              <p className="font-bold text-md">HEDEFTE</p>
+              <p className="font-bold text-md">ASCENDUX</p>
             </div>
           )}
 

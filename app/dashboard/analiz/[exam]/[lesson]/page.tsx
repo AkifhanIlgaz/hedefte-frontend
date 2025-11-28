@@ -31,7 +31,6 @@ export default function Page({
   });
 
   if (isLoading || isError) return;
-  console.log(data);
   return (
     <div className="flex flex-col gap-6 min-h-screen">
       <div className="flex items-center justify-between">
