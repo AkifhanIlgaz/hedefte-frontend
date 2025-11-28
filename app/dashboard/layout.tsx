@@ -52,12 +52,15 @@ export default function DashboardLayout({
         )}
       >
         <div className="flex items-center justify-between h-[2.9rem] px-4 border-b border-default-300 bg-background">
-          {!isSidebarOpen && (
-            <div className="flex items-center gap-2">
-              <Logo />
-              <p className="font-bold text-sm">HEDEFTE</p>
-            </div>
-          )}
+          <div className=" items-center gap-2 hidden md:flex">
+            {!isSidebarOpen && (
+              <>
+                {" "}
+                <Logo />
+                <p className="font-bold text-sm">ASCENDUX</p>
+              </>
+            )}
+          </div>
 
           <div className="flex items-center gap-2 ml-auto text-sm">
             <ThemeSwitch />
@@ -66,7 +69,7 @@ export default function DashboardLayout({
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto p-6  ">{children}</div>
+        <div className=" overflow-auto p-6 max-w-screen">{children}</div>
       </div>
     </div>
   );

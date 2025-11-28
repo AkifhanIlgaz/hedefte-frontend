@@ -114,6 +114,7 @@ export default function ExamsTable({
       bottomContentPlacement="outside"
       isHeaderSticky
       topContentPlacement="outside"
+      className="max-w-screen"
     >
       <TableHeader columns={columns}>
         {(column) => (
@@ -127,6 +128,7 @@ export default function ExamsTable({
         loadingContent={<Spinner />}
         emptyContent={emptyContent}
         loadingState={loadingState}
+        className="max-w-screen"
       >
         {(item: any) => (
           <TableRow key={item.name}>

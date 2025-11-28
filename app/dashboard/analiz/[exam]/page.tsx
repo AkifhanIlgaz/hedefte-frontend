@@ -58,15 +58,15 @@ export default function Page({
   }, []);
 
   return (
-    <div className="flex flex-col gap-6 min-h-screen">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-6  ">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <DashboardHeader
           title="Deneme Analizlerim"
           description="Çözdüğün denemelerinizi burada görebilirsiniz."
         />
-        <div className="flex gap-2">
+        <div className="flex w-full md:w-auto gap-2">
           <Select
-            className="w-xs ml-auto"
+            className="flex-1 md:w-[200px]"
             selectionMode="single"
             defaultSelectedKeys={new Set([timeInterval.toString()])}
             onChange={(event) => {
@@ -82,8 +82,12 @@ export default function Page({
             <SelectItem key={"-1"}>Tüm Zamanlar</SelectItem>
           </Select>
 
-          <Link href={`/dashboard/analiz/ekle?exam=TYT`}>
+          <Link
+            className="flex-1 md:flex-none"
+            href={`/dashboard/analiz/ekle?exam=TYT`}
+          >
             <Button
+              className="w-full md:w-auto"
               color="primary"
               variant="shadow"
               startContent={<Plus className="size-4" />}
@@ -95,9 +99,9 @@ export default function Page({
       </div>
 
       <div className="flex flex-col gap-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <GeneralAnalysisCard
-            title="Cozuelen Deneme sayisi"
+            title="Çözülen Deneme Sayısı"
             icon={BarChart3}
             value={data?.payload.examCount}
           />
@@ -113,21 +117,21 @@ export default function Page({
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           <GeneralChart exams={data?.payload.exams ?? []} />
           <LessonGeneralChart lessons={data?.payload.lessons} />
         </div>
       </div>
 
-      <Tabs>
-        <Tab key="ders" title="ders bazli analiz">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <Tabs aria-label="Analiz Seçenekleri">
+        <Tab key="ders" title="Ders Bazlı Analiz">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Object.values(lessons).map((lesson) => (
               <LessonCard key={lesson.name} lesson={lesson} />
             ))}
           </div>
         </Tab>
-        <Tab key="photos" title="all_exams">
+        <Tab key="photos" title="Tüm Denemeler">
           <ExamsTable
             exam={exam as Exam}
             timeInterval={timeInterval}
