@@ -78,11 +78,11 @@ export default function DashboardLayout({
             )}
           </div>
 
-          <div className="flex items-center gap-2 ml-auto text-sm">
+          <div className="flex items-center  justify-start gap-4 ml-auto ">
             <ThemeSwitch />
             <Dropdown>
               <DropdownTrigger>
-                <span className="cursor-pointer">{fullName}</span>
+                <span className="cursor-pointer text-sm">{fullName}</span>
               </DropdownTrigger>
               <DropdownMenu variant="faded">
                 <DropdownItem

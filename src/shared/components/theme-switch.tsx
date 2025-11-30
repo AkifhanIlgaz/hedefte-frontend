@@ -7,7 +7,7 @@ import clsx from "clsx";
 import { useTheme } from "next-themes";
 import { FC } from "react";
 
-import { Moon, Sun } from "lucide-react";
+import { SunMoon } from "lucide-react";
 
 export interface ThemeSwitchProps {
   className?: string;
@@ -70,11 +70,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
           ),
         })}
       >
-        {!isSelected || isSSR ? (
-          <Sun className="size-4 shrink-0" />
-        ) : (
-          <Moon className="size-4 shrink-0" />
-        )}
+        <SunMoon className="size-5 shrink-0" />
       </div>
     </Component>
   );
