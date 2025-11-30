@@ -1,3 +1,4 @@
+import { Button } from "@heroui/button";
 import { Card, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import {
@@ -127,10 +128,16 @@ export default function SessionItem({
               </div>
             </div>
 
-            <div className="relative flex justify-end items-center gap-2">
+            <div className="relative flex justify-end items-center gap-2 ml-auto">
               <Dropdown className="border border-default-200">
                 <DropdownTrigger>
-                  <EllipsisVertical className="text-default-400 size-5" />
+                  <Button
+                    isIconOnly
+                    className="bg-transparent"
+                    startContent={
+                      <EllipsisVertical className="text-default-400 size-5" />
+                    }
+                  ></Button>
                 </DropdownTrigger>
                 <DropdownMenu
                   onAction={(key) => {

@@ -71,9 +71,8 @@ export default function DashboardLayout({
           <div className=" items-center gap-2 hidden md:flex">
             {!isSidebarOpen && (
               <>
-                {" "}
                 <Logo />
-                <p className="font-bold text-sm">ASCENDUX</p>
+                <p className="font-bold text-sm">zozakademi</p>
               </>
             )}
           </div>
