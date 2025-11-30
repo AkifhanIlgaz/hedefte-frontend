@@ -1,11 +1,10 @@
 "use client";
 
 import { siteConfig } from "@/src/config/site";
-import { createClient } from "@/src/lib/supabase/client";
 import { Logo } from "@/src/shared/components/icons";
-import { Button, Link } from "@heroui/react";
+import { Button } from "@heroui/react";
 import clsx from "clsx";
-import { ChevronsLeft, ChevronsRight, LogOut, Menu } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, Menu } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import SidebarLink from "./sidebarLink";
 
@@ -18,15 +17,6 @@ export default function Sidebar({
   isSidebarOpen,
   setIsSidebarOpenAction,
 }: SidebarProps) {
-  const logOut = async () => {
-    const supabase = createClient();
-
-    const { error } = await supabase.auth.signOut({ scope: "local" });
-    if (error) {
-      console.error("Sign out error:", error.message);
-    }
-  };
-
   return (
     <>
       {/* Mobile Toggle Button - Visible only on tablet/mobile when closed */}
@@ -97,38 +87,6 @@ export default function Sidebar({
               />
             ))}
           </ul>
-
-          <div>
-            <ul className="flex flex-col gap-2 p-2">
-              {siteConfig.sidebarFooterItems.map((item) => (
-                <SidebarLink
-                  key={item.href}
-                  href={item.href}
-                  label={item.label}
-                  icon={item.icon}
-                  isSidebarOpen={isSidebarOpen}
-                />
-              ))}
-              <Link
-                className={clsx(
-                  "px-2 py-2 rounded-md transition-colors duration-300 cursor-pointer flex items-center gap-3",
-                  "text-sm font-medium",
-                  "hover:bg-danger hover:text-danger-foreground",
-                  !isSidebarOpen &&
-                    "justify-center transition-colors duration-300",
-                )}
-                color="danger"
-                onPress={logOut}
-              >
-                <LogOut className="size-4 shrink-0 text-danger" />
-                {isSidebarOpen && (
-                  <span className=" whitespace-nowrap overflow-hidden text-ellipsis">
-                    Çıkış Yap
-                  </span>
-                )}
-              </Link>
-            </ul>
-          </div>
         </div>
       </div>
     </>

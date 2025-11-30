@@ -6,8 +6,15 @@ import { createClient } from "@/src/lib/supabase/client";
 import { Logo } from "@/src/shared/components/icons";
 import Sidebar from "@/src/shared/components/sidebar";
 import { ThemeSwitch } from "@/src/shared/components/theme-switch";
-import { useDisclosure } from "@heroui/react";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  useDisclosure,
+} from "@heroui/react";
 import clsx from "clsx";
+import { LogOut, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function DashboardLayout({
@@ -18,6 +25,15 @@ export default function DashboardLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [fullName, setFullName] = useState<string | null>(null);
+
+  const logOut = async () => {
+    const supabase = createClient();
+
+    const { error } = await supabase.auth.signOut({ scope: "local" });
+    if (error) {
+      console.error("Sign out error:", error.message);
+    }
+  };
 
   useEffect(() => {
     const getUser = async () => {
@@ -64,8 +80,31 @@ export default function DashboardLayout({
 
           <div className="flex items-center gap-2 ml-auto text-sm">
             <ThemeSwitch />
-
-            {fullName}
+            <Dropdown>
+              <DropdownTrigger>
+                <span className="cursor-pointer">{fullName}</span>
+              </DropdownTrigger>
+              <DropdownMenu variant="faded">
+                <DropdownItem
+                  key={"profile"}
+                  href={"/dashboard/profil"}
+                  startContent={<User className="size-4 shrink-0" />}
+                >
+                  Profil
+                </DropdownItem>
+                <DropdownItem
+                  key="logout"
+                  onPress={logOut}
+                  className="text-danger"
+                  color="danger"
+                  startContent={
+                    <LogOut className="size-4 shrink-0 text-danger" />
+                  }
+                >
+                  Çıkış Yap
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         </div>
 
