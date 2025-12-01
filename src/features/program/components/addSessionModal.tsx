@@ -1,3 +1,5 @@
+"use client";
+
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";
@@ -14,9 +16,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { ChangeEvent, Key } from "react";
+import { ChangeEvent, Key, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Exam, LessonName, TytLessonNames } from "../../analiz/types";
+import {
+  AytEaLessonNames,
+  AytMfLessonNames,
+  Exam,
+  LessonName,
+  TytLessonNames,
+} from "../../analiz/types";
 import { fetcher } from "../../analiz/utils";
 import {
   AddSessionRequest,
@@ -44,6 +52,8 @@ export default function AddSessionModal({
   isOpen,
   onOpenChange,
 }: AddSessionModalProps) {
+  const [lessonNames, setLessonNames] = useState<LessonName[]>([]);
+
   const queryClient = useQueryClient();
   const form = useForm<AddSessionRequest>({
     resolver: zodResolver(addSessionSchema),
@@ -116,6 +126,22 @@ export default function AddSessionModal({
                   placeholder="Lütfen çalışacağınız sınavı seçiniz."
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     form.setValue("exam", e.target.value);
+                    switch (e.target.value) {
+                      case "TYT":
+                        setLessonNames([...TytLessonNames]);
+                        break;
+                      case "AYT":
+                        setLessonNames(
+                          Array.from(
+                            new Set([...AytEaLessonNames, ...AytMfLessonNames]),
+                          ),
+                        );
+                        break;
+                      default:
+                        setLessonNames([]);
+                        break;
+                    }
+
                     form.trigger("exam");
                   }}
                   errorMessage={form.formState.errors.exam?.message}
@@ -140,7 +166,7 @@ export default function AddSessionModal({
                   errorMessage={form.formState.errors.lesson?.message}
                   isInvalid={!!form.formState.errors.lesson}
                 >
-                  {TytLessonNames.map((lesson) => (
+                  {lessonNames.map((lesson) => (
                     <SelectItem key={lesson}>{lesson}</SelectItem>
                   ))}
                 </Select>

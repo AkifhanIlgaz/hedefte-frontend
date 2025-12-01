@@ -11,6 +11,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Image,
   useDisclosure,
 } from "@heroui/react";
 import clsx from "clsx";
@@ -107,7 +108,15 @@ export default function DashboardLayout({
           </div>
         </div>
 
-        <div className=" overflow-auto p-6 max-w-screen">{children}</div>
+        <div className=" overflow-auto p-6 max-w-screen">
+          <Image
+            src={
+              "https://drive.google.com/thumbnail?id=1-mSFz9qlHN4NTV-VlT-4MxKLkPv_2fN-&sz=w1171-h676"
+            }
+          />
+
+          {children}
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-import { Button } from "@heroui/button";
 import { Card, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import {
@@ -7,6 +6,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@heroui/dropdown";
+import { useDisclosure } from "@heroui/modal";
 import { addToast } from "@heroui/toast";
 import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
@@ -16,6 +16,8 @@ import { GeneralResponse } from "../../analiz/types";
 import { fetcher } from "../../analiz/utils";
 import { Session } from "../types";
 import { getBadgeColor, getLessonStyles } from "../utils";
+import CompleteModal from "./completeModal";
+import DetailsModal from "./detailsModal";
 
 export default function SessionItem({
   session,
@@ -25,6 +27,8 @@ export default function SessionItem({
   date: Date;
 }) {
   const queryClient = useQueryClient();
+  const detailsModal = useDisclosure();
+  const completeModal = useDisclosure();
   const deleteSession = async () => {
     try {
       const response: GeneralResponse<any> = await fetcher(
@@ -105,8 +109,10 @@ export default function SessionItem({
             session.isCompleted && "bg-success-50 border-success-500 ",
           )}
           isPressable
-          onPress={toggleCompletion}
+          onPress={completeModal.onOpen}
         >
+          <DetailsModal {...detailsModal} session={session}></DetailsModal>
+          <CompleteModal {...completeModal} session={session}></CompleteModal>
           <CardHeader className="flex items-center justify-between gap-2">
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-start gap-2">
@@ -128,43 +134,36 @@ export default function SessionItem({
               </div>
             </div>
 
-            <div className="relative flex justify-end items-center gap-2 ml-auto">
-              <Dropdown className="border border-default-200">
-                <DropdownTrigger>
-                  <Button
-                    isIconOnly
-                    className="bg-transparent"
-                    startContent={
-                      <EllipsisVertical className="text-default-400 size-5" />
-                    }
-                  ></Button>
-                </DropdownTrigger>
-                <DropdownMenu
-                  onAction={(key) => {
-                    if (key === "delete") deleteSession();
-                  }}
+            <Dropdown className=" border-default-200">
+              <DropdownTrigger>
+                <EllipsisVertical className="text-default-400 size-5" />
+              </DropdownTrigger>
+              <DropdownMenu
+                onAction={(key) => {
+                  if (key === "delete") deleteSession();
+                  if (key === "details") detailsModal.onOpen();
+                }}
+              >
+                <DropdownItem
+                  key="details"
+                  variant="solid"
+                  color="default"
+                  startContent={<Info className="size-4" />}
                 >
-                  <DropdownItem
-                    key="view"
-                    variant="solid"
-                    color="default"
-                    startContent={<Info className="size-4" />}
-                  >
-                    Ayrıntılar
-                  </DropdownItem>
+                  Ayrıntılar
+                </DropdownItem>
 
-                  <DropdownItem
-                    key="delete"
-                    variant="solid"
-                    color="danger"
-                    className="text-danger"
-                    startContent={<Trash className="size-4" />}
-                  >
-                    Sil
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
+                <DropdownItem
+                  key="delete"
+                  variant="solid"
+                  color="danger"
+                  className="text-danger"
+                  startContent={<Trash className="size-4" />}
+                >
+                  Sil
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </CardHeader>
         </Card>
       </motion.div>
