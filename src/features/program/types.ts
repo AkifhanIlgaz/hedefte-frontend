@@ -6,6 +6,8 @@ export interface Session {
   lesson: string;
   topic: string;
   goal: string;
+  notes: string;
   date: Date | string;
+  duration: number;
   isCompleted: boolean;
 }

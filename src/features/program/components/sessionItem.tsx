@@ -16,8 +16,8 @@ import { GeneralResponse } from "../../analiz/types";
 import { fetcher } from "../../analiz/utils";
 import { Session } from "../types";
 import { getBadgeColor, getLessonStyles } from "../utils";
-import CompleteModal from "./completeModal";
-import DetailsModal from "./detailsModal";
+import CompleteSessionModal from "./completeSessionModal";
+import SessionDetailsModal from "./detailsModal";
 
 export default function SessionItem({
   session,
@@ -63,38 +63,38 @@ export default function SessionItem({
     }
   };
 
-  const toggleCompletion = async () => {
-    try {
-      const response: GeneralResponse<any> = await fetcher(
-        `sessions/complete/${session.id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...session,
-            isCompleted: !session.isCompleted,
-          }),
-        },
-      );
-      console.log(response);
-      if (response.success) {
-        queryClient.invalidateQueries({
-          queryKey: ["sessions", date.toISOString()],
-          exact: false,
-        });
-      } else {
-        throw new Error(response.message || "Oturum silinemedi.");
-      }
-    } catch (error: any) {
-      addToast({
-        title: "Hata",
-        description: error.message || "Bir hata oluştu.",
-        color: "danger",
-      });
-    }
-  };
+  // const toggleCompletion = async () => {
+  //   try {
+  //     const response: GeneralResponse<any> = await fetcher(
+  //       `sessions/complete/${session.id}`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           ...session,
+  //           isCompleted: !session.isCompleted,
+  //         }),
+  //       },
+  //     );
+  //     console.log(response);
+  //     if (response.success) {
+  //       queryClient.invalidateQueries({
+  //         queryKey: ["sessions", date.toISOString()],
+  //         exact: false,
+  //       });
+  //     } else {
+  //       throw new Error(response.message || "Oturum silinemedi.");
+  //     }
+  //   } catch (error: any) {
+  //     addToast({
+  //       title: "Hata",
+  //       description: error.message || "Bir hata oluştu.",
+  //       color: "danger",
+  //     });
+  //   }
+  // };
   return (
     <AnimatePresence initial={true}>
       <motion.div
@@ -109,10 +109,23 @@ export default function SessionItem({
             session.isCompleted && "bg-success-50 border-success-500 ",
           )}
           isPressable
-          onPress={completeModal.onOpen}
+          onPress={() => {
+            if (session.isCompleted) {
+              return;
+            }
+            completeModal.onOpen();
+          }}
         >
-          <DetailsModal {...detailsModal} session={session}></DetailsModal>
-          <CompleteModal {...completeModal} session={session}></CompleteModal>
+          <SessionDetailsModal
+            {...detailsModal}
+            date={date}
+            session={session}
+          ></SessionDetailsModal>
+          <CompleteSessionModal
+            {...completeModal}
+            session={session}
+            date={date}
+          ></CompleteSessionModal>
           <CardHeader className="flex items-center justify-between gap-2">
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-start gap-2">

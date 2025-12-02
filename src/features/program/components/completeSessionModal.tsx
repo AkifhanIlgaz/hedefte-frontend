@@ -8,23 +8,60 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/modal";
-import { NumberInput } from "@heroui/react";
+import { addToast, NumberInput } from "@heroui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { BookOpen, Clock } from "lucide-react";
+import { GeneralResponse } from "../../analiz/types";
+import { fetcher } from "../../analiz/utils";
 import { Session } from "../types";
 import { getBadgeColor, getLessonStyles } from "../utils";
 
 interface CompleteModalProps {
   session: Session;
+  date: Date;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }
 
-export default function CompleteModal({
+export default function CompleteSessionModal({
   session,
+  date,
   isOpen,
   onOpenChange,
 }: CompleteModalProps) {
+  const queryClient = useQueryClient();
+  const toggleCompletion = async () => {
+    try {
+      const response: GeneralResponse<any> = await fetcher(
+        `sessions/complete/${session.id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...session,
+            isCompleted: !session.isCompleted,
+          }),
+        },
+      );
+      if (response.success) {
+        queryClient.invalidateQueries({
+          queryKey: ["sessions", date.toISOString()],
+          exact: false,
+        });
+      } else {
+        throw new Error(response.message || "Oturum silinemedi.");
+      }
+    } catch (error: any) {
+      addToast({
+        title: "Hata",
+        description: error.message || "Bir hata oluştu.",
+        color: "danger",
+      });
+    }
+  };
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
       <ModalContent>
@@ -72,7 +109,14 @@ export default function CompleteModal({
                     <span>{new Date(session.date).toLocaleDateString()}</span>
                   </div>
                 </div>
-
+                <NumberInput
+                  endContent={<span className="">dakika</span>}
+                  labelPlacement="outside"
+                  variant="flat"
+                  hideStepper
+                  label="Süre"
+                  placeholder="Lütfen kaç dakika çalıştığınızı giriniz."
+                />
                 <Textarea
                   label="Hedef & Amaç"
                   labelPlacement="outside-top"
@@ -108,7 +152,12 @@ export default function CompleteModal({
               <Button color="danger" onPress={onClose}>
                 Kapat
               </Button>
-              <Button color="primary" onPress={onClose}>
+              <Button
+                color="primary"
+                onPress={() => {
+                  toggleCompletion().then(() => onClose());
+                }}
+              >
                 Tamamla
               </Button>
             </ModalFooter>
