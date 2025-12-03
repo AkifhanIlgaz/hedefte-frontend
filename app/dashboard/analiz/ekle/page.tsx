@@ -40,7 +40,6 @@ export default function Page() {
     resolver: zodResolver(myschema),
     defaultValues: {
       name: "",
-      date: new Date(),
       ...defaultValues,
     },
   });

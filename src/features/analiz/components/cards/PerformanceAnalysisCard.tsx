@@ -31,7 +31,7 @@ export default function PerformanceAnalysisCard({
   const lessons = getLessons(exam, field);
   const examDetailsModal = useDisclosure();
   // Tekil Net Hesaplama Fonksiyonu
-  const calculateNet = (correct, incorrect) => {
+  const calculateNet = (correct: number, incorrect: number) => {
     return (correct - incorrect * 0.25).toFixed(2);
   };
 
@@ -116,7 +116,16 @@ export default function PerformanceAnalysisCard({
               )}
             </ModalContent>
           </Modal>
-          <Button color="primary" onPress={examDetailsModal.onOpen}>
+          <Button
+            color="primary"
+            onPress={() => {
+              form.trigger().then((isValid) => {
+                if (isValid) {
+                  examDetailsModal.onOpen();
+                }
+              });
+            }}
+          >
             <Save className="size-4" />
             Denemeyi Kaydet
           </Button>

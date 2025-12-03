@@ -44,106 +44,29 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
         </div>
       </CardHeader>
       <CardBody className="flex gap-3">
-        <NumberInput
+        <MyNumberInput
           label="Doğru"
-          labelPlacement="outside"
           placeholder="Lütfen kaç soruyu doğru yaptığınızı giriniz."
-          hideStepper
-          variant="bordered"
-          minValue={0}
-          value={form.watch(`${lessonName}.correct`)}
-          errorMessage={
-            form.formState.errors[`${lessonName}.correct`]?.message as string
-          }
-          isInvalid={!!form.formState.errors[`${lessonName}.correct`]}
-          onInput={(e) => {
-            form.setValue(
-              `${lessonName}.correct`,
-              parseInt(e.currentTarget.value) || 0,
-            );
-            form.trigger(`${lessonName}`);
-          }}
-          size="sm"
-          classNames={{
-            label: "text-xs",
-            input: "text-center",
-          }}
+          field="correct"
+          lessonName={lessonName}
         />
-
-        <NumberInput
+        <MyNumberInput
           label="Yanlış"
-          labelPlacement="outside"
           placeholder="Lütfen kaç soruyu yanlış yaptığınızı giriniz."
-          hideStepper
-          size="sm"
-          variant="bordered"
-          minValue={0}
-          value={form.watch(`${lessonName}.wrong`)}
-          errorMessage={
-            form.formState.errors[`${lessonName}.wrong`]?.message as string
-          }
-          isInvalid={!!form.formState.errors[`${lessonName}.wrong`]}
-          onInput={(e) => {
-            form.setValue(
-              `${lessonName}.wrong`,
-              parseInt(e.currentTarget.value) || 0,
-            );
-            form.trigger(`${lessonName}`);
-          }}
-          classNames={{
-            label: "text-xs",
-            input: "text-center",
-          }}
+          field="wrong"
+          lessonName={lessonName}
         />
-
-        <NumberInput
+        <MyNumberInput
           label="Boş"
-          labelPlacement="outside"
           placeholder="Lütfen kaç soruyu boş bıraktığınızı giriniz"
-          hideStepper
-          variant="bordered"
-          size="sm"
-          minValue={0}
-          value={form.watch(`${lessonName}.empty`)}
-          errorMessage={
-            form.formState.errors[`${lessonName}.empty`]?.message as string
-          }
-          isInvalid={!!form.formState.errors[`${lessonName}.empty`]}
-          onInput={(e) => {
-            form.setValue(
-              `${lessonName}.empty`,
-              parseInt(e.currentTarget.value) || 0,
-            );
-            form.trigger(`${lessonName}`);
-          }}
-          classNames={{
-            label: "text-xs",
-            input: "text-center",
-          }}
+          field="empty"
+          lessonName={lessonName}
         />
-
-        <NumberInput
+        <MyNumberInput
           label="Süre (dakika)"
-          labelPlacement="outside"
           placeholder="Lütfen testi kaç dakikada çözdüğünüzü giriniz."
-          hideStepper
-          variant="bordered"
-          size="sm"
-          value={form.watch(`${lessonName}.time`)}
-          errorMessage={
-            form.formState.errors[`${lessonName}.time`]?.message as string
-          }
-          isInvalid={!!form.formState.errors[`${lessonName}.time`]}
-          onInput={(e) =>
-            form.setValue(
-              `${lessonName}.time`,
-              parseInt(e.currentTarget.value) || 0,
-            )
-          }
-          classNames={{
-            label: "text-xs",
-            input: "text-center",
-          }}
+          field="time"
+          lessonName={lessonName}
         />
       </CardBody>
       <CardFooter className="pt-0">
@@ -166,5 +89,49 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
         )}
       </CardFooter>
     </Card>
+  );
+}
+
+interface MyNumberInputProps {
+  label: string;
+  placeholder: string;
+  lessonName: string;
+  field: "correct" | "wrong" | "empty" | "time";
+}
+
+function MyNumberInput({
+  label,
+  placeholder,
+  lessonName,
+  field,
+}: MyNumberInputProps) {
+  const form = useFormContext();
+
+  return (
+    <NumberInput
+      label={label}
+      labelPlacement="outside"
+      placeholder={placeholder}
+      hideStepper
+      variant="bordered"
+      size="sm"
+      minValue={0}
+      value={form.watch(`${lessonName}.${field}`)}
+      errorMessage={
+        form.formState.errors[`${lessonName}.${field}`]?.message as string
+      }
+      isInvalid={!!form.formState.errors[`${lessonName}.${field}`]}
+      onInput={(e) => {
+        form.setValue(
+          `${lessonName}.${field}`,
+          parseInt(e.currentTarget.value) || 0,
+        );
+        form.trigger(`${lessonName}`);
+      }}
+      classNames={{
+        label: "text-xs",
+        input: "text-center",
+      }}
+    />
   );
 }
