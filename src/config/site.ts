@@ -1,6 +1,7 @@
 import {
   Calendar,
   ChartArea,
+  ChartBar,
   ChartNoAxesCombined,
   Home,
   ListChecks,
@@ -25,9 +26,14 @@ export const siteConfig = {
       icon: ChartArea,
     },
     {
-      label: "AYT Analizlerim",
-      href: "/dashboard/analiz/ayt",
+      label: "AYT SAY Analizlerim",
+      href: "/dashboard/analiz/ayt/say",
       icon: ChartNoAxesCombined,
+    },
+    {
+      label: "AYT EA Analizlerim",
+      href: "/dashboard/analiz/ayt/ea",
+      icon: ChartBar,
     },
 
     {

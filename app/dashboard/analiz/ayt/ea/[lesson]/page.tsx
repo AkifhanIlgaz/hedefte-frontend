@@ -3,7 +3,6 @@ import GeneralAnalysisCard from "@/src/features/analiz/components/cards/GeneralA
 import GeneralChart from "@/src/features/analiz/components/charts/generalChart";
 import TopicMistakeChart from "@/src/features/analiz/components/charts/topicMistakeChart";
 import {
-  Exam,
   GeneralResponse,
   LessonChartPayload,
 } from "@/src/features/analiz/types";
@@ -16,16 +15,16 @@ import { use, useState } from "react";
 export default function Page({
   params,
 }: {
-  params: Promise<{ lesson: string; exam: string }>;
+  params: Promise<{ lesson: string }>;
 }) {
-  const { exam, lesson: encodedLesson } = use(params);
+  const { lesson: encodedLesson } = use(params);
   const lesson = decodeURIComponent(encodedLesson);
   const [timeInterval, setTimeInterval] = useState(-1);
   const { data, isLoading, isError } = useChartData<
     GeneralResponse<LessonChartPayload>
   >({
     chartType: "lesson",
-    examType: exam.toUpperCase() as Exam,
+    examType: "AYT",
     lesson: lesson,
     timeInterval: timeInterval,
   });
@@ -35,7 +34,7 @@ export default function Page({
     <div className="flex flex-col gap-6 min-h-screen">
       <div className="flex items-center justify-between">
         <DashboardHeader
-          title={`${exam.toUpperCase()} ${lesson.slice(0, 1).toUpperCase() + lesson.slice(1)} Analizi`}
+          title={`AYT ${lesson.slice(0, 1).toUpperCase() + lesson.slice(1)} Analizi`}
           description="Çözdüğün denemelerinizi burada görebilirsiniz."
         />
         <div className="flex gap-2">
@@ -61,7 +60,7 @@ export default function Page({
       <div className="flex flex-col gap-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <GeneralAnalysisCard
-            title="Cozuelen Deneme sayisi"
+            title="Çözülen Deneme Sayısı"
             icon={BarChart3}
             value={data?.payload.examCount ?? 0}
           />

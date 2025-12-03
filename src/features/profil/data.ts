@@ -1202,4 +1202,4 @@ export const departments = [
 
 export const exams = ["YKS", "LGS"];
 
-export const fields: Field[] = ["Sayısal", "Eşit Ağırlık"];
+export const fields: Field[] = ["AYT_SAY", "AYT_EA"];

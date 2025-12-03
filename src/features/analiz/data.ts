@@ -10,13 +10,9 @@ import {
   Swords,
   Trees,
 } from "lucide-react";
-import z from "zod";
-import { Field } from "../profil/types";
-import { lessonAnalysisSchema } from "./schemas/add_exam.schema";
 import {
   AytEaLessonName,
   AytMfLessonName,
-  Exam,
   Lesson,
   TytLessonName,
 } from "./types";
@@ -507,7 +503,7 @@ export const eaLessons: Record<AytEaLessonName, Lesson> = {
   },
 };
 
-export const mfLessons: Record<AytMfLessonName, Lesson> = {
+export const sayLessons: Record<AytMfLessonName, Lesson> = {
   Matematik: {
     name: "Matematik",
     totalQuestions: 40,
@@ -700,16 +696,8 @@ export const mfLessons: Record<AytMfLessonName, Lesson> = {
   },
 };
 
-export const getLessons = (exam: Exam, field?: Field) => {
-  if (exam === "TYT") return tytLessons;
-  if (field === "Sayısal") return mfLessons;
-  if (field === "Eşit Ağırlık") return eaLessons;
-  return {};
+export const allLessons = {
+  TYT: tytLessons,
+  AYT_SAY: sayLessons,
+  AYT_EA: eaLessons,
 };
-
-export type LessonAnalysisData = z.infer<typeof lessonAnalysisSchema>;
-
-export type GenericExamFormValues = {
-  name: string;
-  date: Date;
-} & Record<string, any>;

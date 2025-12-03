@@ -1,6 +1,6 @@
 import { LucideIcon } from "lucide-react";
 
-export type Exam = "TYT" | "AYT";
+export type Exam = "TYT" | "AYT_SAY" | "AYT_EA";
 
 export const TytLessonNames = [
   "Türkçe",

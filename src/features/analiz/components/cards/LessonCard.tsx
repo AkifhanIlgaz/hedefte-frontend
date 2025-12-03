@@ -3,7 +3,6 @@ import { Link } from "@heroui/link";
 import { Lesson } from "../../types";
 
 export default function LessonCard({ lesson }: { lesson: Lesson }) {
-  console.log(window.location.href);
   return (
     <Card
       as={Link}

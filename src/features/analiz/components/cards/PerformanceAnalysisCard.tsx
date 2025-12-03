@@ -11,18 +11,18 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@heroui/modal";
+import clsx from "clsx";
 import { ChevronsRight, Save } from "lucide-react";
 import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
-import { getLessons } from "../../data";
+import { allLessons } from "../../data";
 import { Exam } from "../../types";
-import clsx from "clsx";
 import NetInfoCard from "./NetInfoCard";
 import TopicInfoCard from "./TopicInfoCard";
 
 interface PerformanceAnalysisCardProps {
   exam: Exam;
-  field: Field;
+  field?: Field;
   isLoading: boolean;
 }
 
@@ -32,14 +32,13 @@ export default function PerformanceAnalysisCard({
   isLoading,
 }: PerformanceAnalysisCardProps) {
   const form = useFormContext();
-  const lessons = getLessons(exam, field);
+  const lessons = allLessons[exam];
   const examDetailsModal = useDisclosure();
-  // Tekil Net Hesaplama Fonksiyonu
+
   const calculateNet = (correct: number, incorrect: number) => {
     return (correct - incorrect * 0.25).toFixed(2);
   };
 
-  // Toplam Net Hesaplama
   const totalNet = useMemo(() => {
     return Object.keys(lessons).reduce((acc, lessonName) => {
       const correct = form.watch(`${lessonName}.correct`) || 0;
@@ -145,7 +144,6 @@ export default function PerformanceAnalysisCard({
         <CardBody className="gap-3">
           <Accordion variant="splitted">
             {Object.values(lessons).map((lesson) => {
-
               const correct = form.watch(`${lesson.name}.correct`);
               const wrong = form.watch(`${lesson.name}.wrong`);
               const totalNet = (correct ?? 0) - (wrong ?? 0) * 0.25;
@@ -155,24 +153,31 @@ export default function PerformanceAnalysisCard({
                   <div className={clsx("p-2 rounded-full", lesson.bgClass)}>
                     <lesson.icon className={clsx("size-4", lesson.iconColor)} />
                   </div>
-                  <span className={clsx(`text-md`, lesson.iconColor)}>{lesson.name}</span>
+                  <span className={clsx(`text-md`, lesson.iconColor)}>
+                    {lesson.name}
+                  </span>
                   <span className={clsx(`text-md`, lesson.iconColor)}>
                     {totalNet.toFixed(2)}
                   </span>
                 </div>
               );
 
-              return <AccordionItem
-                key={lesson.name}
-                aria-label={lesson.name}
-                title={title}
-                className="data-[open=true]:pb-4  "
-              >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-                  <NetInfoCard lessonName={lesson.name} />
-                  <TopicInfoCard topics={lesson.topics} lessonName={lesson.name} />
-                </div>
-              </AccordionItem>
+              return (
+                <AccordionItem
+                  key={lesson.name}
+                  aria-label={lesson.name}
+                  title={title}
+                  className="data-[open=true]:pb-4  "
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                    <NetInfoCard lessonName={lesson.name} />
+                    <TopicInfoCard
+                      topics={lesson.topics}
+                      lessonName={lesson.name}
+                    />
+                  </div>
+                </AccordionItem>
+              );
             })}
           </Accordion>
         </CardBody>

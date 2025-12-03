@@ -11,4 +11,4 @@ export type PersonalInfo = {
   email: string;
 };
 
-export type Field = "Sayısal" | "Eşit Ağırlık";
+export type Field = "AYT_SAY" | "AYT_EA";

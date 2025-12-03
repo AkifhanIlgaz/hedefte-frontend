@@ -1,26 +1,4 @@
 import z from "zod";
-import { Field } from "../../profil/types";
-import { eaLessons, mfLessons, tytLessons } from "../data";
-import { Exam, Lesson, LessonName } from "../types";
-
-const createLessonsSchema = (lessons: Record<LessonName, Lesson>) => {
-  return z.object(
-    Object.fromEntries(
-      Object.entries(lessons).map(([lessonName, info]) => {
-        return [
-          lessonName,
-          lessonAnalysisSchema.refine(
-            (data) =>
-              data.correct + data.wrong + data.empty <= info.totalQuestions,
-            {
-              message: `Girdiğin doğru, yanlış ve boş sayılarının toplamı, (${info.totalQuestions}) soruyu aşamaz.`,
-            },
-          ),
-        ];
-      }),
-    ),
-  );
-};
 
 export const topicMistakesSchema = z.object({
   topicName: z.string(),
@@ -35,29 +13,34 @@ export const lessonAnalysisSchema = z.object({
   topicMistakes: z.array(topicMistakesSchema),
 });
 
-export const addTytExamSchema = z
-  .object({
-    date: z.date("Lütfen deneme tarihini giriniz."),
-    name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
-  })
-  .extend(createLessonsSchema(tytLessons).shape);
+export const addTytExamSchema = z.object({
+  date: z.date("Lütfen deneme tarihini giriniz."),
+  name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
+  Türkçe: lessonAnalysisSchema,
+  Tarih: lessonAnalysisSchema,
+  Coğrafya: lessonAnalysisSchema,
+  Felsefe: lessonAnalysisSchema,
+  DinKültürü: lessonAnalysisSchema,
+  Matematik: lessonAnalysisSchema,
+  Fizik: lessonAnalysisSchema,
+  Kimya: lessonAnalysisSchema,
+  Biyoloji: lessonAnalysisSchema,
+});
 
-export const addMfExamSchema = z
-  .object({
-    date: z.date("Lütfen deneme tarihini giriniz."),
-    name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
-  })
-  .extend(createLessonsSchema(mfLessons).shape);
+export const addSayExamSchema = z.object({
+  date: z.date("Lütfen deneme tarihini giriniz."),
+  name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
+  Matematik: lessonAnalysisSchema,
+  Fizik: lessonAnalysisSchema,
+  Kimya: lessonAnalysisSchema,
+  Biyoloji: lessonAnalysisSchema,
+});
 
-export const addEaExamSchema = z
-  .object({
-    date: z.date("Lütfen deneme tarihini giriniz."),
-    name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
-  })
-  .extend(createLessonsSchema(eaLessons).shape);
-
-export const getExamSchema = (exam: Exam, field?: Field) => {
-  if (exam === "TYT") return addTytExamSchema;
-  if (field === "Sayısal") return addMfExamSchema;
-  if (field === "Eşit Ağırlık") return addEaExamSchema;
-};
+export const addEaExamSchema = z.object({
+  date: z.date("Lütfen deneme tarihini giriniz."),
+  name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
+  Edebiyat: lessonAnalysisSchema,
+  Tarih: lessonAnalysisSchema,
+  Coğrafya: lessonAnalysisSchema,
+  Matematik: lessonAnalysisSchema,
+});
