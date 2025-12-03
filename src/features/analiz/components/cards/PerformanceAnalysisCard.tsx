@@ -1,4 +1,5 @@
 import { Field } from "@/src/features/profil/types";
+import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
@@ -11,10 +12,13 @@ import {
   useDisclosure,
 } from "@heroui/modal";
 import { ChevronsRight, Save } from "lucide-react";
+import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { getLessons } from "../../data";
 import { Exam } from "../../types";
-import LessonAccordion from "../LessonAccordion";
+import clsx from "clsx";
+import NetInfoCard from "./NetInfoCard";
+import TopicInfoCard from "./TopicInfoCard";
 
 interface PerformanceAnalysisCardProps {
   exam: Exam;
@@ -34,6 +38,15 @@ export default function PerformanceAnalysisCard({
   const calculateNet = (correct: number, incorrect: number) => {
     return (correct - incorrect * 0.25).toFixed(2);
   };
+
+  // Toplam Net Hesaplama
+  const totalNet = useMemo(() => {
+    return Object.keys(lessons).reduce((acc, lessonName) => {
+      const correct = form.watch(`${lessonName}.correct`) || 0;
+      const wrong = form.watch(`${lessonName}.wrong`) || 0;
+      return acc + (correct - wrong * 0.25);
+    }, 0);
+  }, [lessons, form.watch()]);
 
   return (
     <>
@@ -69,7 +82,7 @@ export default function PerformanceAnalysisCard({
                         </span>
                       }
                     >
-                      97,75
+                      {totalNet.toFixed(2)}
                     </Chip>
                   </ModalHeader>
                   <ModalBody>
@@ -82,7 +95,6 @@ export default function PerformanceAnalysisCard({
 
                               `}
                       >
-                        {/* Sol: Ders Adı */}
                         <span className="text-md font-bold text-default-700">
                           {lesson.name}
                         </span>
@@ -131,9 +143,38 @@ export default function PerformanceAnalysisCard({
           </Button>
         </CardHeader>
         <CardBody className="gap-3">
-          {Object.values(lessons).map((lesson) => (
-            <LessonAccordion lesson={lesson} key={lesson.name} />
-          ))}
+          <Accordion variant="splitted">
+            {Object.values(lessons).map((lesson) => {
+
+              const correct = form.watch(`${lesson.name}.correct`);
+              const wrong = form.watch(`${lesson.name}.wrong`);
+              const totalNet = (correct ?? 0) - (wrong ?? 0) * 0.25;
+
+              const title = (
+                <div className="flex items-center gap-3">
+                  <div className={clsx("p-2 rounded-full", lesson.bgClass)}>
+                    <lesson.icon className={clsx("size-4", lesson.iconColor)} />
+                  </div>
+                  <span className={clsx(`text-md`, lesson.iconColor)}>{lesson.name}</span>
+                  <span className={clsx(`text-md`, lesson.iconColor)}>
+                    {totalNet.toFixed(2)}
+                  </span>
+                </div>
+              );
+
+              return <AccordionItem
+                key={lesson.name}
+                aria-label={lesson.name}
+                title={title}
+                className="data-[open=true]:pb-4  "
+              >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                  <NetInfoCard lessonName={lesson.name} />
+                  <TopicInfoCard topics={lesson.topics} lessonName={lesson.name} />
+                </div>
+              </AccordionItem>
+            })}
+          </Accordion>
         </CardBody>
       </Card>
     </>
