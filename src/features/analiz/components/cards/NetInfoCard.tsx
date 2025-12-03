@@ -123,7 +123,7 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
         />
 
         <NumberInput
-          label="Süre"
+          label="Süre (dakika)"
           labelPlacement="outside"
           placeholder="Lütfen testi kaç dakikada çözdüğünüzü giriniz."
           hideStepper

@@ -28,10 +28,10 @@ export default function LessonAccordion({ lesson }: LessonAccordionProps) {
   );
 
   return (
-    <Accordion variant="splitted" selectionMode="single" className=" ">
+    <Accordion variant="splitted" selectionMode="single">
       <AccordionItem
-        key="1"
-        aria-label="Accordion 1"
+        key={lesson.name}
+        aria-label={lesson.name}
         title={title}
         className="data-[open=true]:pb-4  "
       >

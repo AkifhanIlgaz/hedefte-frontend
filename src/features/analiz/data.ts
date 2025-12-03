@@ -10,7 +10,9 @@ import {
   Swords,
   Trees,
 } from "lucide-react";
+import z from "zod";
 import { Field } from "../profil/types";
+import { lessonAnalysisSchema } from "./schemas/add_exam.schema";
 import {
   AytEaLessonName,
   AytMfLessonName,
@@ -704,3 +706,10 @@ export const getLessons = (exam: Exam, field?: Field) => {
   if (field === "Eşit Ağırlık") return eaLessons;
   return {};
 };
+
+export type LessonAnalysisData = z.infer<typeof lessonAnalysisSchema>;
+
+export type GenericExamFormValues = {
+  name: string;
+  date: Date;
+} & Record<string, any>;

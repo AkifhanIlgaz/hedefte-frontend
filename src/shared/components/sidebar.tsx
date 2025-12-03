@@ -22,7 +22,7 @@ export default function Sidebar({
       {/* Mobile Toggle Button - Visible only on tablet/mobile when closed */}
       <div
         className={clsx(
-          "fixed top-2 left-3 z-50 lg:hidden",
+          "fixed top-2 left-3 z-50 lg:hidden ",
           isSidebarOpen ? "hidden" : "block",
         )}
       >

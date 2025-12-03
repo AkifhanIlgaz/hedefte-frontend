@@ -84,7 +84,7 @@ export default function Page({
 
           <Link
             className="flex-1 md:flex-none"
-            href={`/dashboard/analiz/ekle?exam=TYT`}
+            href={`/dashboard/analiz/ekle?exam=${exam.toUpperCase()}&field=${field}`}
           >
             <Button
               className="w-full md:w-auto"
@@ -92,7 +92,7 @@ export default function Page({
               variant="shadow"
               startContent={<Plus className="size-4" />}
             >
-              TYT Analiz Ekle
+              {exam.toUpperCase()} Analiz Ekle
             </Button>
           </Link>
         </div>

@@ -28,7 +28,7 @@ export default function GeneralExamInfoCard({
         </span>
       </CardHeader>
       <CardBody>
-        <div className="flex gap-5  justify-center items-start ">
+        <div className="md:flex  md:gap-5  justify-center items-end ">
           <Input
             type="text"
             label="Sınav"

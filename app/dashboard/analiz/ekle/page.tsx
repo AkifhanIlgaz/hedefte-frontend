@@ -1,7 +1,7 @@
 "use client";
 import GeneralExamInfoCard from "@/src/features/analiz/components/cards/GeneralExamInfoCard";
 import PerformanceAnalysisCard from "@/src/features/analiz/components/cards/PerformanceAnalysisCard";
-import { getLessons } from "@/src/features/analiz/data";
+import { GenericExamFormValues, getLessons } from "@/src/features/analiz/data";
 import { getExamSchema } from "@/src/features/analiz/schemas/add_exam.schema";
 import { Exam, TopicMistake } from "@/src/features/analiz/types";
 import { Field } from "@/src/features/profil/types";
@@ -36,16 +36,16 @@ export default function Page() {
   );
   if (!myschema) return <p>Loading schema...</p>;
 
-  const form = useForm({
+  const form = useForm<GenericExamFormValues>({
     resolver: zodResolver(myschema),
     defaultValues: {
+      name: "",
+      date: new Date(),
       ...defaultValues,
     },
   });
 
   const onSubmit = async (data: z.infer<typeof myschema>) => {
-    console.log(data);
-
     setIsLoading(true);
 
     try {
@@ -96,6 +96,8 @@ export default function Page() {
     }
   };
 
+  console.log(form.getValues());
+
   return (
     <FormProvider {...form}>
       <form
@@ -106,6 +108,7 @@ export default function Page() {
           title="Deneme Analizi Ekle"
           description="Deneme sonuçlarını sisteme ekle, zayıf ve güçlü yönlerini keşfet."
         />
+
         <GeneralExamInfoCard exam={exam} />
         <PerformanceAnalysisCard
           exam={exam}

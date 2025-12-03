@@ -128,7 +128,7 @@ export default function TopicInfoCard({
             <Button
               color="primary"
               onPress={() => {
-                if (selectedTopic == undefined || mistakesCount == undefined) {
+                if (selectedTopic == "" || mistakesCount == undefined) {
                   addToast({
                     title: "Bir hata oluştu !",
                     description: "Lütfen konuyu ve yanlış sayısını seçiniz.",
