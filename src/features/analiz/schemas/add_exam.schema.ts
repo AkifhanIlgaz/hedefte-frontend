@@ -5,42 +5,51 @@ export const topicMistakesSchema = z.object({
   mistakeCount: z.number(),
 });
 
-export const lessonAnalysisSchema = z.object({
-  correct: z.number().min(0),
-  wrong: z.number().min(0),
-  empty: z.number().min(0),
-  time: z.number().min(0, "Lütfen zamanı giriniz."),
-  topicMistakes: z.array(topicMistakesSchema),
-});
+export const lessonAnalysisSchema = (totalQuestions: number) => {
+  return z
+    .object({
+      correct: z.number().min(0),
+      wrong: z.number().min(0),
+      empty: z.number().min(0),
+      time: z.number().min(0, "Lütfen zamanı giriniz."),
+      topicMistakes: z.array(topicMistakesSchema),
+    })
+    .refine(
+      (data) => data.correct + data.wrong + data.empty === totalQuestions,
+      {
+        message: `Toplam doğru, yanlış ve boş sayısı ${totalQuestions} olmalıdır.`,
+      },
+    );
+};
 
 export const addTytExamSchema = z.object({
   date: z.date("Lütfen deneme tarihini giriniz."),
   name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
-  Türkçe: lessonAnalysisSchema,
-  Tarih: lessonAnalysisSchema,
-  Coğrafya: lessonAnalysisSchema,
-  Felsefe: lessonAnalysisSchema,
-  DinKültürü: lessonAnalysisSchema,
-  Matematik: lessonAnalysisSchema,
-  Fizik: lessonAnalysisSchema,
-  Kimya: lessonAnalysisSchema,
-  Biyoloji: lessonAnalysisSchema,
+  Türkçe: lessonAnalysisSchema(40),
+  Tarih: lessonAnalysisSchema(5),
+  Coğrafya: lessonAnalysisSchema(5),
+  Felsefe: lessonAnalysisSchema(5),
+  DinKültürü: lessonAnalysisSchema(5),
+  Matematik: lessonAnalysisSchema(40),
+  Fizik: lessonAnalysisSchema(7),
+  Kimya: lessonAnalysisSchema(7),
+  Biyoloji: lessonAnalysisSchema(6),
 });
 
 export const addSayExamSchema = z.object({
   date: z.date("Lütfen deneme tarihini giriniz."),
   name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
-  Matematik: lessonAnalysisSchema,
-  Fizik: lessonAnalysisSchema,
-  Kimya: lessonAnalysisSchema,
-  Biyoloji: lessonAnalysisSchema,
+  Matematik: lessonAnalysisSchema(40),
+  Fizik: lessonAnalysisSchema(14),
+  Kimya: lessonAnalysisSchema(13),
+  Biyoloji: lessonAnalysisSchema(13),
 });
 
 export const addEaExamSchema = z.object({
   date: z.date("Lütfen deneme tarihini giriniz."),
   name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
-  Edebiyat: lessonAnalysisSchema,
-  Tarih: lessonAnalysisSchema,
-  Coğrafya: lessonAnalysisSchema,
-  Matematik: lessonAnalysisSchema,
+  Edebiyat: lessonAnalysisSchema(24),
+  Tarih: lessonAnalysisSchema(10),
+  Coğrafya: lessonAnalysisSchema(6),
+  Matematik: lessonAnalysisSchema(40),
 });

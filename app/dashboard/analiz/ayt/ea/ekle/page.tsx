@@ -13,9 +13,22 @@ import z from "zod";
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
 
+  const defaultLesson = () => ({
+    correct: 0,
+    wrong: 0,
+    empty: 0,
+    time: 0,
+    topicMistakes: [],
+  });
+
   const form = useForm({
     resolver: zodResolver(addEaExamSchema),
-    defaultValues: {},
+    defaultValues: {
+      Edebiyat: defaultLesson(),
+      Tarih: defaultLesson(),
+      Coğrafya: defaultLesson(),
+      Matematik: defaultLesson(),
+    },
   });
 
   const onSubmit = async (data: z.infer<typeof addEaExamSchema>) => {

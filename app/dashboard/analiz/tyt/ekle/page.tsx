@@ -13,9 +13,27 @@ import z from "zod";
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
 
+  const defaultLesson = () => ({
+    correct: 0,
+    wrong: 0,
+    empty: 0,
+    time: 0,
+    topicMistakes: [],
+  });
+
   const form = useForm({
     resolver: zodResolver(addTytExamSchema),
-    defaultValues: {},
+    defaultValues: {
+      Türkçe: defaultLesson(),
+      Tarih: defaultLesson(),
+      Coğrafya: defaultLesson(),
+      Felsefe: defaultLesson(),
+      DinKültürü: defaultLesson(),
+      Matematik: defaultLesson(),
+      Fizik: defaultLesson(),
+      Kimya: defaultLesson(),
+      Biyoloji: defaultLesson(),
+    },
   });
 
   const onSubmit = async (data: z.infer<typeof addTytExamSchema>) => {

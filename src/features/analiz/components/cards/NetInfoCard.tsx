@@ -15,6 +15,7 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
 
   const correct = form.watch(`${lessonName}.correct`) as number;
   const wrong = form.watch(`${lessonName}.wrong`) as number;
+  const empty = form.watch(`${lessonName}.empty`) as number;
   const net = (correct ?? 0) - (wrong ?? 0) * 0.25;
 
   return (
@@ -31,15 +32,9 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
             />
           </h1>
           <div className="flex gap-5">
-            <span className="text-success">
-              {form.watch(`${lessonName}.correct`)} D
-            </span>
-            <span className="text-danger">
-              {form.watch(`${lessonName}.wrong`)} Y
-            </span>
-            <span className="text-default-600">
-              {form.watch(`${lessonName}.empty`)} B
-            </span>
+            <span className="text-success">{correct} D</span>
+            <span className="text-danger">{wrong} Y</span>
+            <span className="text-default-600">{empty} B</span>
           </div>
         </div>
       </CardHeader>
