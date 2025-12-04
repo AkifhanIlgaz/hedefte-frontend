@@ -19,7 +19,7 @@ export const useExams = ({
     queryKey: ["analysis", exam, page, rowsPerPage, timeInterval],
     queryFn: () =>
       fetcher(
-        `analysis/${exam}?page=${page}&rowsPerPage=${rowsPerPage}&timeInterval=${timeInterval}`,
+        `${exam.toLowerCase()}/exams?page=${page}&rowsPerPage=${rowsPerPage}&timeInterval=${timeInterval}`,
       ),
     staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
   });

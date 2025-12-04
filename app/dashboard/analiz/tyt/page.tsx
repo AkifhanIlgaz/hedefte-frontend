@@ -10,7 +10,7 @@ import {
   GeneralChartPayload,
   GeneralResponse,
 } from "@/src/features/analiz/types";
-import { useChartData } from "@/src/queries/useChartData";
+import { useTYTGeneralChart } from "@/src/queries/useChartData";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
@@ -23,16 +23,12 @@ export default function Page() {
   const [timeInterval, setTimeInterval] = useState(-1);
   const lessons = allLessons.TYT;
 
-  const { data, isLoading, isError } = useChartData<
-    GeneralResponse<GeneralChartPayload>
-  >({
-    chartType: "general",
-    examType: "TYT",
-    timeInterval: timeInterval,
-  });
+  const { data, isLoading, isError } =
+    useTYTGeneralChart<GeneralResponse<GeneralChartPayload>>(timeInterval);
 
   if (isLoading && isError) return;
 
+  console.log(data);
   return (
     <div className="flex flex-col gap-6  ">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

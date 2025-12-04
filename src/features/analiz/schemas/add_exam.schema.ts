@@ -15,7 +15,7 @@ export const lessonAnalysisSchema = (totalQuestions: number) => {
       topicMistakes: z.array(topicMistakesSchema),
     })
     .refine(
-      (data) => data.correct + data.wrong + data.empty === totalQuestions,
+      (data) => data.correct + data.wrong + data.empty <= totalQuestions,
       {
         message: `Toplam doğru, yanlış ve boş sayısı ${totalQuestions} olmalıdır.`,
       },
@@ -29,7 +29,7 @@ export const addTytExamSchema = z.object({
   Tarih: lessonAnalysisSchema(5),
   Coğrafya: lessonAnalysisSchema(5),
   Felsefe: lessonAnalysisSchema(5),
-  DinKültürü: lessonAnalysisSchema(5),
+  "Din Kültürü": lessonAnalysisSchema(5),
   Matematik: lessonAnalysisSchema(40),
   Fizik: lessonAnalysisSchema(7),
   Kimya: lessonAnalysisSchema(7),

@@ -24,12 +24,14 @@ interface PerformanceAnalysisCardProps {
   exam: Exam;
   field?: Field;
   isLoading: boolean;
+  onSubmit?: (e?: React.BaseSyntheticEvent) => Promise<void> | void;
 }
 
 export default function PerformanceAnalysisCard({
   exam,
   field,
   isLoading,
+  onSubmit,
 }: PerformanceAnalysisCardProps) {
   const form = useFormContext();
   const lessons = allLessons[exam];
@@ -71,7 +73,7 @@ export default function PerformanceAnalysisCard({
                     <p className="text-xl font-bold">
                       {form.getValues("name")}
                     </p>
-                    <p>{form.getValues("date").toLocaleDateString()}</p>
+                    <p>{form.getValues("date")?.toLocaleDateString()}</p>
                     <Chip
                       variant="shadow"
                       className="font-bold text-xl px-4 py-2"
@@ -118,7 +120,10 @@ export default function PerformanceAnalysisCard({
                     ))}
                   </ModalBody>
                   <ModalFooter className="flex items-center justify-between">
-                    <Button type="submit" color="primary">
+                    <Button
+                      color="primary"
+                      onPress={() => onSubmit && onSubmit()}
+                    >
                       <Save className="size-4" />
                       Denemeyi Kaydet
                     </Button>

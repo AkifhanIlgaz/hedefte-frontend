@@ -23,3 +23,12 @@ export function useChartData<T>({
     staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
   });
 }
+
+export function useTYTGeneralChart<T>(timeInterval: number) {
+  return useQuery<T>({
+    queryKey: ["tyt", "charts", "general", timeInterval],
+    queryFn: () =>
+      fetcher(`tyt/charts/general?timeInterval=${timeInterval}`) as Promise<T>,
+    staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
+  });
+}
