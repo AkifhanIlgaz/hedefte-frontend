@@ -37,6 +37,7 @@ export default function Page() {
       Biyoloji: defaultLesson(),
     },
   });
+
   const submitHandler = form.handleSubmit(
     async (data: z.infer<typeof addTytExamSchema>) => {
       console.log(data);
@@ -99,11 +100,7 @@ export default function Page() {
         />
 
         <GeneralExamInfoCard exam={"TYT"} />
-        <PerformanceAnalysisCard
-          exam={"TYT"}
-          isLoading={isLoading}
-          onSubmit={submitHandler}
-        />
+        <PerformanceAnalysisCard exam={"TYT"} onSubmit={submitHandler} />
       </form>
     </FormProvider>
   );

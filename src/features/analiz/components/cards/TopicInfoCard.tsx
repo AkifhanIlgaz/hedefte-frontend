@@ -1,11 +1,12 @@
+"use client";
+
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { CircularProgress } from "@heroui/progress";
-import { addToast, NumberInput } from "@heroui/react";
+import { Image } from "@heroui/react";
 import { Select, SelectItem } from "@heroui/select";
-import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { CircleChevronLeft, CircleChevronRight, ZapIcon } from "lucide-react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { LessonName, TopicMistake } from "../../types";
 
@@ -19,12 +20,16 @@ export default function TopicInfoCard({
   lessonName,
 }: TopicInfoCardProps) {
   const [selectedTopic, setSelectedTopic] = useState<string>("");
-  const [mistakesCount, setMistakesCount] = useState<number>(1);
+  const [isGuessing, setIsGuessing] = useState<boolean>(false);
+  const [selectedImages, setSelectedImages] = useState<
+    { id: string; name: string; src: string }[]
+  >([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const form = useFormContext();
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields } = useFieldArray({
     control: form.control,
-    name: `${lessonName}.topicMistakes`, // path dikkat
+    name: `${lessonName}.topicMistakes`,
   });
 
   const typedFields = fields as (TopicMistake & { id: string })[];
@@ -32,10 +37,74 @@ export default function TopicInfoCard({
   const wrong = form.watch(`${lessonName}.wrong`) as number;
   const empty = form.watch(`${lessonName}.empty`) as number;
 
+  const generateImageId = () => {
+    if (
+      typeof globalThis.crypto !== "undefined" &&
+      typeof globalThis.crypto.randomUUID === "function"
+    ) {
+      return globalThis.crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  };
+
+  const handleImagesSelected = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (!files.length) return;
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setSelectedImages((prev) => [
+          ...prev,
+          {
+            id: generateImageId(),
+            name: file.name,
+            src: reader.result as string,
+          },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    event.target.value = "";
+  };
+
+  const handleRemoveImage = (id: string) => {
+    setSelectedImages((prev) => prev.filter((image) => image.id !== id));
+  };
+
+  const handleAIGuess = () => {
+    setIsGuessing(true);
+    if (selectedImages.length === 0) return;
+    const image = selectedImages[currentImageIndex];
+    // TODO: Implement AI guess logic
+  };
+
+  useEffect(() => {
+    if (selectedImages.length === 0) {
+      setCurrentImageIndex(0);
+      return;
+    }
+
+    setCurrentImageIndex((prev) => Math.min(prev, selectedImages.length - 1));
+  }, [selectedImages.length]);
+
+  const handleNextImage = () => {
+    if (selectedImages.length === 0) return;
+    setCurrentImageIndex((prev) => (prev + 1) % selectedImages.length);
+  };
+
+  const handlePrevImage = () => {
+    if (selectedImages.length === 0) return;
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + selectedImages.length) % selectedImages.length,
+    );
+  };
+
   return (
     <>
       <Card className="p-3">
-        <CardHeader className="flex flex-col items-center justify-center ">
+        <CardHeader className="flex flex-col items-center justify-center gap-2">
           {(() => {
             const totalMistakes = typedFields.reduce(
               (acc, curr) => acc + curr.mistakeCount,
@@ -71,152 +140,115 @@ export default function TopicInfoCard({
                   }
                   valueLabel={`${totalMistakes}/${totalWrongEmpty}`}
                 />
-                <span className="text-xs text-muted-foreground ">
+                <span className="text-xs text-muted-foreground">
                   Yanlış/Boş girilen soru sayısı
+                </span>
+                <span className="text-xs text-default-500">
+                  Yüklenen görsel: {selectedImages.length}
                 </span>
               </>
             );
           })()}
         </CardHeader>
 
-        <CardBody className="flex items-center justify-end gap-4">
+        <CardFooter>
+          <Button as="label" className="w-full" color="primary">
+            <input
+              type="file"
+              className="sr-only"
+              accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+              multiple
+              onChange={handleImagesSelected}
+            />
+            Görsel Yükle
+          </Button>
+        </CardFooter>
+      </Card>
+
+      <Card className="p-3" id={`topic-selection-${lessonName}`}>
+        <CardBody className="flex flex-col gap-4 ">
+          {selectedImages.length === 0 ? (
+            <div className="w-full h-full *:rounded-xl border border-dashed border-default-300/70 py-6 text-center text-sm text-default-500">
+              Henüz görsel yüklenmedi. Lütfen yukarıdaki butondan görsel
+              ekleyin.
+            </div>
+          ) : (
+            <div className="relative w-full ">
+              <Card isFooterBlurred className="h-80 overflow-hidden">
+                <div> </div>
+                <Image
+                  removeWrapper
+                  alt={`${selectedImages[currentImageIndex].name} önizleme`}
+                  className="z-0 h-full w-full object-cover"
+                  src={selectedImages[currentImageIndex].src}
+                />
+                <CardFooter className="absolute bottom-0 z-10 flex w-full items-center justify-between bg-black/40 px-3 py-2">
+                  <span className="text-xs font-semibold text-white line-clamp-1">
+                    {selectedImages[currentImageIndex].name}
+                  </span>
+                  <Button
+                    size="sm"
+                    color="danger"
+                    variant="flat"
+                    onPress={() =>
+                      handleRemoveImage(selectedImages[currentImageIndex].id)
+                    }
+                  >
+                    Sil
+                  </Button>
+                </CardFooter>
+              </Card>
+              {selectedImages.length > 1 && (
+                <>
+                  <Button
+                    isIconOnly
+                    className="absolute left-2 top-1/2 -translate-y-1/2 "
+                    variant="faded"
+                    onPress={handlePrevImage}
+                  >
+                    <CircleChevronLeft />
+                  </Button>
+                  <Button
+                    isIconOnly
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                    variant="faded"
+                    onPress={handleNextImage}
+                  >
+                    <CircleChevronRight />
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
+        </CardBody>
+        <CardFooter className="flex items-center justify-center gap-2">
           <Select
             variant="bordered"
-            label="Konu"
             labelPlacement="outside"
-            isVirtualized
+            isDisabled={topics.length === 0}
+            label="Konu Seçiniz"
             selectionMode="single"
-            selectedKeys={new Set([selectedTopic])}
-            value={selectedTopic}
+            disabled={isGuessing}
+            endContent={
+              <Button
+                isIconOnly
+                className="bg-transparent"
+                onPress={handleAIGuess}
+                endContent={<ZapIcon className="size-5" />}
+              />
+            }
+            selectedKeys={
+              selectedTopic ? new Set([selectedTopic]) : new Set<string>()
+            }
             onChange={(e) => setSelectedTopic(e.target.value)}
-            placeholder="Lütfen yanlış yaptığınız veya boş bıraktığınız konuyu seçiniz."
+            isLoading={isGuessing}
+            placeholder="Lütfen yanlış yaptığınız konuyu seçiniz."
           >
             {topics.map((topic) => (
               <SelectItem key={topic}>{topic}</SelectItem>
             ))}
           </Select>
-          <div className="flex items-center gap-4">
-            <Button
-              isIconOnly
-              onPress={() => setMistakesCount((prev) => prev - 1)}
-            >
-              <Minus />
-            </Button>
-            <NumberInput
-              hideStepper
-              size="sm"
-              radius="full"
-              variant="bordered"
-              minValue={1}
-              value={mistakesCount}
-              onValueChange={setMistakesCount}
-              classNames={{
-                label: "text-xs",
-                input: "text-center",
-              }}
-            />
-            <Button
-              isIconOnly
-              onPress={() => setMistakesCount((prev) => prev + 1)}
-            >
-              <Plus />
-            </Button>
-          </div>
-        </CardBody>
-        <CardFooter>
-          <div className="flex flex-col gap-4 w-full">
-            <Button
-              color="primary"
-              onPress={() => {
-                if (selectedTopic == "" || mistakesCount == undefined) {
-                  addToast({
-                    title: "Bir hata oluştu !",
-                    description: "Lütfen konuyu ve yanlış sayısını seçiniz.",
-                    color: "danger",
-                  });
-                  return;
-                }
-
-                const idx = typedFields.findIndex(
-                  (field) => field.topicName === selectedTopic,
-                );
-
-                if (idx === -1) {
-                  append({
-                    topicName: selectedTopic,
-                    mistakeCount: mistakesCount,
-                  });
-                  setSelectedTopic("");
-                  setMistakesCount(1);
-                  return;
-                }
-
-                const f = typedFields[idx];
-
-                f.mistakeCount += mistakesCount;
-
-                update(idx, f);
-                setSelectedTopic("");
-                setMistakesCount(1);
-              }}
-            >
-              Ekle
-            </Button>
-          </div>
         </CardFooter>
-      </Card>
-      <Card className="p-3  ">
-        <CardBody className="flex gap-3 overflow-x-hidden">
-          <AnimatePresence initial={false}>
-            {typedFields
-              .toSorted((a, b) => b.mistakeCount - a.mistakeCount)
-              .map((field, idx) => (
-                <motion.div
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.25, ease: "easeInOut" }}
-                  key={field.id}
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="
-              w-full flex items-center justify-between
-              rounded-xl border
-              px-3 py-2
-              text-sm
-              bg-danger-50 dark:bg-danger-50
-              border-danger-400/60 dark:border-danger-400/60
-              shadow-sm
-              "
-                    >
-                      <span className="opacity-80 font-bold">
-                        {field.topicName}
-                      </span>
-                      <span className="text-danger text-xs font-medium">
-                        {field.mistakeCount} yanlış
-                      </span>
-                    </div>
-                    <Button
-                      isIconOnly
-                      variant="shadow"
-                      color="danger"
-                      size="sm"
-                      onPress={() => {
-                        const idx = typedFields.findIndex(
-                          (field) => field.topicName === selectedTopic,
-                        );
-                        remove(idx);
-                      }}
-                    >
-                      <Trash2 className="size-3" />
-                    </Button>
-                  </div>
-                </motion.div>
-              ))}
-          </AnimatePresence>
-        </CardBody>
       </Card>
     </>
   );

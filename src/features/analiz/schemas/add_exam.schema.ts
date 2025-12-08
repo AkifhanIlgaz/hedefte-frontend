@@ -1,8 +1,11 @@
 import z from "zod";
 
 export const topicMistakesSchema = z.object({
-  topicName: z.string(),
-  mistakeCount: z.number(),
+  lesson: z.string().min(1, "Lütfen ders adını giriniz.").max(50),
+  examType: z.string().min(1, "Lütfen sınav türünü giriniz.").max(50),
+  imageUrl: z.url("Lütfen geçerli bir URL giriniz."),
+  isSolved: z.boolean().default(false),
+  topicName: z.string().min(1, "Lütfen konu adını giriniz.").max(50),
 });
 
 export const lessonAnalysisSchema = (totalQuestions: number) => {

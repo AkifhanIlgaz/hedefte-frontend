@@ -7,6 +7,7 @@ interface SidebarLinkProps {
   href: string;
   icon: LucideIcon;
   label: string;
+  isActive?: boolean;
 }
 
 export default function SidebarLink({
@@ -14,6 +15,7 @@ export default function SidebarLink({
   href,
   icon: Icon,
   label,
+  isActive = false,
 }: SidebarLinkProps) {
   return (
     <Link
@@ -21,10 +23,12 @@ export default function SidebarLink({
         "px-2 py-2 rounded-md transition-colors duration-300 cursor-pointer flex items-center gap-3",
         "text-sm font-medium",
         "hover:bg-primary hover:text-primary-foreground",
+        isActive && "bg-primary/10 text-primary border border-primary/40",
         !isSidebarOpen && "justify-center transition-colors duration-300",
       )}
       color="foreground"
       href={href}
+      aria-current={isActive ? "page" : undefined}
     >
       <Icon className="size-4 shrink-0" />
       {isSidebarOpen && (

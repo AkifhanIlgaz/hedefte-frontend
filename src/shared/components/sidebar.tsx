@@ -5,6 +5,7 @@ import { Logo } from "@/src/shared/components/icons";
 import { Button } from "@heroui/react";
 import clsx from "clsx";
 import { ChevronsLeft, ChevronsRight, Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 import SidebarLink from "./sidebarLink";
 
@@ -17,6 +18,16 @@ export default function Sidebar({
   isSidebarOpen,
   setIsSidebarOpenAction,
 }: SidebarProps) {
+  const pathname = usePathname();
+
+  const isRouteActive = (href: string) => {
+    if (!pathname) return false;
+    if (href === "/") {
+      return pathname === href;
+    }
+    return pathname === href;
+  };
+
   return (
     <>
       {/* Mobile Toggle Button - Visible only on tablet/mobile when closed */}
@@ -84,6 +95,7 @@ export default function Sidebar({
                 label={item.label}
                 icon={item.icon}
                 isSidebarOpen={isSidebarOpen}
+                isActive={isRouteActive(item.href)}
               />
             ))}
           </ul>

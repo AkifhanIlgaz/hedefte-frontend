@@ -1,4 +1,3 @@
-import { Field } from "@/src/features/profil/types";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
@@ -22,15 +21,11 @@ import TopicInfoCard from "./TopicInfoCard";
 
 interface PerformanceAnalysisCardProps {
   exam: Exam;
-  field?: Field;
-  isLoading: boolean;
   onSubmit?: (e?: React.BaseSyntheticEvent) => Promise<void> | void;
 }
 
 export default function PerformanceAnalysisCard({
   exam,
-  field,
-  isLoading,
   onSubmit,
 }: PerformanceAnalysisCardProps) {
   const form = useFormContext();
