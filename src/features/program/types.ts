@@ -1,7 +1,9 @@
+import { Exam } from "../analiz/types";
+
 export interface Session {
   id: string;
   userId: string;
-  exam: "TYT" | "AYT";
+  exam: Exam;
   type: string;
   lesson: string;
   topic: string;

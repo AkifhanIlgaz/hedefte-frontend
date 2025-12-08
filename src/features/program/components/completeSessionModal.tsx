@@ -89,7 +89,9 @@ export default function CompleteSessionModal({
                     <span className="text-xs text-default-500">Ders</span>
                     <Chip
                       size="lg"
-                      className={clsx(getLessonStyles(session.lesson))}
+                      className={clsx(
+                        getLessonStyles(session.exam, session.lesson),
+                      )}
                     >
                       {session.lesson}
                     </Chip>

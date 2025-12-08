@@ -1,12 +1,22 @@
 "use client";
 
+import { createClient } from "@/src/lib/supabase/client";
 import { Button } from "@heroui/button";
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
+import { Card, CardBody, CardFooter } from "@heroui/card";
 import { CircularProgress } from "@heroui/progress";
-import { Image } from "@heroui/react";
-import { Select, SelectItem } from "@heroui/select";
+import {
+  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Select,
+  SelectItem,
+  useDisclosure,
+} from "@heroui/react";
 import { CircleChevronLeft, CircleChevronRight, ZapIcon } from "lucide-react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { LessonName, TopicMistake } from "../../types";
 
@@ -21,9 +31,10 @@ export default function TopicInfoCard({
 }: TopicInfoCardProps) {
   const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [isGuessing, setIsGuessing] = useState<boolean>(false);
-  const [selectedImages, setSelectedImages] = useState<
-    { id: string; name: string; src: string }[]
-  >([]);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [uploadedUrls, setUploadedUrls] = useState<Set<string>>(new Set());
+  const myModal = useDisclosure();
+
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const form = useFormContext();
 
@@ -37,74 +48,65 @@ export default function TopicInfoCard({
   const wrong = form.watch(`${lessonName}.wrong`) as number;
   const empty = form.watch(`${lessonName}.empty`) as number;
 
-  const generateImageId = () => {
-    if (
-      typeof globalThis.crypto !== "undefined" &&
-      typeof globalThis.crypto.randomUUID === "function"
-    ) {
-      return globalThis.crypto.randomUUID();
-    }
-    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  };
-
-  const handleImagesSelected = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleImagesSelected = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
     if (!files.length) return;
 
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setSelectedImages((prev) => [
-          ...prev,
-          {
-            id: generateImageId(),
-            name: file.name,
-            src: reader.result as string,
-          },
-        ]);
-      };
-      reader.readAsDataURL(file);
-    });
+    const supabase = createClient();
+    const bucket = supabase.storage.from("hg");
 
-    event.target.value = "";
+    const { data } = await supabase.auth.getUser();
+    const userId = data?.user?.id;
+    if (!userId) return;
+
+    try {
+      setIsUploading(true);
+      await Promise.all(
+        files.map(async (file) => {
+          const fileName = `${userId}/${file.name}`;
+          const { error } = await bucket.upload(fileName, file, {
+            upsert: true,
+            contentType: file.type,
+          });
+          const { data } = supabase.storage.from("hg").getPublicUrl(fileName);
+
+          setUploadedUrls((prev) => prev.add(data.publicUrl));
+          if (error) {
+            console.error(error);
+          }
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
-  const handleRemoveImage = (id: string) => {
-    setSelectedImages((prev) => prev.filter((image) => image.id !== id));
-  };
+  const handleRemoveImage = (name: string) => {};
 
   const handleAIGuess = () => {
     setIsGuessing(true);
-    if (selectedImages.length === 0) return;
-    const image = selectedImages[currentImageIndex];
+
     // TODO: Implement AI guess logic
   };
 
-  useEffect(() => {
-    if (selectedImages.length === 0) {
-      setCurrentImageIndex(0);
-      return;
-    }
-
-    setCurrentImageIndex((prev) => Math.min(prev, selectedImages.length - 1));
-  }, [selectedImages.length]);
-
   const handleNextImage = () => {
-    if (selectedImages.length === 0) return;
-    setCurrentImageIndex((prev) => (prev + 1) % selectedImages.length);
+    if (uploadedUrls.size === 0) return;
+    setCurrentImageIndex((prev) => (prev + 1) % uploadedUrls.size);
   };
 
   const handlePrevImage = () => {
-    if (selectedImages.length === 0) return;
+    if (uploadedUrls.size === 0) return;
     setCurrentImageIndex(
-      (prev) => (prev - 1 + selectedImages.length) % selectedImages.length,
+      (prev) => (prev - 1 + uploadedUrls.size) % uploadedUrls.size,
     );
   };
 
   return (
     <>
-      <Card className="p-3">
-        <CardHeader className="flex flex-col items-center justify-center gap-2">
+      <Card className="p-3 ">
+        <CardBody className="flex flex-col items-center justify-center gap-2">
           {(() => {
             const totalMistakes = typedFields.reduce(
               (acc, curr) => acc + curr.mistakeCount,
@@ -144,14 +146,13 @@ export default function TopicInfoCard({
                   Yanlış/Boş girilen soru sayısı
                 </span>
                 <span className="text-xs text-default-500">
-                  Yüklenen görsel: {selectedImages.length}
+                  Yüklenen görsel: {uploadedUrls.size}
                 </span>
               </>
             );
           })()}
-        </CardHeader>
-
-        <CardFooter>
+        </CardBody>
+        <CardFooter className="flex flex-col gap-2 items-end justify-end">
           <Button as="label" className="w-full" color="primary">
             <input
               type="file"
@@ -160,45 +161,47 @@ export default function TopicInfoCard({
               multiple
               onChange={handleImagesSelected}
             />
-            Görsel Yükle
+            Soru Yükle
           </Button>
         </CardFooter>
       </Card>
 
       <Card className="p-3" id={`topic-selection-${lessonName}`}>
-        <CardBody className="flex flex-col gap-4 ">
-          {selectedImages.length === 0 ? (
+        <CardBody className="flex flex-col gap-4 items-center justify-center ">
+          {uploadedUrls.size === 0 ? (
             <div className="w-full h-full *:rounded-xl border border-dashed border-default-300/70 py-6 text-center text-sm text-default-500">
-              Henüz görsel yüklenmedi. Lütfen yukarıdaki butondan görsel
-              ekleyin.
+              Henüz hiçbir soru kaydetmedin. Yüklediğin soruları kaydettiğinden
+              emin ol.
             </div>
+          ) : isUploading ? (
+            <CircularProgress color="primary" label="Sorular Yükleniyor..." />
           ) : (
             <div className="relative w-full ">
               <Card isFooterBlurred className="h-80 overflow-hidden">
-                <div> </div>
                 <Image
                   removeWrapper
-                  alt={`${selectedImages[currentImageIndex].name} önizleme`}
                   className="z-0 h-full w-full object-cover"
-                  src={selectedImages[currentImageIndex].src}
+                  src={Array.from(uploadedUrls)[currentImageIndex]}
                 />
                 <CardFooter className="absolute bottom-0 z-10 flex w-full items-center justify-between bg-black/40 px-3 py-2">
                   <span className="text-xs font-semibold text-white line-clamp-1">
-                    {selectedImages[currentImageIndex].name}
+                    {Array.from(uploadedUrls)[currentImageIndex]}
                   </span>
                   <Button
                     size="sm"
                     color="danger"
                     variant="flat"
                     onPress={() =>
-                      handleRemoveImage(selectedImages[currentImageIndex].id)
+                      handleRemoveImage(
+                        Array.from(uploadedUrls)[currentImageIndex],
+                      )
                     }
                   >
                     Sil
                   </Button>
                 </CardFooter>
               </Card>
-              {selectedImages.length > 1 && (
+              {uploadedUrls.size > 1 && (
                 <>
                   <Button
                     isIconOnly
@@ -222,34 +225,55 @@ export default function TopicInfoCard({
           )}
         </CardBody>
         <CardFooter className="flex items-center justify-center gap-2">
-          <Select
-            variant="bordered"
-            labelPlacement="outside"
-            isDisabled={topics.length === 0}
-            label="Konu Seçiniz"
-            selectionMode="single"
-            disabled={isGuessing}
-            endContent={
-              <Button
-                isIconOnly
-                className="bg-transparent"
-                onPress={handleAIGuess}
-                endContent={<ZapIcon className="size-5" />}
-              />
-            }
-            selectedKeys={
-              selectedTopic ? new Set([selectedTopic]) : new Set<string>()
-            }
-            onChange={(e) => setSelectedTopic(e.target.value)}
-            isLoading={isGuessing}
-            placeholder="Lütfen yanlış yaptığınız konuyu seçiniz."
+          <Button
+            className="w-full"
+            color="primary"
+            onPress={myModal.onOpen}
+            isDisabled={uploadedUrls.size === 0}
           >
-            {topics.map((topic) => (
-              <SelectItem key={topic}>{topic}</SelectItem>
-            ))}
-          </Select>
+            Konulari Sec
+          </Button>
         </CardFooter>
       </Card>
+
+      <Modal isOpen={myModal.isOpen} onOpenChange={myModal.onOpenChange}>
+        <ModalContent>
+          <ModalHeader>Konu Seçimi</ModalHeader>
+
+          <ModalBody>
+            <Select
+              variant="bordered"
+              labelPlacement="outside"
+              isDisabled={topics.length === 0}
+              label="Konu Seçiniz"
+              selectionMode="single"
+              disabled={isGuessing}
+              endContent={
+                <Button
+                  isIconOnly
+                  content="Yucci'ye sor"
+                  className="bg-transparent"
+                  onPress={handleAIGuess}
+                  endContent={<ZapIcon className="size-5" />}
+                />
+              }
+              selectedKeys={
+                selectedTopic ? new Set([selectedTopic]) : new Set<string>()
+              }
+              onChange={(e) => setSelectedTopic(e.target.value)}
+              isLoading={isGuessing}
+              placeholder="Lütfen yanlış yaptığınız konuyu seçiniz."
+            >
+              {topics.map((topic) => (
+                <SelectItem key={topic}>{topic}</SelectItem>
+              ))}
+            </Select>
+          </ModalBody>
+        </ModalContent>
+        <ModalFooter>
+          <Button color="primary">Kapat</Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 }

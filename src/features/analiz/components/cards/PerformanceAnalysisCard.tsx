@@ -142,7 +142,7 @@ export default function PerformanceAnalysisCard({
           </Button>
         </CardHeader>
         <CardBody className="gap-3">
-          <Accordion variant="splitted">
+          <Accordion variant="splitted" keepContentMounted>
             {Object.values(lessons).map((lesson) => {
               const correct = form.watch(`${lesson.name}.correct`);
               const wrong = form.watch(`${lesson.name}.wrong`);

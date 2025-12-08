@@ -134,7 +134,9 @@ export default function SessionItem({
                 </Chip>
                 <Chip
                   size="sm"
-                  className={clsx(getLessonStyles(session.lesson))}
+                  className={clsx(
+                    getLessonStyles(session.exam, session.lesson),
+                  )}
                 >
                   {session.lesson}
                 </Chip>

@@ -1,5 +1,5 @@
-import { eaLessons, mfLessons, tytLessons } from "../analiz/data";
-import { Exam, LessonName, TytLessonName } from "../analiz/types";
+import { allLessons } from "../analiz/data";
+import { Exam, LessonName } from "../analiz/types";
 
 export const getBadgeColor = (type: string) => {
   switch (type) {
@@ -14,28 +14,52 @@ export const getBadgeColor = (type: string) => {
   }
 };
 
-export const getLessonStyles = (lessonName: string) => {
-  const allLessons = {
-    ...tytLessons,
-    ...eaLessons,
-    ...mfLessons,
-  };
+export const getLessonStyles = (exam: Exam, lessonName: string) => {
+  let bgClass;
+  let iconColor;
 
-  const lesson = allLessons[lessonName as keyof typeof allLessons];
-
-  if (!lesson) {
-    console.warn(`Lesson "${lessonName}" not found.`);
-    return { bgClass: "bg-gray-100", iconColor: "text-gray-700" }; // Default styles
+  switch (exam) {
+    case "TYT":
+      bgClass =
+        allLessons.TYT[lessonName as keyof typeof allLessons.TYT].bgClass;
+      iconColor =
+        allLessons.TYT[lessonName as keyof typeof allLessons.TYT].iconColor;
+      break;
+    case "AYT_SAY":
+      bgClass =
+        allLessons.AYT_SAY[lessonName as keyof typeof allLessons.AYT_SAY]
+          .bgClass;
+      iconColor =
+        allLessons.AYT_SAY[lessonName as keyof typeof allLessons.AYT_SAY]
+          .iconColor;
+      break;
+    case "AYT_EA":
+      bgClass =
+        allLessons.AYT_EA[lessonName as keyof typeof allLessons.AYT_EA].bgClass;
+      iconColor =
+        allLessons.AYT_EA[lessonName as keyof typeof allLessons.AYT_EA]
+          .iconColor;
+      break;
+    default:
+      bgClass = "bg-gray-100";
+      iconColor = "text-gray-700";
+      break;
   }
 
-  return `
-    ${lesson.bgClass}
-    ${lesson.iconColor}
-  `;
+  return bgClass + iconColor;
 };
 
-export const getTopics = (exam?: Exam, lesson?: LessonName) => {
-  if (!exam || !lesson) return [];
-  if (exam === "TYT") return tytLessons[lesson as TytLessonName].topics;
-  return { ...eaLessons, ...mfLessons }[lesson].topics;
+export const getTopics = (exam?: Exam, lessonName?: LessonName) => {
+  switch (exam) {
+    case "TYT":
+      return allLessons.TYT[lessonName as keyof typeof allLessons.TYT];
+
+    case "AYT_SAY":
+      return allLessons.AYT_SAY[lessonName as keyof typeof allLessons.AYT_SAY];
+
+    case "AYT_EA":
+      return allLessons.AYT_EA[lessonName as keyof typeof allLessons.AYT_EA];
+    default:
+      return [];
+  }
 };

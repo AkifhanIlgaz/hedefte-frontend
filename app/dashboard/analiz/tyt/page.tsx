@@ -28,7 +28,6 @@ export default function Page() {
 
   if (isLoading && isError) return;
 
-  console.log(data);
   return (
     <div className="flex flex-col gap-6  ">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

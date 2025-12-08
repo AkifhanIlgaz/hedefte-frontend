@@ -54,7 +54,6 @@ export default function Page() {
           throw new Error("Access token not found");
         }
 
-        // Send POST request to /api/analysis
         const response = await fetch("http://localhost:8080/api/tyt/exams", {
           method: "POST",
           headers: {
