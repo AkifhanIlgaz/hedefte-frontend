@@ -36,8 +36,9 @@ export type Lesson = {
 };
 
 export type TopicMistake = {
+  imageUrl: string;
+  filePath: string;
   topicName: string;
-  mistakeCount: number;
 };
 
 export interface GeneralChartPayload {

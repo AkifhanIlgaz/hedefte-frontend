@@ -32,23 +32,32 @@ export default function TopicInfoCard({
   const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [isGuessing, setIsGuessing] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [uploadedUrls, setUploadedUrls] = useState<Set<string>>(new Set());
   const myModal = useDisclosure();
 
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const form = useFormContext();
 
-  const { fields } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: `${lessonName}.topicMistakes`,
   });
 
-  const typedFields = fields as (TopicMistake & { id: string })[];
-
   const wrong = form.watch(`${lessonName}.wrong`) as number;
   const empty = form.watch(`${lessonName}.empty`) as number;
+  const topicMistakes = form.watch(
+    `${lessonName}.topicMistakes`,
+  ) as TopicMistake[];
+  const topicMistakesByTopic = topicMistakes.reduce(
+    (acc, mistake) => {
+      if (!mistake.topicName) return acc;
+      acc[mistake.topicName] = (acc[mistake.topicName] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   const handleImagesSelected = async (event: ChangeEvent<HTMLInputElement>) => {
+    setIsUploading(true);
     const files = Array.from(event.target.files ?? []);
     if (!files.length) return;
 
@@ -60,20 +69,24 @@ export default function TopicInfoCard({
     if (!userId) return;
 
     try {
-      setIsUploading(true);
       await Promise.all(
         files.map(async (file) => {
-          const fileName = `${userId}/${file.name}`;
+          const fileName = `${userId}/${crypto.randomUUID()}`;
           const { error } = await bucket.upload(fileName, file, {
             upsert: true,
             contentType: file.type,
           });
-          const { data } = supabase.storage.from("hg").getPublicUrl(fileName);
-
-          setUploadedUrls((prev) => prev.add(data.publicUrl));
           if (error) {
             console.error(error);
+            return;
           }
+          const { data } = supabase.storage.from("hg").getPublicUrl(fileName);
+
+          append({
+            imageUrl: data.publicUrl,
+            filePath: fileName,
+            topicName: "",
+          });
         }),
       );
     } catch (error) {
@@ -83,7 +96,9 @@ export default function TopicInfoCard({
     }
   };
 
-  const handleRemoveImage = (name: string) => {};
+  const handleRemoveImage = (index: number) => {
+    remove(index);
+  };
 
   const handleAIGuess = () => {
     setIsGuessing(true);
@@ -92,14 +107,18 @@ export default function TopicInfoCard({
   };
 
   const handleNextImage = () => {
-    if (uploadedUrls.size === 0) return;
-    setCurrentImageIndex((prev) => (prev + 1) % uploadedUrls.size);
+    console.log("next image");
+    console.log("current index: ", currentImageIndex);
+    if (topicMistakes.length === 0) return;
+    setCurrentImageIndex((prev) => (prev + 1) % topicMistakes.length);
   };
 
   const handlePrevImage = () => {
-    if (uploadedUrls.size === 0) return;
+    console.log("prev image");
+    console.log("current index: ", currentImageIndex);
+    if (topicMistakes.length === 0) return;
     setCurrentImageIndex(
-      (prev) => (prev - 1 + uploadedUrls.size) % uploadedUrls.size,
+      (prev) => (prev - 1 + topicMistakes.length) % topicMistakes.length,
     );
   };
 
@@ -108,10 +127,7 @@ export default function TopicInfoCard({
       <Card className="p-3 ">
         <CardBody className="flex flex-col items-center justify-center gap-2">
           {(() => {
-            const totalMistakes = typedFields.reduce(
-              (acc, curr) => acc + curr.mistakeCount,
-              0,
-            );
+            const totalMistakes = fields.length;
             const totalWrongEmpty = wrong + empty;
             const isComplete =
               totalMistakes >= totalWrongEmpty && totalWrongEmpty > 0;
@@ -146,7 +162,7 @@ export default function TopicInfoCard({
                   Yanlış/Boş girilen soru sayısı
                 </span>
                 <span className="text-xs text-default-500">
-                  Yüklenen görsel: {uploadedUrls.size}
+                  Yüklenen görsel: {topicMistakes.length}
                 </span>
               </>
             );
@@ -163,89 +179,100 @@ export default function TopicInfoCard({
             />
             Soru Yükle
           </Button>
-        </CardFooter>
-      </Card>
-
-      <Card className="p-3" id={`topic-selection-${lessonName}`}>
-        <CardBody className="flex flex-col gap-4 items-center justify-center ">
-          {uploadedUrls.size === 0 ? (
-            <div className="w-full h-full *:rounded-xl border border-dashed border-default-300/70 py-6 text-center text-sm text-default-500">
-              Henüz hiçbir soru kaydetmedin. Yüklediğin soruları kaydettiğinden
-              emin ol.
-            </div>
-          ) : isUploading ? (
-            <CircularProgress color="primary" label="Sorular Yükleniyor..." />
-          ) : (
-            <div className="relative w-full ">
-              <Card isFooterBlurred className="h-80 overflow-hidden">
-                <Image
-                  removeWrapper
-                  className="z-0 h-full w-full object-cover"
-                  src={Array.from(uploadedUrls)[currentImageIndex]}
-                />
-                <CardFooter className="absolute bottom-0 z-10 flex w-full items-center justify-between bg-black/40 px-3 py-2">
-                  <span className="text-xs font-semibold text-white line-clamp-1">
-                    {Array.from(uploadedUrls)[currentImageIndex]}
-                  </span>
-                  <Button
-                    size="sm"
-                    color="danger"
-                    variant="flat"
-                    onPress={() =>
-                      handleRemoveImage(
-                        Array.from(uploadedUrls)[currentImageIndex],
-                      )
-                    }
-                  >
-                    Sil
-                  </Button>
-                </CardFooter>
-              </Card>
-              {uploadedUrls.size > 1 && (
-                <>
-                  <Button
-                    isIconOnly
-                    className="absolute left-2 top-1/2 -translate-y-1/2 "
-                    variant="faded"
-                    onPress={handlePrevImage}
-                  >
-                    <CircleChevronLeft />
-                  </Button>
-                  <Button
-                    isIconOnly
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                    variant="faded"
-                    onPress={handleNextImage}
-                  >
-                    <CircleChevronRight />
-                  </Button>
-                </>
-              )}
-            </div>
-          )}
-        </CardBody>
-        <CardFooter className="flex items-center justify-center gap-2">
           <Button
             className="w-full"
             color="primary"
             onPress={myModal.onOpen}
-            isDisabled={uploadedUrls.size === 0}
+            isDisabled={topicMistakes.length === 0}
           >
             Konulari Sec
           </Button>
         </CardFooter>
       </Card>
 
-      <Modal isOpen={myModal.isOpen} onOpenChange={myModal.onOpenChange}>
+      <Card className="p-3" id={`topic-selection-${lessonName}`}>
+        <CardBody className="flex flex-col gap-4 items-center justify-center ">
+          {Object.keys(topicMistakesByTopic).length === 0 ? (
+            <div>bir sey eklemedi</div>
+          ) : (
+            <div>
+              {Object.entries(topicMistakesByTopic).map(
+                ([topicName, count], index) => (
+                  <div key={index}>{`${topicName}: ${count}`}</div>
+                ),
+              )}
+            </div>
+          )}
+        </CardBody>
+        <CardFooter className="flex items-center justify-center gap-2"></CardFooter>
+      </Card>
+
+      <Modal
+        isOpen={myModal.isOpen}
+        onOpenChange={myModal.onOpenChange}
+        size="xl"
+      >
         <ModalContent>
           <ModalHeader>Konu Seçimi</ModalHeader>
-
           <ModalBody>
+            {topicMistakes.length === 0 ? (
+              <div className="w-full h-full *:rounded-xl border border-dashed border-default-300/70 py-6 text-center text-sm text-default-500">
+                Henüz hiçbir soru kaydetmedin. Yüklediğin soruları
+                kaydettiğinden emin ol.
+              </div>
+            ) : isUploading ? (
+              <CircularProgress color="primary" label="Sorular Yükleniyor..." />
+            ) : (
+              <div className="relative w-full ">
+                <Card isFooterBlurred className="h-80 overflow-hidden">
+                  <Image
+                    removeWrapper
+                    className="z-0 h-full w-full object-center"
+                    src={topicMistakes[currentImageIndex].imageUrl}
+                  />
+                  <CardFooter className="absolute bottom-0 z-10 flex w-full items-center justify-between bg-black/40 px-3 py-2">
+                    <span className="text-xs font-semibold text-white line-clamp-1">
+                      {topicMistakes[currentImageIndex].topicName}
+                    </span>
+                    <Button
+                      size="sm"
+                      color="danger"
+                      variant="flat"
+                      onPress={() => handleRemoveImage(currentImageIndex)}
+                    >
+                      Sil
+                    </Button>
+                  </CardFooter>
+                </Card>
+                {topicMistakes.length > 1 && (
+                  <>
+                    <Button
+                      isIconOnly
+                      className="absolute left-2 top-1/2 -translate-y-1/2 "
+                      variant="faded"
+                      onPress={handlePrevImage}
+                    >
+                      <CircleChevronLeft />
+                    </Button>
+                    <Button
+                      isIconOnly
+                      className="absolute right-2 top-1/2 -translate-y-1/2"
+                      variant="faded"
+                      onPress={handleNextImage}
+                    >
+                      <CircleChevronRight />
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
+          </ModalBody>
+
+          <ModalFooter>
             <Select
               variant="bordered"
               labelPlacement="outside"
               isDisabled={topics.length === 0}
-              label="Konu Seçiniz"
               selectionMode="single"
               disabled={isGuessing}
               endContent={
@@ -260,7 +287,11 @@ export default function TopicInfoCard({
               selectedKeys={
                 selectedTopic ? new Set([selectedTopic]) : new Set<string>()
               }
-              onChange={(e) => setSelectedTopic(e.target.value)}
+              onChange={(e) => {
+                topicMistakes[currentImageIndex].topicName = e.target.value;
+
+                setSelectedTopic(e.target.value);
+              }}
               isLoading={isGuessing}
               placeholder="Lütfen yanlış yaptığınız konuyu seçiniz."
             >
@@ -268,11 +299,8 @@ export default function TopicInfoCard({
                 <SelectItem key={topic}>{topic}</SelectItem>
               ))}
             </Select>
-          </ModalBody>
+          </ModalFooter>
         </ModalContent>
-        <ModalFooter>
-          <Button color="primary">Kapat</Button>
-        </ModalFooter>
       </Modal>
     </>
   );
