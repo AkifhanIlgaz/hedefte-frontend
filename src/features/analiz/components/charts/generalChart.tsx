@@ -2,7 +2,7 @@
 
 import { Card, CardBody } from "@heroui/card";
 import { ApexOptions } from "apexcharts";
-import { format } from "date-fns";
+import { format, isValid as isValidDate, parseISO } from "date-fns";
 import { tr } from "date-fns/locale";
 import dynamic from "next/dynamic";
 import { LessonName } from "../../types";
@@ -13,43 +13,46 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 function prepareChartData(
   rawData: { date: string; name: string; totalNet: number }[],
 ) {
-  const monthGroups: Record<string, typeof rawData> = {};
+  const toDate = (value: string) => {
+    const parsed = parseISO(value);
+    if (isValidDate(parsed)) return parsed;
+    const fallback = new Date(value);
+    return isValidDate(fallback) ? fallback : new Date();
+  };
 
-  rawData.forEach((item) => {
-    const monthYear = format(new Date(item.date), "MMM yyyy", { locale: tr }); // Örn: "Haz 2024"
-    if (!monthGroups[monthYear]) monthGroups[monthYear] = [];
-    monthGroups[monthYear].push(item);
+  const sorted = [...rawData].sort(
+    (a, b) => toDate(a.date).getTime() - toDate(b.date).getTime(),
+  );
+
+  const dateCounts: Record<string, number> = {};
+  sorted.forEach((item) => {
+    const key = format(toDate(item.date), "yyyy-MM-dd");
+    dateCounts[key] = (dateCounts[key] || 0) + 1;
   });
 
-  const months = Object.keys(monthGroups).sort((a, b) => {
-    const dateA = new Date(monthGroups[a][0].date);
-    const dateB = new Date(monthGroups[b][0].date);
-    return dateA.getTime() - dateB.getTime();
+  const dateSeen: Record<string, number> = {};
+  const chartData = sorted.map((item) => {
+    const baseDate = toDate(item.date);
+    const key = format(baseDate, "yyyy-MM-dd");
+    const seenCount = dateSeen[key] || 0;
+    const totalCount = dateCounts[key] || 1;
+
+    // Spread points on the same day by 30-minute steps so markers don't overlap.
+    const jitterMinutes =
+      totalCount > 1 ? (seenCount - (totalCount - 1) / 2) * 30 : 0;
+
+    dateSeen[key] = seenCount + 1;
+
+    return {
+      x: baseDate.getTime() + jitterMinutes * 60 * 1000,
+      y: item.totalNet,
+      name: item.name,
+      date: item.date,
+      totalNet: item.totalNet,
+    };
   });
 
-  const chartData: {
-    x: number;
-    month: string;
-    name: string;
-    date: string;
-    totalNet: number;
-  }[] = [];
-
-  months.forEach((month, monthIndex) => {
-    const items = monthGroups[month];
-    items.forEach((item, i) => {
-      const jitter = (i - (items.length - 1) / 2) * 0.2; // -0.2, 0, +0.2 gibi
-      chartData.push({
-        x: monthIndex + jitter,
-        month,
-        name: item.name,
-        date: item.date,
-        totalNet: item.totalNet,
-      });
-    });
-  });
-
-  return { chartData, months };
+  return { chartData };
 }
 
 export interface GeneralChartPayload {
@@ -83,7 +86,34 @@ export default function GeneralChart({
 }: {
   exams: { date: string; name: string; totalNet: number }[];
 }) {
-  const { chartData, months } = prepareChartData(exams);
+  const { chartData } = prepareChartData(exams);
+  const sortedChartData = [...chartData].sort((a, b) => a.x - b.x);
+  const monthTicks: number[] = [];
+  let minDate: number | undefined;
+  let maxDate: number | undefined;
+  if (sortedChartData.length > 0) {
+    const xs = sortedChartData
+      .map((item) => item.x)
+      .filter((v) => Number.isFinite(v));
+    minDate = Math.min(...xs);
+    maxDate = Math.max(...xs);
+
+    const start = new Date(minDate);
+    start.setDate(1);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(maxDate);
+    end.setDate(1);
+    end.setHours(0, 0, 0, 0);
+
+    for (
+      let cursor = new Date(start);
+      cursor.getTime() <= end.getTime();
+      cursor.setMonth(cursor.getMonth() + 1)
+    ) {
+      monthTicks.push(cursor.getTime());
+    }
+  }
 
   // ApexCharts için yapılandırma
   const chartOptions: ApexOptions = {
@@ -95,9 +125,17 @@ export default function GeneralChart({
       },
     },
     xaxis: {
-      categories: months,
+      type: "datetime",
+      min: minDate,
+      max: maxDate,
+      tickAmount: Math.max(monthTicks.length, 2),
       labels: {
         style: { fontSize: "12px" },
+        showDuplicates: false,
+        formatter: (value) =>
+          format(new Date(Number(value)), "MMM yyyy", {
+            locale: tr,
+          }),
       },
     },
     title: {
@@ -107,8 +145,34 @@ export default function GeneralChart({
     },
     yaxis: {
       title: { text: "Toplam Net" },
+      min: 0,
       labels: {
         formatter: (val: number) => val.toFixed(2),
+      },
+    },
+    tooltip: {
+      shared: false,
+      custom: ({ seriesIndex, dataPointIndex, w }) => {
+        const point =
+          (w?.globals?.initialSeries?.[seriesIndex]?.data?.[dataPointIndex] as
+            | { x?: string; y?: number; name?: string; date?: string }
+            | undefined) ?? null;
+
+        if (!point) return "";
+
+        const dateLabel = point.date
+          ? format(new Date(point.date), "dd MMM yyyy", { locale: tr })
+          : "";
+        const nameLabel = point.name ?? "";
+        const netLabel = typeof point.y === "number" ? point.y.toFixed(2) : "—";
+
+        return `
+          <div style="padding:8px 10px;min-width:180px;display:flex;flex-direction:column;gap:4px;">
+            <span style="font-size:12px;color:#6b7280;">${dateLabel}</span>
+            <span style="font-size:13px;font-weight:600;color:#111827;">${nameLabel}</span>
+            <span style="font-size:13px;color:#d97706;">Toplam Net: ${netLabel}</span>
+          </div>
+        `;
       },
     },
     stroke: {
@@ -121,7 +185,7 @@ export default function GeneralChart({
   const series = [
     {
       name: "Toplam Net",
-      data: chartData.map((item) => item.totalNet),
+      data: sortedChartData,
     },
   ];
   return (

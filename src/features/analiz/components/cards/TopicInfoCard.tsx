@@ -13,6 +13,7 @@ import {
   ModalHeader,
   Select,
   SelectItem,
+  Tooltip,
   useDisclosure,
 } from "@heroui/react";
 import { addToast } from "@heroui/toast";
@@ -397,15 +398,20 @@ export default function TopicInfoCard({
               >
                 Sil
               </Button>
-              <Button
-                size="sm"
-                color="primary"
+              <Tooltip
+                content="Yucci soru-konu analizi için özel olarak geliştirdiğimiz bir yapay zeka modeli"
                 className="text-xs"
-                onPress={handleAIGuess}
-                endContent={<ZapIcon className="size-4" />}
               >
-                Gemini gardaşıma sor
-              </Button>
+                <Button
+                  size="sm"
+                  color="primary"
+                  className="text-xs"
+                  onPress={handleAIGuess}
+                  endContent={<ZapIcon className="size-4" />}
+                >
+                  bi' abine sor
+                </Button>
+              </Tooltip>
             </div>
             <Select
               variant="bordered"

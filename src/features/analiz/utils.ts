@@ -33,9 +33,10 @@ export const fetcher = async (...args: [string, RequestInit?]) => {
 };
 
 export const getLessonNames = (exam: Exam, field?: Field) => {
-  if (exam.toUpperCase() === "TYT") return TytLessonNames;
-
-  return field === "Sayısal" ? AytMfLessonNames : AytEaLessonNames;
+  if (exam === "TYT") return TytLessonNames;
+  if (exam === "AYT_SAY") return AytMfLessonNames;
+  if (exam === "AYT_EA") return AytEaLessonNames;
+  return [];
 };
 
 export const getTableColumns = (exam: Exam, field?: Field) => {
@@ -51,6 +52,7 @@ export const getTableColumns = (exam: Exam, field?: Field) => {
     { key: "date", label: "Tarih" },
     ...lessonColumns,
     { key: "totalNet", label: "Toplam Net" },
+    { key: "actions", label: "" },
   ];
 
   return columns;

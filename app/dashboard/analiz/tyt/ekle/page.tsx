@@ -40,7 +40,6 @@ export default function Page() {
 
   const submitHandler = form.handleSubmit(
     async (data: z.infer<typeof addTytExamSchema>) => {
-      console.log(data);
       setIsLoading(true);
 
       try {

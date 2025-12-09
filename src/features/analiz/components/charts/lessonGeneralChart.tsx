@@ -26,9 +26,15 @@ export default function LessonGeneralChart({
     ([, a], [, b]) => b.averageNet - a.averageNet,
   ); // Büyükten küçüğe sıralama
 
-  const averageNets = sortedLessons.map(([_, lesson]) => lesson.averageNet);
-  const maxNets = sortedLessons.map(([_, lesson]) => lesson.maxNet);
-  const averageTimes = sortedLessons.map(([_, lesson]) => lesson.averageTime);
+  const averageNets = sortedLessons.map(([_, lesson]) =>
+    Number(lesson.averageNet.toFixed(2)),
+  );
+  const maxNets = sortedLessons.map(([_, lesson]) =>
+    Number(lesson.maxNet.toFixed(2)),
+  );
+  const averageTimes = sortedLessons.map(([_, lesson]) =>
+    Number(lesson.averageTime.toFixed(2)),
+  );
 
   const series: ApexAxisChartSeries = [
     {
@@ -64,11 +70,15 @@ export default function LessonGeneralChart({
     xaxis: {
       categories: sortedLessons.map(([lessonName, _]) => lessonName),
     },
+    yaxis: {
+      min: 0,
+    },
     title: {
       text: "Ders Bazlı Analiz",
       align: "left",
       style: { fontSize: "16px", fontWeight: "bold" },
     },
+
     fill: {
       opacity: 1,
     },

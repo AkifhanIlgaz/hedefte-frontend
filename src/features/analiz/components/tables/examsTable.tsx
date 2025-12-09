@@ -1,5 +1,6 @@
 import { Field } from "@/src/features/profil/types";
 import { useExams } from "@/src/queries/useExams";
+import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";
 import { Spinner } from "@heroui/spinner";
@@ -11,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/table";
-import { CircleAlert } from "lucide-react";
+import { CircleAlert, Trash2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { Exam } from "../../types";
 import { getTableColumns } from "../../utils";
@@ -94,6 +95,23 @@ export default function ExamsTable({
             {cellValue.toFixed(2)}
           </Chip>
         );
+      case "actions":
+        return (
+          <Button
+            color="danger"
+            size="sm"
+            variant="bordered"
+            aria-label="Denemeyi sil"
+            startContent={<Trash2 className="size-3" />}
+            className="flex "
+            onPress={() => {
+              // TODO: wire delete when endpoint is ready
+              console.log("Sil", exam);
+            }}
+          >
+            Sil
+          </Button>
+        );
 
       default:
         return (
@@ -103,8 +121,6 @@ export default function ExamsTable({
         );
     }
   }, []);
-
-  console.log(data);
 
   return (
     <Table
