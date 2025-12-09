@@ -15,7 +15,14 @@ import {
   SelectItem,
   useDisclosure,
 } from "@heroui/react";
-import { CircleChevronLeft, CircleChevronRight, ZapIcon } from "lucide-react";
+import { addToast } from "@heroui/toast";
+import {
+  AlertCircle,
+  CircleChevronLeft,
+  CircleChevronRight,
+  Info,
+  ZapIcon,
+} from "lucide-react";
 import { ChangeEvent, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { LessonName, TopicMistake } from "../../types";
@@ -25,10 +32,30 @@ interface TopicInfoCardProps {
   lessonName: LessonName;
 }
 
+function sanitizeFilename(str: string) {
+  const map: Record<string, string> = {
+    ç: "c",
+    Ç: "C",
+    ğ: "g",
+    Ğ: "G",
+    ü: "u",
+    Ü: "U",
+    ö: "o",
+    Ö: "O",
+    ş: "s",
+    Ş: "S",
+    ı: "i",
+    İ: "I",
+  };
+
+  return str.replace(/ç|Ç|ğ|Ğ|ü|Ü|ö|Ö|ş|Ş|ı|İ/g, (match) => map[match]);
+}
+
 export default function TopicInfoCard({
   topics,
   lessonName,
 }: TopicInfoCardProps) {
+  const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3 MB
   const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [isGuessing, setIsGuessing] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -56,22 +83,55 @@ export default function TopicInfoCard({
     {} as Record<string, number>,
   );
 
+  const topicMistakeEntries = Object.entries(topicMistakesByTopic).sort(
+    (a, b) => b[1] - a[1],
+  );
+  const hasTopicMistakes = topicMistakeEntries.length > 0;
+
   const handleImagesSelected = async (event: ChangeEvent<HTMLInputElement>) => {
     setIsUploading(true);
     const files = Array.from(event.target.files ?? []);
-    if (!files.length) return;
+    if (!files.length) {
+      setIsUploading(false);
+      return;
+    }
+
+    const acceptedMimeTypes = ["image/jpeg", "image/png"];
+    const validFiles = files.filter(
+      (file) =>
+        file.size <= MAX_FILE_SIZE && acceptedMimeTypes.includes(file.type),
+    );
+
+    if (validFiles.length === 0) {
+      addToast({
+        title: "Uyarı",
+        description:
+          "Sadece JPG/PNG ve 3 MB altındaki dosyaları yükleyebilirsin.",
+        color: "warning",
+      });
+      setIsUploading(false);
+      return;
+    }
 
     const supabase = createClient();
     const bucket = supabase.storage.from("hg");
 
     const { data } = await supabase.auth.getUser();
     const userId = data?.user?.id;
-    if (!userId) return;
+    if (!userId) {
+      addToast({
+        title: "Hata",
+        description: "Giriş yapmadan görsel yükleyemezsin.",
+        color: "danger",
+      });
+      setIsUploading(false);
+      return;
+    }
 
     try {
       await Promise.all(
-        files.map(async (file) => {
-          const fileName = `${userId}/${crypto.randomUUID()}`;
+        validFiles.map(async (file) => {
+          const fileName = `${userId}/${sanitizeFilename(file.name)}`;
           const { error } = await bucket.upload(fileName, file, {
             upsert: true,
             contentType: file.type,
@@ -89,15 +149,50 @@ export default function TopicInfoCard({
           });
         }),
       );
+      addToast({
+        title: "Başarılı",
+        description: "Sorular yüklendi. Konu seçimini yapabilirsin.",
+        color: "success",
+      });
     } catch (error) {
       console.error(error);
+      addToast({
+        title: "Hata",
+        description:
+          "Görseller yüklenirken bir sorun oluştu. Lütfen tekrar dene.",
+        color: "danger",
+      });
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleRemoveImage = (index: number) => {
-    remove(index);
+  const handleRemoveImage = async (index: number) => {
+    const topicMistakeToRemove = topicMistakes[index];
+    const supabase = createClient();
+    const bucket = supabase.storage.from("hg");
+
+    try {
+      const { error } = await bucket.remove([topicMistakeToRemove.filePath]);
+      if (error) throw error;
+
+      remove(index);
+      setCurrentImageIndex((prev) => (prev + 1) % topicMistakes.length);
+      addToast({
+        title: "Başarılı",
+        description: "Soru görseli silindi.",
+        color: "success",
+      });
+    } catch (error: any) {
+      console.error(error);
+      addToast({
+        title: "Hata",
+        description:
+          error?.message ||
+          "Görsel silinirken bir sorun oluştu. Lütfen tekrar deneyin.",
+        color: "danger",
+      });
+    }
   };
 
   const handleAIGuess = () => {
@@ -107,16 +202,17 @@ export default function TopicInfoCard({
   };
 
   const handleNextImage = () => {
-    console.log("next image");
-    console.log("current index: ", currentImageIndex);
     if (topicMistakes.length === 0) return;
+    const idx = (currentImageIndex + 1) % topicMistakes.length;
+    setSelectedTopic(topicMistakes[idx].topicName);
     setCurrentImageIndex((prev) => (prev + 1) % topicMistakes.length);
   };
 
   const handlePrevImage = () => {
-    console.log("prev image");
-    console.log("current index: ", currentImageIndex);
     if (topicMistakes.length === 0) return;
+    const idx =
+      (currentImageIndex - 1 + topicMistakes.length) % topicMistakes.length;
+    setSelectedTopic(topicMistakes[idx].topicName);
     setCurrentImageIndex(
       (prev) => (prev - 1 + topicMistakes.length) % topicMistakes.length,
     );
@@ -168,17 +264,31 @@ export default function TopicInfoCard({
             );
           })()}
         </CardBody>
-        <CardFooter className="flex flex-col gap-2 items-end justify-end">
-          <Button as="label" className="w-full" color="primary">
+        <CardFooter className="flex flex-col gap-2 items-start justify-center">
+          <div className="flex gap-2 items-center ">
+            <Info className="size-4 text-default-500" />
+            <p className="w-full text-start text-[11px] text-default-500">
+              .jpg/.jpeg/.png uzantılı ve maksimum 3 MB boyutunda dosyalar
+              desteklenir.
+            </p>
+          </div>
+          <Button
+            as="label"
+            className="w-full"
+            color="primary"
+            isLoading={isUploading}
+          >
             <input
               type="file"
               className="sr-only"
               accept=".jpg,.jpeg,.png,image/jpeg,image/png"
               multiple
+              size={MAX_FILE_SIZE}
               onChange={handleImagesSelected}
             />
             Soru Yükle
           </Button>
+
           <Button
             className="w-full"
             color="primary"
@@ -191,20 +301,45 @@ export default function TopicInfoCard({
       </Card>
 
       <Card className="p-3" id={`topic-selection-${lessonName}`}>
-        <CardBody className="flex flex-col gap-4 items-center justify-center ">
-          {Object.keys(topicMistakesByTopic).length === 0 ? (
-            <div>bir sey eklemedi</div>
+        <CardBody
+          className={
+            hasTopicMistakes
+              ? "flex flex-col gap-3 items-start justify-start"
+              : "flex flex-col items-center justify-center"
+          }
+        >
+          {topicMistakeEntries.length === 0 ? (
+            <div className="flex w-full flex-col items-center justify-center gap-2 p-6 text-center">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-default-100 text-danger">
+                <AlertCircle className="h-6 w-6 text-danger" />
+              </span>
+              <p className="text-sm font-semibold text-default-700">
+                Henüz konu seçilmedi
+              </p>
+              <p className="text-xs text-default-500">
+                Yanlış yaptığın soruların konuları burada listelenecek.
+              </p>
+            </div>
           ) : (
-            <div>
-              {Object.entries(topicMistakesByTopic).map(
-                ([topicName, count], index) => (
-                  <div key={index}>{`${topicName}: ${count}`}</div>
-                ),
-              )}
+            <div className="grid w-full grid-cols-1 gap-3">
+              {topicMistakeEntries.map(([topicName, count]) => (
+                <div
+                  key={topicName}
+                  className="flex items-center justify-between rounded-xl border border-default-200/80 bg-default-50 px-3 py-3 shadow-sm"
+                >
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-default-800">
+                      {topicName}
+                    </span>
+                  </div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger-600">
+                    <span className="text-sm font-semibold">{count}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </CardBody>
-        <CardFooter className="flex items-center justify-center gap-2"></CardFooter>
       </Card>
 
       <Modal
@@ -215,81 +350,74 @@ export default function TopicInfoCard({
         <ModalContent>
           <ModalHeader>Konu Seçimi</ModalHeader>
           <ModalBody>
-            {topicMistakes.length === 0 ? (
-              <div className="w-full h-full *:rounded-xl border border-dashed border-default-300/70 py-6 text-center text-sm text-default-500">
-                Henüz hiçbir soru kaydetmedin. Yüklediğin soruları
-                kaydettiğinden emin ol.
-              </div>
-            ) : isUploading ? (
-              <CircularProgress color="primary" label="Sorular Yükleniyor..." />
-            ) : (
-              <div className="relative w-full ">
-                <Card isFooterBlurred className="h-80 overflow-hidden">
-                  <Image
-                    removeWrapper
-                    className="z-0 h-full w-full object-center"
-                    src={topicMistakes[currentImageIndex].imageUrl}
-                  />
-                  <CardFooter className="absolute bottom-0 z-10 flex w-full items-center justify-between bg-black/40 px-3 py-2">
+            <div className="relative w-full ">
+              <Card isFooterBlurred className="h-80 overflow-hidden">
+                <Image
+                  removeWrapper
+                  className="z-0 h-full w-full object-center"
+                  src={topicMistakes[currentImageIndex]?.imageUrl}
+                />
+                {topicMistakes[currentImageIndex]?.topicName && (
+                  <CardFooter className="absolute bottom-0 z-10 flex w-full items-center justify-center px-3 py-2">
                     <span className="text-xs font-semibold text-white line-clamp-1">
                       {topicMistakes[currentImageIndex].topicName}
                     </span>
-                    <Button
-                      size="sm"
-                      color="danger"
-                      variant="flat"
-                      onPress={() => handleRemoveImage(currentImageIndex)}
-                    >
-                      Sil
-                    </Button>
                   </CardFooter>
-                </Card>
-                {topicMistakes.length > 1 && (
-                  <>
-                    <Button
-                      isIconOnly
-                      className="absolute left-2 top-1/2 -translate-y-1/2 "
-                      variant="faded"
-                      onPress={handlePrevImage}
-                    >
-                      <CircleChevronLeft />
-                    </Button>
-                    <Button
-                      isIconOnly
-                      className="absolute right-2 top-1/2 -translate-y-1/2"
-                      variant="faded"
-                      onPress={handleNextImage}
-                    >
-                      <CircleChevronRight />
-                    </Button>
-                  </>
                 )}
-              </div>
-            )}
+              </Card>
+              {topicMistakes.length > 1 && (
+                <>
+                  <Button
+                    isIconOnly
+                    className="absolute left-2 top-1/2 -translate-y-1/2 "
+                    variant="faded"
+                    onPress={handlePrevImage}
+                  >
+                    <CircleChevronLeft />
+                  </Button>
+                  <Button
+                    isIconOnly
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                    variant="faded"
+                    onPress={handleNextImage}
+                  >
+                    <CircleChevronRight />
+                  </Button>
+                </>
+              )}
+            </div>
           </ModalBody>
 
-          <ModalFooter>
+          <ModalFooter className="flex flex-col gap-3">
+            <div className="flex w-full items-center justify-between  ">
+              <Button
+                size="sm"
+                color="danger"
+                onPress={() => handleRemoveImage(currentImageIndex)}
+              >
+                Sil
+              </Button>
+              <Button
+                size="sm"
+                color="primary"
+                className="text-xs"
+                onPress={handleAIGuess}
+                endContent={<ZapIcon className="size-4" />}
+              >
+                Gemini gardaşıma sor
+              </Button>
+            </div>
             <Select
               variant="bordered"
-              labelPlacement="outside"
+              aria-label="Konu seçin"
               isDisabled={topics.length === 0}
               selectionMode="single"
               disabled={isGuessing}
-              endContent={
-                <Button
-                  isIconOnly
-                  content="Yucci'ye sor"
-                  className="bg-transparent"
-                  onPress={handleAIGuess}
-                  endContent={<ZapIcon className="size-5" />}
-                />
-              }
               selectedKeys={
                 selectedTopic ? new Set([selectedTopic]) : new Set<string>()
               }
               onChange={(e) => {
                 topicMistakes[currentImageIndex].topicName = e.target.value;
-
                 setSelectedTopic(e.target.value);
               }}
               isLoading={isGuessing}
