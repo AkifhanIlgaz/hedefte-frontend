@@ -146,6 +146,7 @@ export default function TopicInfoCard({
           append({
             imageUrl: data.publicUrl,
             filePath: fileName,
+            date: form.getValues("date"),
             topicName: "",
           });
         }),

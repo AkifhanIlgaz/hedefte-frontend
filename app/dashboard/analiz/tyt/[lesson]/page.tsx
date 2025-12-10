@@ -3,10 +3,9 @@ import GeneralAnalysisCard from "@/src/features/analiz/components/cards/GeneralA
 import GeneralChart from "@/src/features/analiz/components/charts/generalChart";
 import TopicMistakeChart from "@/src/features/analiz/components/charts/topicMistakeChart";
 import {
-  GeneralResponse,
-  LessonChartPayload,
-} from "@/src/features/analiz/types";
-import { useChartData } from "@/src/queries/useChartData";
+  useTYTLessonChart,
+  useTYTTopicMistakesChart,
+} from "@/src/queries/useChartData";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Select, SelectItem } from "@heroui/select";
 import { BarChart3 } from "lucide-react";
@@ -20,16 +19,14 @@ export default function Page({
   const { lesson: encodedLesson } = use(params);
   const lesson = decodeURIComponent(encodedLesson);
   const [timeInterval, setTimeInterval] = useState(-1);
-  const { data, isLoading, isError } = useChartData<
-    GeneralResponse<LessonChartPayload>
-  >({
-    chartType: "lesson",
-    examType: "TYT",
-    lesson: lesson,
-    timeInterval: timeInterval,
-  });
+  const { data, isLoading, isError } = useTYTLessonChart(lesson, timeInterval);
 
-  if (isLoading || isError) return;
+  const topicMistakes = useTYTTopicMistakesChart(lesson, timeInterval);
+
+  if (topicMistakes.isLoading || topicMistakes.isError || isLoading || isError)
+    return;
+  console.log(topicMistakes.data);
+
   return (
     <div className="flex flex-col gap-6 min-h-screen">
       <div className="flex items-center justify-between">
@@ -67,12 +64,12 @@ export default function Page({
           <GeneralAnalysisCard
             title="Ortalama Net"
             icon={BarChart3}
-            value={data?.payload.averageNet ?? 0}
+            value={data?.payload.averageNet.toFixed(2) ?? 0}
           />
           <GeneralAnalysisCard
             title="Maksimum Net"
             icon={BarChart3}
-            value={data?.payload.maxNet ?? 0}
+            value={data?.payload.maxNet.toFixed(2) ?? 0}
           />
         </div>
 

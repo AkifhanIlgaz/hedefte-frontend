@@ -10,16 +10,38 @@ interface UseChartDataParams {
 
 export function useChartData<T>({
   examType,
-  chartType,
+
   lesson,
   timeInterval,
 }: UseChartDataParams) {
   return useQuery<T>({
-    queryKey: ["chart", examType, chartType, lesson, timeInterval],
+    queryKey: ["chart", examType, lesson, timeInterval],
     queryFn: () =>
       fetcher(
-        `analysis/charts?exam=${examType}&chartType=${chartType}&timeInterval=${timeInterval}${lesson ? `&lesson=${lesson}` : ""}`,
+        `analysis/${examType.toLowerCase()}/charts?timeInterval=${timeInterval}${lesson ? `&lesson=${lesson}` : ""}`,
       ) as Promise<T>,
+    staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
+  });
+}
+
+export function useTYTLessonChart(lesson: string, timeInterval: number) {
+  return useQuery({
+    queryKey: ["tyt", "charts", "lesson", lesson, timeInterval],
+    queryFn: () =>
+      fetcher(
+        `tyt/charts/lesson?timeInterval=${timeInterval}&lesson=${lesson}`,
+      ) as Promise<any>,
+    staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
+  });
+}
+
+export function useTYTTopicMistakesChart(lesson: string, timeInterval: number) {
+  return useQuery({
+    queryKey: ["tyt", "topic-mistakes", lesson, timeInterval],
+    queryFn: () =>
+      fetcher(
+        `tyt/topic-mistakes?timeInterval=${timeInterval}&lesson=${lesson}`,
+      ) as Promise<any>,
     staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
   });
 }

@@ -2,6 +2,7 @@ import z from "zod";
 
 export const topicMistakesSchema = z.object({
   imageUrl: z.url("Lütfen geçerli bir URL giriniz."),
+  date: z.date("Lütfen tarihi giriniz."),
   filePath: z.string().min(1, "Lütfen dosya yolunu giriniz.").max(255),
   topicName: z.string().min(1, "Lütfen konu adını giriniz.").max(50),
 });

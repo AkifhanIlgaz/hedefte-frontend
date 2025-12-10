@@ -25,6 +25,7 @@ export default function LessonGeneralChart({
   const sortedLessons = Object.entries(lessons ?? {}).sort(
     ([, a], [, b]) => b.averageNet - a.averageNet,
   ); // Büyükten küçüğe sıralama
+  const chartHeight = Math.max(320, sortedLessons.length * 48);
 
   const averageNets = sortedLessons.map(([_, lesson]) =>
     Number(lesson.averageNet.toFixed(2)),
@@ -52,6 +53,11 @@ export default function LessonGeneralChart({
   ];
 
   const options: ApexOptions = {
+    chart: {
+      type: "bar",
+      height: chartHeight,
+      toolbar: { show: false },
+    },
     plotOptions: {
       bar: {
         horizontal: false,
@@ -82,13 +88,45 @@ export default function LessonGeneralChart({
     fill: {
       opacity: 1,
     },
+    legend: {
+      position: "bottom",
+    },
     tooltip: {},
+    responsive: [
+      {
+        breakpoint: 960,
+        options: {
+          chart: {
+            height: Math.max(280, sortedLessons.length * 56),
+          },
+          plotOptions: {
+            bar: {
+              horizontal: true,
+              barHeight: "60%",
+            },
+          },
+          legend: {
+            position: "bottom",
+          },
+          xaxis: {
+            labels: {
+              rotate: 0,
+            },
+          },
+        },
+      },
+    ],
   };
 
   return (
     <Card>
       <CardBody>
-        <Chart options={options} series={series} type="bar"></Chart>
+        <Chart
+          options={options}
+          series={series}
+          type="bar"
+          height={chartHeight}
+        ></Chart>
       </CardBody>
     </Card>
   );
