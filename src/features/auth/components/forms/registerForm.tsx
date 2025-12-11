@@ -1,10 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  isAuthApiError,
-  SignUpWithPasswordCredentials,
-} from "@supabase/supabase-js";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -13,8 +9,10 @@ import { Button } from "@heroui/button";
 
 import { Input } from "@heroui/input";
 
-import { createClient } from "@/src/lib/supabase/client";
+import { useRegister } from "@/src/lib/queries/useRegister";
 import { Link } from "@heroui/link";
+import { addToast } from "@heroui/toast";
+import { useRouter } from "next/navigation";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
 import { RegisterRequest, registerSchema } from "../../schemas";
@@ -24,90 +22,54 @@ import AuthHeader from "../shared/header";
 import SignInWithGoogle from "../shared/signInWithGoogle";
 
 export default function RegisterForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isSucceeded, setIsSucceeded] = useState(false);
+  const { mutate, status, error, reset } = useRegister();
 
   const form = useForm<RegisterRequest>({
     resolver: zodResolver(registerSchema),
   });
 
   const onSubmit = async (req: RegisterRequest) => {
-    setIsLoading(true);
-    const supabase = createClient();
-
-    const credentials: SignUpWithPasswordCredentials = {
-      email: req.email,
-      password: req.password,
-      options: {
-        data: {
-          personalInfo: {
-            firstName: req.firstName,
-            lastName: req.lastName,
-            email: req.email,
-          },
-          examInfo: {},
-        },
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+    mutate(req, {
+      onSuccess: () => {
+        addToast({
+          shouldShowTimeoutProgress: true,
+          title: "Hoşgeldiniz!",
+          variant: "flat",
+          description: "Giriş başarılı.",
+          color: "success",
+        });
+        router.push("/dashboard");
       },
-    };
-
-    try {
-      const res = await supabase.auth.signUp(credentials);
-      if (res.error) throw res.error;
-
-      if (res.data.user?.identities?.length === 0) {
-        setError("Bu e-posta adresiyle zaten bir hesap var.");
-        return;
-      }
-
-      setIsSucceeded(true);
-    } catch (error: unknown) {
-      if (isAuthApiError(error)) {
-        switch (error.code) {
-          case "email_exists":
-            setError("Bu e-posta adresiyle zaten bir hesap var.");
-            break;
-          case "invalid_credentials":
-            setError("E-posta veya şifre hatalı. Lütfen tekrar deneyiniz.");
-            break;
-          default:
-            setError("Bir hata meydana geldi. Lütfen tekrar deneyiniz.");
-            break;
-        }
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
-  if (isSucceeded) {
-    return (
-      <AuthMessage
-        variant="success"
-        title="E-posta doğrulaması gerekli"
-        setError={setError}
-        message="Lütfen hesabını aktifleştirmek için e-posta adresini kontrol et."
-        extraNote={authText.checkSpam}
-        backHref={authRoutes.login}
-        backText="Giriş Sayfasına Dön"
-      />
-    );
-  }
-
-  if (error) {
-    return (
-      <AuthMessage
-        variant="error"
-        title="Bir şeyler ters gitti"
-        message={error}
-        setError={setError}
-        backHref={authRoutes.login}
-        backText="Giriş Sayfasına Dön"
-      />
-    );
+  switch (status) {
+    case "success":
+      return (
+        <AuthMessage
+          variant="success"
+          title="E-posta doğrulaması gerekli"
+          reset={reset}
+          message="Lütfen hesabını aktifleştirmek için e-posta adresini kontrol et."
+          extraNote={authText.checkSpam}
+          backHref={authRoutes.login}
+          backText="Giriş Sayfasına Dön"
+        />
+      );
+    case "error":
+      return (
+        <AuthMessage
+          variant="error"
+          title="Bir şeyler ters gitti"
+          message={error.message}
+          reset={reset}
+          backHref={authRoutes.login}
+          backText="Giriş Sayfasına Dön"
+        />
+      );
   }
 
   return (
@@ -201,17 +163,15 @@ export default function RegisterForm() {
         <Button
           type="submit"
           className="w-full "
-          disabled={isLoading}
+          disabled={status === "pending"}
+          isLoading={status === "pending"}
           color="primary"
         >
-          {isLoading ? (
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-4 h-4 border-2 border-gray-300 border-t-primary rounded-full animate-spin" />
-              <span>{authText.creatingAccount}</span>
-            </div>
-          ) : (
-            authText.buttons.register
-          )}
+          <span>
+            {status === "pending"
+              ? authText.creatingAccount
+              : authText.buttons.register}
+          </span>
         </Button>
 
         <p className="text-center text-sm text-default-500">

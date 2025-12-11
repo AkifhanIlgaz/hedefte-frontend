@@ -2,14 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Check } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { isAuthApiError } from "@supabase/supabase-js";
 
-import { createClient } from "@/src/lib/supabase/client";
+import { useForgotPassword } from "@/src/lib/queries/useForgotPassword";
 import { Link } from "@heroui/link";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
@@ -18,58 +16,31 @@ import { AuthMessage } from "../shared/authMessage";
 import AuthHeader from "../shared/header";
 
 export default function ForgotPasswordForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
+  const { mutate, status, error, reset, isPending } = useForgotPassword();
   const form = useForm<ForgotPasswordRequest>({
     resolver: zodResolver(forgotPasswordSchema),
   });
 
   const onSubmit = async (req: ForgotPasswordRequest) => {
-    const supabase = createClient();
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // The url which will be included in the email. This URL needs to be configured in your redirect URLs in the Supabase dashboard at https://supabase.com/dashboard/project/_/auth/url-configuration
-      const { error } = await supabase.auth.resetPasswordForEmail(req.email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
-      });
-      if (error) throw error;
-      setSuccess(true);
-    } catch (error: unknown) {
-      if (isAuthApiError(error)) {
-        switch (error.code) {
-          case "invalid_credentials":
-            setError("E-posta veya şifre hatalı. Lütfen tekrar deneyiniz.");
-            break;
-          default:
-            setError("Bir hata meydana geldi. Lütfen tekrar deneyiniz.");
-            break;
-        }
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    mutate(req);
   };
 
-  if (success) {
-    return <Submitted email={form.getValues().email} />;
+  switch (status) {
+    case "success":
+      return <Submitted email={form.getValues().email} />;
+    case "error":
+      return (
+        <AuthMessage
+          variant="error"
+          title="Bir şeyler ters gitti"
+          message={error.message}
+          reset={reset}
+          backHref={authRoutes.login}
+          backText="Giriş Sayfasına Dön"
+        />
+      );
   }
 
-  if (error) {
-    return (
-      <AuthMessage
-        variant="error"
-        title="Bir şeyler ters gitti"
-        message={error}
-        setError={setError}
-        backHref={authRoutes.login}
-        backText="Giriş Sayfasına Dön"
-      />
-    );
-  }
   return (
     <div className="space-y-8">
       <AuthHeader
@@ -88,15 +59,14 @@ export default function ForgotPasswordForm() {
         />
 
         <div className="space-y-4">
-          <Button type="submit" className="w-full " color="primary">
-            {isLoading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                {authText.sendingLink}
-              </>
-            ) : (
-              authText.buttons.sendResetLink
-            )}
+          <Button
+            type="submit"
+            className="w-full "
+            color="primary"
+            isDisabled={isPending}
+            isLoading={isPending}
+          >
+            {isPending ? authText.sendingLink : authText.buttons.sendResetLink}
           </Button>
 
           <Button

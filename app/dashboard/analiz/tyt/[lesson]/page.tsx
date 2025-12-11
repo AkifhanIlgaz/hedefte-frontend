@@ -75,7 +75,9 @@ export default function Page({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <GeneralChart exams={data?.payload.exams ?? []} />
-          <TopicMistakeChart topicMistakes={data?.payload.topicMistakes} />
+          <TopicMistakeChart
+            topicMistakes={topicMistakes?.data.payload ?? []}
+          />
         </div>
       </div>
     </div>

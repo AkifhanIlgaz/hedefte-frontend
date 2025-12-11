@@ -35,11 +35,18 @@ export type Lesson = {
   topics: string[];
 };
 
-export type TopicMistake = {
-  imageUrl: string;
+export interface TopicMistake {
+  id?: string; // bson.ObjectID -> string (optional because omitempty)
+  date: Date; // time.Time -> string (ISO date)
+  examId: string; // bson.ObjectID -> string
+  userId: string;
+  examType: string;
+  lesson: string;
   filePath: string;
   topicName: string;
-};
+  isSolved: boolean;
+  imageUrl: string;
+}
 
 export interface GeneralChartPayload {
   examCount: number;

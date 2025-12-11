@@ -18,7 +18,7 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Check, Moon } from "lucide-react";
 import { ChangeEvent, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
   AytEaLessonNames,
   AytMfLessonNames,
@@ -249,17 +249,24 @@ export default function SessionDetailsModal({
                   ))}
                 </Autocomplete>
                 <div className="flex items-end justify-between">
-                  <NumberInput
-                    endContent={<span className="">dakika</span>}
-                    labelPlacement="outside"
-                    value={form.watch(`duration`)}
-                    variant="flat"
-                    hideStepper
-                    label="Süre"
-                    className="w-1/2"
-                    {...form.register("duration")}
-                    placeholder="Lütfen kaç dakika çalıştığınızı giriniz."
-                  />{" "}
+                  <Controller
+                    control={form.control}
+                    name="duration"
+                    render={({ field }) => (
+                      <NumberInput
+                        endContent={<span>dakika</span>}
+                        labelPlacement="outside"
+                        value={field.value ?? 0}
+                        onValueChange={(val) => field.onChange(val ?? 0)}
+                        min={0}
+                        variant="flat"
+                        hideStepper
+                        label="Süre"
+                        className="w-1/2"
+                        placeholder="Lütfen kaç dakika çalıştığınızı giriniz."
+                      />
+                    )}
+                  />
                   <Switch
                     color="success"
                     size="sm"

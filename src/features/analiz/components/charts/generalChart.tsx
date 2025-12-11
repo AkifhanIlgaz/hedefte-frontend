@@ -4,6 +4,7 @@ import { Card, CardBody } from "@heroui/card";
 import { ApexOptions } from "apexcharts";
 import { format, isValid as isValidDate, parseISO } from "date-fns";
 import { tr } from "date-fns/locale";
+import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { LessonName } from "../../types";
 
@@ -86,6 +87,13 @@ export default function GeneralChart({
 }: {
   exams: { date: string; name: string; totalNet: number }[];
 }) {
+  const theme = useTheme();
+  const isDark = theme.theme === "dark";
+
+  const axisColor = isDark ? "#e5e7eb" : "#000000";
+  const labelColor = isDark ? "#e5e7eb" : "#000000";
+  const accentColor = "#ef7c00";
+
   const { chartData } = prepareChartData(exams);
   const sortedChartData = [...chartData].sort((a, b) => a.x - b.x);
   const monthTicks: number[] = [];
@@ -130,7 +138,7 @@ export default function GeneralChart({
       max: maxDate,
       tickAmount: Math.max(monthTicks.length, 2),
       labels: {
-        style: { fontSize: "12px" },
+        style: { fontSize: "12px", colors: axisColor },
         showDuplicates: false,
         formatter: (value) =>
           format(new Date(Number(value)), "MMM yyyy", {
@@ -141,17 +149,19 @@ export default function GeneralChart({
     title: {
       text: "Tüm Denemelerim",
       align: "left",
-      style: { fontSize: "16px", fontWeight: "bold" },
+      style: { fontSize: "16px", fontWeight: "bold", color: labelColor },
     },
     yaxis: {
-      title: { text: "Toplam Net" },
+      title: { text: "Toplam Net", style: { color: axisColor } },
       min: 0,
       labels: {
+        style: { colors: [axisColor] },
         formatter: (val: number) => val.toFixed(2),
       },
     },
     tooltip: {
       shared: false,
+      theme: isDark ? "dark" : "light",
       custom: ({ seriesIndex, dataPointIndex, w }) => {
         const point =
           (w?.globals?.initialSeries?.[seriesIndex]?.data?.[dataPointIndex] as
@@ -168,9 +178,9 @@ export default function GeneralChart({
 
         return `
           <div style="padding:8px 10px;min-width:180px;display:flex;flex-direction:column;gap:4px;">
-            <span style="font-size:12px;color:#6b7280;">${dateLabel}</span>
-            <span style="font-size:13px;font-weight:600;color:#111827;">${nameLabel}</span>
-            <span style="font-size:13px;color:#d97706;">Toplam Net: ${netLabel}</span>
+            <span style="font-size:12px;color:${isDark ? "#9ca3af" : "#6b7280"};">${dateLabel}</span>
+            <span style="font-size:13px;font-weight:600;color:${labelColor};">${nameLabel}</span>
+            <span style="font-size:13px;color:${accentColor};">Toplam Net: ${netLabel}</span>
           </div>
         `;
       },
@@ -179,7 +189,7 @@ export default function GeneralChart({
       curve: "straight",
       width: 2,
     },
-    colors: ["#d97706"],
+    colors: [accentColor],
   };
 
   const series = [

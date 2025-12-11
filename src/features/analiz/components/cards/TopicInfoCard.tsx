@@ -67,14 +67,13 @@ export default function TopicInfoCard({
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: `${lessonName}.topicMistakes`,
+    name: `lessons.${lessonName}.topicMistakes`,
   });
 
-  const wrong = form.watch(`${lessonName}.wrong`) as number;
-  const empty = form.watch(`${lessonName}.empty`) as number;
-  const topicMistakes = form.watch(
-    `${lessonName}.topicMistakes`,
-  ) as TopicMistake[];
+  const wrong = form.watch(`lessons.${lessonName}.wrong`) as number;
+  const empty = form.watch(`lessons.${lessonName}.empty`) as number;
+  const topicMistakes =
+    (form.watch(`lessons.${lessonName}.topicMistakes`) as TopicMistake[]) ?? [];
   const topicMistakesByTopic = topicMistakes.reduce(
     (acc, mistake) => {
       if (!mistake.topicName) return acc;

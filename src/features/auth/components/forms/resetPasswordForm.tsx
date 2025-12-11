@@ -2,7 +2,6 @@
 
 import { Button } from "@heroui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { isAuthApiError } from "@supabase/supabase-js";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -10,7 +9,7 @@ import { useForm } from "react-hook-form";
 
 import { Input } from "@heroui/input";
 
-import { createClient } from "@/src/lib/supabase/client";
+import { useResetPassword } from "@/src/lib/queries/useResetPassword";
 import { Link } from "@heroui/link";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
@@ -22,42 +21,15 @@ export default function ResetPasswordForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const errorCode = searchParams.get("error_code");
-
+  const { mutate, status, error, reset, isPending } = useResetPassword();
   const form = useForm<ResetPasswordRequest>({
     resolver: zodResolver(resetPasswordSchema),
   });
 
   const onSubmit = async (req: ResetPasswordRequest) => {
-    const supabase = createClient();
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // The url which will be included in the email. This URL needs to be configured in your redirect URLs in the Supabase dashboard at https://supabase.com/dashboard/project/_/auth/url-configuration
-      const { error } = await supabase.auth.updateUser({
-        password: req.password,
-      });
-      if (error) throw error;
-
-      router.push("/protected");
-    } catch (error: unknown) {
-      if (isAuthApiError(error)) {
-        switch (error.code) {
-          case "same_password":
-            setError("Yeni şifreniz eski şifreniz ile aynı olamaz.");
-            break;
-          default:
-            setError("Bir hata meydana geldi. Lütfen tekrar deneyiniz.");
-            break;
-        }
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    mutate(req);
   };
 
   if (errorCode == "otp_expired") {
@@ -67,7 +39,7 @@ export default function ResetPasswordForm() {
         title="Bağlantı geçersiz."
         message={"Bu bağlantı geçersiz veya süresi dolmuş."}
         extraNote="Lütfen yeni bir şifre sıfırlama bağlantısı alın."
-        setError={setError}
+        reset={reset}
         backHref={authRoutes.login}
         backText="Giriş Sayfasına Dön"
       />
@@ -79,8 +51,8 @@ export default function ResetPasswordForm() {
       <AuthMessage
         variant="error"
         title="Bir şeyler ters gitti"
-        message={error}
-        setError={setError}
+        message={error.message}
+        reset={reset}
         backHref={authRoutes.login}
         backText="Giriş Sayfasına Dön"
       />
@@ -140,15 +112,16 @@ export default function ResetPasswordForm() {
         />
 
         <div className="space-y-4">
-          <Button type="submit" className="w-full " color="primary">
-            {isLoading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                {authText.updatingPassword}
-              </>
-            ) : (
-              authText.buttons.updatePassword
-            )}
+          <Button
+            type="submit"
+            className="w-full "
+            color="primary"
+            isDisabled={isPending}
+            isLoading={isPending}
+          >
+            {isPending
+              ? authText.updatingPassword
+              : authText.buttons.updatePassword}
           </Button>
 
           <Button

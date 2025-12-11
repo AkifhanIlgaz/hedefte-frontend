@@ -38,8 +38,8 @@ export default function PerformanceAnalysisCard({
 
   const totalNet = useMemo(() => {
     return Object.keys(lessons).reduce((acc, lessonName) => {
-      const correct = form.watch(`${lessonName}.correct`) || 0;
-      const wrong = form.watch(`${lessonName}.wrong`) || 0;
+      const correct = form.watch(`lessons.${lessonName}.correct`) || 0;
+      const wrong = form.watch(`lessons.${lessonName}.wrong`) || 0;
       return acc + (correct - wrong * 0.25);
     }, 0);
   }, [lessons, form.watch()]);
@@ -97,17 +97,17 @@ export default function PerformanceAnalysisCard({
                         <div className="flex items-end justify-end gap-4">
                           <div className="flex gap-2 text-md font-semibold ">
                             <span className="text-success-600">
-                              {form.watch(`${lesson.name}.correct`)} D
+                              {form.watch(`lessons.${lesson.name}.correct`)} D
                             </span>
                             <span className="text-danger-500">
-                              {form.watch(`${lesson.name}.wrong`)}Y
+                              {form.watch(`lessons.${lesson.name}.wrong`)}Y
                             </span>
                           </div>
                           <ChevronsRight />
                           <span className="text-md bg-transparent font-bold  ">
                             {calculateNet(
-                              form.watch(`${lesson.name}.correct`),
-                              form.watch(`${lesson.name}.wrong`),
+                              form.watch(`lessons.${lesson.name}.correct`),
+                              form.watch(`lessons.${lesson.name}.wrong`),
                             )}
                           </span>
                         </div>
@@ -144,8 +144,8 @@ export default function PerformanceAnalysisCard({
         <CardBody className="gap-3">
           <Accordion variant="splitted" keepContentMounted>
             {Object.values(lessons).map((lesson) => {
-              const correct = form.watch(`${lesson.name}.correct`);
-              const wrong = form.watch(`${lesson.name}.wrong`);
+              const correct = form.watch(`lessons.${lesson.name}.correct`);
+              const wrong = form.watch(`lessons.${lesson.name}.wrong`);
               const totalNet = (correct ?? 0) - (wrong ?? 0) * 0.25;
 
               const title = (

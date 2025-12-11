@@ -13,9 +13,9 @@ interface NetInfoCardProps {
 export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
   const form = useFormContext();
 
-  const correct = form.watch(`${lessonName}.correct`) as number;
-  const wrong = form.watch(`${lessonName}.wrong`) as number;
-  const empty = form.watch(`${lessonName}.empty`) as number;
+  const correct = form.watch(`lessons.${lessonName}.correct`) as number;
+  const wrong = form.watch(`lessons.${lessonName}.wrong`) as number;
+  const empty = form.watch(`lessons.${lessonName}.empty`) as number;
   const net = (correct ?? 0) - (wrong ?? 0) * 0.25;
 
   return (
@@ -111,17 +111,17 @@ function MyNumberInput({
       variant="bordered"
       size="sm"
       minValue={0}
-      value={form.watch(`${lessonName}.${field}`)}
+      value={form.watch(`lessons.${lessonName}.${field}`)}
       errorMessage={
         form.formState.errors[`${lessonName}.${field}`]?.message as string
       }
       isInvalid={!!form.formState.errors[`${lessonName}.${field}`]}
       onInput={(e) => {
         form.setValue(
-          `${lessonName}.${field}`,
+          `lessons.${lessonName}.${field}`,
           parseInt(e.currentTarget.value) || 0,
         );
-        form.trigger(`${lessonName}`);
+        form.trigger(`lessons.${lessonName}`);
       }}
       classNames={{
         label: "text-xs",

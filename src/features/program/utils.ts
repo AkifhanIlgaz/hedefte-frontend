@@ -52,13 +52,15 @@ export const getLessonStyles = (exam: Exam, lessonName: string) => {
 export const getTopics = (exam?: Exam, lessonName?: LessonName) => {
   switch (exam) {
     case "TYT":
-      return allLessons.TYT[lessonName as keyof typeof allLessons.TYT];
+      return allLessons.TYT[lessonName as keyof typeof allLessons.TYT].topics;
 
     case "AYT_SAY":
-      return allLessons.AYT_SAY[lessonName as keyof typeof allLessons.AYT_SAY];
+      return allLessons.AYT_SAY[lessonName as keyof typeof allLessons.AYT_SAY]
+        .topics;
 
     case "AYT_EA":
-      return allLessons.AYT_EA[lessonName as keyof typeof allLessons.AYT_EA];
+      return allLessons.AYT_EA[lessonName as keyof typeof allLessons.AYT_EA]
+        .topics;
     default:
       return [];
   }

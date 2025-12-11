@@ -2,7 +2,6 @@ import { cn } from "@/src/lib/utils";
 import { Button } from "@heroui/button";
 import { ArrowLeft, Check, XCircle } from "lucide-react";
 import Link from "next/link";
-import { Dispatch, SetStateAction } from "react";
 
 type Variant = "success" | "error";
 
@@ -10,7 +9,7 @@ interface AuthMessageProps {
   variant?: Variant;
   title: string;
   message: string;
-  setError: Dispatch<SetStateAction<string | null>>;
+  reset: () => void;
   email?: string;
   extraNote?: string;
   backHref: string;
@@ -31,7 +30,7 @@ export function AuthMessage({
   variant = "success",
   title,
   message,
-  setError,
+  reset,
   email,
   extraNote,
   backHref,
@@ -65,8 +64,8 @@ export function AuthMessage({
       <Button
         as={Link}
         href={backHref}
-        onPress={() => setError(null)}
         variant="ghost"
+        onPress={reset}
         color={variant === "error" ? "danger" : "primary"}
         className="w-full"
         startContent={<ArrowLeft className="w-4 h-4 mr-2" />}

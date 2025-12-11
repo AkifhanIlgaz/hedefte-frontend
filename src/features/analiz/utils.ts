@@ -1,5 +1,6 @@
 import { createClient } from "@/src/lib/supabase/client";
 import { Field } from "../profil/types";
+import { allLessons } from "./data";
 import {
   AytEaLessonNames,
   AytMfLessonNames,
@@ -56,4 +57,26 @@ export const getTableColumns = (exam: Exam, field?: Field) => {
   ];
 
   return columns;
+};
+
+export const defaultLessonsForExam = (exam: Exam) => {
+  const defaultLesson = (totalQuestions: number) => ({
+    correct: 0,
+    wrong: 0,
+    empty: 0,
+    time: 0,
+    totalQuestions: totalQuestions,
+    topicMistakes: [],
+  });
+
+  return {
+    ...Object.values(allLessons[exam]).reduce(
+      (acc, lesson) => {
+        const name = lesson.name;
+        acc[name] = defaultLesson(lesson.totalQuestions);
+        return acc;
+      },
+      {} as Record<string, ReturnType<typeof defaultLesson>>,
+    ),
+  };
 };

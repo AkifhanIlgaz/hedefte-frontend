@@ -11,12 +11,9 @@ import { Button } from "@heroui/button";
 import { Checkbox } from "@heroui/checkbox";
 import { Input } from "@heroui/input";
 
-import { createClient } from "@/src/lib/supabase/client";
+import { useLogin } from "@/src/lib/queries/useLogin";
 import { Link } from "@heroui/link";
-import {
-  isAuthApiError,
-  SignInWithPasswordCredentials,
-} from "@supabase/supabase-js";
+import { addToast } from "@heroui/toast";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
 import { LoginRequest, loginSchema } from "../../schemas";
@@ -27,53 +24,35 @@ import SignInWithGoogle from "../shared/signInWithGoogle";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { mutate, isError, error, reset, isPending } = useLogin();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<LoginRequest>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = async (req: LoginRequest) => {
-    setIsLoading(true);
-    const supabase = createClient();
-
-    const credentials: SignInWithPasswordCredentials = {
-      email: req.email,
-      password: req.password,
-    };
-
-    try {
-      const res = await supabase.auth.signInWithPassword(credentials);
-      if (res.error) throw res.error;
-      router.push("/dashboard");
-    } catch (error: unknown) {
-      if (isAuthApiError(error)) {
-        switch (error.code) {
-          case "invalid_credentials":
-            setError("E-posta veya şifre hatalı. Lütfen tekrar deneyiniz.");
-            break;
-          case "email_not_confirmed":
-            setError("E-posta adresinizi doğrulamanız gerekiyor.");
-            break;
-          default:
-            setError("Bir hata meydana geldi. Lütfen tekrar deneyiniz.");
-            break;
-        }
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    mutate(req, {
+      onSuccess: () => {
+        addToast({
+          shouldShowTimeoutProgress: true,
+          title: "Hoşgeldiniz!",
+          variant: "flat",
+          description: "Giriş başarılı.",
+          color: "success",
+        });
+        router.push("/dashboard");
+      },
+    });
   };
 
-  if (error) {
+  if (isError) {
     return (
       <AuthMessage
         variant="error"
         title="Bir şeyler ters gitti"
-        message={error}
-        setError={setError}
+        message={error.message}
+        reset={reset}
         backHref={authRoutes.login}
         backText="Giriş Sayfasına Dön"
       />
@@ -140,17 +119,11 @@ export default function LoginForm() {
         <Button
           type="submit"
           className="w-full "
-          disabled={isLoading}
+          disabled={isPending}
+          isLoading={isPending}
           color="primary"
         >
-          {isLoading ? (
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-4 h-4 border-2 border-gray-300 border-t-primary rounded-full animate-spin" />
-              <span>{authText.signingIn}</span>
-            </div>
-          ) : (
-            authText.buttons.login
-          )}
+          {isPending ? authText.signingIn : authText.buttons.login}
         </Button>
 
         <p className="text-center text-sm text-default-500">

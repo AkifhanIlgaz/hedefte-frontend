@@ -2,11 +2,13 @@
 
 import MissingProfileInfoModal from "@/src/features/profil/components/MissingProfileInfoModal";
 import { PersonalInfo } from "@/src/features/profil/types";
+import { useLogout } from "@/src/lib/queries/useLogout";
 import { createClient } from "@/src/lib/supabase/client";
 import { Logo } from "@/src/shared/components/icons";
 import Sidebar from "@/src/shared/components/sidebar";
 import { ThemeSwitch } from "@/src/shared/components/theme-switch";
 import {
+  addToast,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -15,6 +17,7 @@ import {
 } from "@heroui/react";
 import clsx from "clsx";
 import { LogOut, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function DashboardLayout({
@@ -24,15 +27,23 @@ export default function DashboardLayout({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { mutate } = useLogout();
+  const router = useRouter();
   const [fullName, setFullName] = useState<string | null>(null);
 
-  const logOut = async () => {
-    const supabase = createClient();
-
-    const { error } = await supabase.auth.signOut({ scope: "local" });
-    if (error) {
-      console.error("Sign out error:", error.message);
-    }
+  const handleLogout = () => {
+    mutate(undefined, {
+      onSuccess: () => {
+        router.replace("/");
+      },
+      onError: (error) => {
+        addToast({
+          title: "Oturum kapatılamadı !",
+          description: error.message,
+          color: "danger",
+        });
+      },
+    });
   };
 
   useEffect(() => {
@@ -93,7 +104,7 @@ export default function DashboardLayout({
                 </DropdownItem>
                 <DropdownItem
                   key="logout"
-                  onPress={logOut}
+                  onPress={handleLogout}
                   className="text-danger"
                   color="danger"
                   startContent={
