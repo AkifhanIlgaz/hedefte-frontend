@@ -1,5 +1,4 @@
-import { Field } from "@/src/features/profil/types";
-import { useExams } from "@/src/queries/useExams";
+import { useExams } from "@/src/lib/queries/useExams";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";
@@ -14,22 +13,15 @@ import {
 } from "@heroui/table";
 import { CircleAlert, Trash2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { Exam } from "../../types";
+import { Exam, ExamResponse } from "../../types";
 import { getTableColumns } from "../../utils";
 
 interface ExamsTableProps {
   exam: Exam;
-  field?: Field;
   timeInterval: number;
 }
 
-export default function ExamsTable({
-  exam,
-  field,
-  timeInterval,
-}: ExamsTableProps) {
-  const columns = getTableColumns(exam, field);
-
+export default function ExamsTable({ exam, timeInterval }: ExamsTableProps) {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -42,8 +34,10 @@ export default function ExamsTable({
   const loadingState = isLoading ? "loading" : "idle";
 
   const pages = useMemo(() => {
-    return data?.meta.total ? Math.ceil(data.meta.total / rowsPerPage) : 0;
-  }, [data?.meta.total, rowsPerPage]);
+    return data?.meta?.total ? Math.ceil(data.meta.total / rowsPerPage) : 0;
+  }, [data?.meta?.total, rowsPerPage]);
+
+  const columns = getTableColumns(exam);
 
   const bottomContent = useMemo(() => {
     return (
@@ -54,7 +48,7 @@ export default function ExamsTable({
           showShadow
           color="primary"
           page={pages}
-          total={data?.meta.totalPages}
+          total={data?.meta?.totalPages ?? 0}
           onChange={(page) => setPage(page)}
         />
       </div>
@@ -72,55 +66,86 @@ export default function ExamsTable({
     );
   }, []);
 
-  const renderCell = useCallback((exam: any, columnKey: any) => {
-    const cellValue = exam[columnKey];
-    switch (columnKey) {
-      case "date":
-        const formattedDate = new Intl.DateTimeFormat("tr-TR", {
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
-        }).format(new Date(cellValue));
-        return <span className="text-md font-bold">{formattedDate}</span>;
-      case "name":
-        return <span className="text-md font-bold">{cellValue}</span>;
-      case "totalNet":
+  console.log("data", data);
+  const renderCell = useCallback(
+    (exam: ExamResponse, columnKey: keyof ExamResponse | "actions") => {
+      console.log(columnKey);
+      if (columnKey.startsWith("lesson:")) {
+        const lessonName = columnKey.replace("lesson:", "");
+        const lesson = exam.lessons.find((l) => l.name === lessonName);
+
+        const value = lesson?.result ?? 0;
+
         return (
           <Chip
+            size="sm"
+            variant="dot"
+            className="font-semibold"
             color="primary"
-            classNames={{
-              content: "font-bold",
-            }}
           >
-            {cellValue.toFixed(2)}
+            {value.toFixed(2)}
           </Chip>
         );
-      case "actions":
-        return (
-          <Button
-            color="danger"
-            size="sm"
-            variant="bordered"
-            aria-label="Denemeyi sil"
-            startContent={<Trash2 className="size-3" />}
-            className="flex "
-            onPress={() => {
-              // TODO: wire delete when endpoint is ready
-              console.log("Sil", exam);
-            }}
-          >
-            Sil
-          </Button>
-        );
-
-      default:
-        return (
-          <span className="text-xs font-semibold">
-            {cellValue?.net.toFixed(2)}
-          </span>
-        );
-    }
-  }, []);
+      }
+      switch (columnKey) {
+        case "date":
+          const formattedDate = new Intl.DateTimeFormat("tr-TR", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          }).format(new Date(exam.date));
+          return <span className="text-md font-bold">{formattedDate}</span>;
+        case "name":
+          return <span className="text-md font-bold">{exam.name}</span>;
+        case "result":
+          return (
+            <Chip
+              color="primary"
+              classNames={{
+                content: "font-bold",
+              }}
+            >
+              {exam.result.toFixed(2)}
+            </Chip>
+          );
+        case "actions":
+          return (
+            <Button
+              color="danger"
+              size="sm"
+              variant="bordered"
+              aria-label="Denemeyi sil"
+              startContent={<Trash2 className="size-3" />}
+              className="flex "
+              onPress={() => {
+                // TODO: wire delete when endpoint is ready
+                console.log("Sil", exam);
+              }}
+            >
+              Sil
+            </Button>
+          );
+        case "lessons":
+          return (
+            <div className="flex flex-wrap gap-1">
+              {exam.lessons.map((lesson) => (
+                <Chip
+                  key={lesson.name}
+                  size="sm"
+                  variant="flat"
+                  color={lesson.result > 0 ? "primary" : "default"}
+                >
+                  {lesson.name}: {lesson.result}
+                </Chip>
+              ))}
+            </div>
+          );
+        default:
+          return null;
+      }
+    },
+    [],
+  );
 
   return (
     <Table
@@ -146,10 +171,12 @@ export default function ExamsTable({
         loadingState={loadingState}
         className="max-w-screen"
       >
-        {(item: any) => (
-          <TableRow key={item.name}>
+        {(item: ExamResponse) => (
+          <TableRow key={item.id}>
             {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
+              <TableCell>
+                {renderCell(item, columnKey as keyof ExamResponse | "actions")}
+              </TableCell>
             )}
           </TableRow>
         )}

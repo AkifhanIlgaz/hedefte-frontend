@@ -1,5 +1,9 @@
 import { AddExamRequest } from "@/src/features/analiz/schemas/add_exam.schema";
-import { GeneralResponse } from "@/src/features/analiz/types";
+import {
+  Exam,
+  ExamResponse,
+  GeneralResponse,
+} from "@/src/features/analiz/types";
 import api from "../axios";
 
 class ExamService {
@@ -20,6 +24,22 @@ class ExamService {
 
     if (!res.data.success)
       throw new Error(`Deneme ekleme başarısız: ${res.data.message}`);
+  }
+
+  async getExams(
+    exam: Exam,
+    page: number,
+    rowsPerPage: number,
+    timeInterval: number,
+  ): Promise<GeneralResponse<ExamResponse[]>> {
+    const res = await api.get<GeneralResponse<ExamResponse[]>>(
+      `/exams?exam=${exam}&page=${page}&rowsPerPage=${rowsPerPage}&timeInterval=${timeInterval}`,
+    );
+
+    if (!res.data.success)
+      throw new Error(`Deneme ekleme başarısız: ${res.data.message}`);
+
+    return res.data;
   }
 }
 

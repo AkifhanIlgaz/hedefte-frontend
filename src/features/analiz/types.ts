@@ -83,5 +83,30 @@ export interface GeneralResponse<T> {
   success: boolean;
   message: string;
   payload: T;
+  meta?: Metadata;
   timestamp: string;
 }
+
+export interface Metadata {
+  page: number;
+  rowsPerPage: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface ExamResponse {
+  id: string;
+  date: string;
+  name: string;
+  result: number;
+  lessons: LessonResponse[];
+}
+
+export type LessonResponse = {
+  name: LessonName;
+  correct: number;
+  wrong: number;
+  empty: number;
+  time: number;
+  result: number;
+};

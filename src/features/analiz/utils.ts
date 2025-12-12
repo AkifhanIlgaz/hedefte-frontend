@@ -1,5 +1,4 @@
 import { createClient } from "@/src/lib/supabase/client";
-import { Field } from "../profil/types";
 import { allLessons } from "./data";
 import {
   AytEaLessonNames,
@@ -33,18 +32,18 @@ export const fetcher = async (...args: [string, RequestInit?]) => {
   return fetch(`${baseUrl}/${url}`, updatedOptions).then((res) => res.json());
 };
 
-export const getLessonNames = (exam: Exam, field?: Field) => {
+export const getLessonNames = (exam: Exam) => {
   if (exam === "TYT") return TytLessonNames;
   if (exam === "AYT_SAY") return AytMfLessonNames;
   if (exam === "AYT_EA") return AytEaLessonNames;
   return [];
 };
 
-export const getTableColumns = (exam: Exam, field?: Field) => {
-  const lessonNames = getLessonNames(exam, field);
+export const getTableColumns = (exam: Exam) => {
+  const lessonNames = getLessonNames(exam);
 
   const lessonColumns = lessonNames.map((lessonName) => ({
-    key: lessonName,
+    key: `lesson:${lessonName}`,
     label: lessonName,
   }));
 
@@ -52,7 +51,7 @@ export const getTableColumns = (exam: Exam, field?: Field) => {
     { key: "name", label: "İsim" },
     { key: "date", label: "Tarih" },
     ...lessonColumns,
-    { key: "totalNet", label: "Toplam Net" },
+    { key: "result", label: "Toplam Net" },
     { key: "actions", label: "" },
   ];
 

@@ -1,6 +1,6 @@
+import { Exam } from "@/src/features/analiz/types";
 import { useQuery } from "@tanstack/react-query";
-import { Exam } from "../features/analiz/types";
-import { fetcher } from "../features/analiz/utils";
+import examService from "../services/examService";
 
 interface UseExamsParams {
   exam: Exam;
@@ -16,11 +16,8 @@ export const useExams = ({
   timeInterval,
 }: UseExamsParams) => {
   return useQuery({
-    queryKey: ["analysis", exam, page, rowsPerPage, timeInterval],
-    queryFn: () =>
-      fetcher(
-        `${exam.toLowerCase()}/exams?page=${page}&rowsPerPage=${rowsPerPage}&timeInterval=${timeInterval}`,
-      ),
+    queryKey: ["exams", exam, page, rowsPerPage, timeInterval],
+    queryFn: () => examService.getExams(exam, page, rowsPerPage, timeInterval),
     staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
   });
 };
