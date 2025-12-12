@@ -114,19 +114,23 @@ export default function PerformanceAnalysisCard({
                       </div>
                     ))}
                   </ModalBody>
-                  <ModalFooter className="flex items-center justify-between">
+                  <ModalFooter className="flex items-center justify-end">
                     <Button
                       color="primary"
+                      isLoading={form.formState.isSubmitting}
                       onPress={() => onSubmit && onSubmit()}
                     >
                       <Save className="size-4" />
-                      Denemeyi Kaydet
+                      {form.formState.isSubmitting
+                        ? "Deneme Kaydediliyor..."
+                        : "Denemeyi Kaydet"}
                     </Button>
                   </ModalFooter>
                 </>
               )}
             </ModalContent>
           </Modal>
+
           <Button
             color="primary"
             onPress={() => {

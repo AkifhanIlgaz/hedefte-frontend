@@ -11,13 +11,14 @@ import { useAddExam } from "@/src/lib/queries/useAddExam";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { addToast } from "@heroui/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 
 export default function Page() {
   const searchParams = useSearchParams();
   const exam = searchParams.get("exam") as Exam;
   const { mutateAsync } = useAddExam();
+  const router = useRouter();
 
   const form = useForm({
     resolver: zodResolver(addExamSchema),
@@ -41,6 +42,7 @@ export default function Page() {
       // TODO: analiz basariyla kaydedildiyse analytics e redirect et veya toast icinde button ekle
       // TODO: cache invalidate
       form.reset();
+      router.push("/dashboard");
     } catch (error) {
       addToast({
         title: "Bir hata oluştu.",
