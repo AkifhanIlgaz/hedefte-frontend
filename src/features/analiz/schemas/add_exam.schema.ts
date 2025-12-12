@@ -49,34 +49,4 @@ export const lessonAnalysisSchema = (totalQuestions: number) => {
     );
 };
 
-export const addTytExamSchema = z.object({
-  date: z.date("Lütfen deneme tarihini giriniz."),
-  name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
-  Türkçe: lessonAnalysisSchema(40),
-  Tarih: lessonAnalysisSchema(5),
-  Coğrafya: lessonAnalysisSchema(5),
-  Felsefe: lessonAnalysisSchema(5),
-  "Din Kültürü": lessonAnalysisSchema(5),
-  Matematik: lessonAnalysisSchema(40),
-  Fizik: lessonAnalysisSchema(7),
-  Kimya: lessonAnalysisSchema(7),
-  Biyoloji: lessonAnalysisSchema(6),
-});
-
-export const addSayExamSchema = z.object({
-  date: z.date("Lütfen deneme tarihini giriniz."),
-  name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
-  Matematik: lessonAnalysisSchema(40),
-  Fizik: lessonAnalysisSchema(14),
-  Kimya: lessonAnalysisSchema(13),
-  Biyoloji: lessonAnalysisSchema(13),
-});
-
-export const addEaExamSchema = z.object({
-  date: z.date("Lütfen deneme tarihini giriniz."),
-  name: z.string().min(1, "Lütfen deneme ismini giriniz.").max(50),
-  Edebiyat: lessonAnalysisSchema(24),
-  Tarih: lessonAnalysisSchema(10),
-  Coğrafya: lessonAnalysisSchema(6),
-  Matematik: lessonAnalysisSchema(40),
-});
+export type AddExamRequest = z.infer<typeof addExamSchema>;

@@ -11,6 +11,7 @@ import { Input } from "@heroui/input";
 
 import { useResetPassword } from "@/src/lib/queries/useResetPassword";
 import { Link } from "@heroui/link";
+import { addToast } from "@heroui/toast";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
 import { ResetPasswordRequest, resetPasswordSchema } from "../../schemas";
@@ -23,13 +24,19 @@ export default function ResetPasswordForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const searchParams = useSearchParams();
   const errorCode = searchParams.get("error_code");
-  const { mutate, status, error, reset, isPending } = useResetPassword();
+  const { mutateAsync, error, reset, isPending } = useResetPassword();
   const form = useForm<ResetPasswordRequest>({
     resolver: zodResolver(resetPasswordSchema),
   });
 
   const onSubmit = async (req: ResetPasswordRequest) => {
-    mutate(req);
+    await mutateAsync(req);
+    addToast({
+      color: "success",
+      title: "Şifre Sıfırlama Başarılı !",
+      description: "Şifreniz başarıyla sıfırlandı.",
+    });
+    router.push(authRoutes.login);
   };
 
   if (errorCode == "otp_expired") {

@@ -16,15 +16,15 @@ import { Link } from "@heroui/link";
 import { addToast } from "@heroui/toast";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
+import { mapAuthError } from "../../auth.utils";
 import { LoginRequest, loginSchema } from "../../schemas";
-import { AuthMessage } from "../shared/authMessage";
 import AuthDivider from "../shared/divider";
 import AuthHeader from "../shared/header";
 import SignInWithGoogle from "../shared/signInWithGoogle";
 
 export default function LoginForm() {
   const router = useRouter();
-  const { mutate, isError, error, reset, isPending } = useLogin();
+  const { mutateAsync, isPending } = useLogin();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginRequest>({
@@ -32,32 +32,25 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (req: LoginRequest) => {
-    mutate(req, {
-      onSuccess: () => {
-        addToast({
-          shouldShowTimeoutProgress: true,
-          title: "Hoşgeldiniz!",
-          variant: "flat",
-          description: "Giriş başarılı.",
-          color: "success",
-        });
-        router.push("/dashboard");
-      },
-    });
+    try {
+      await mutateAsync(req);
+      addToast({
+        shouldShowTimeoutProgress: true,
+        title: "Hoşgeldiniz!",
+        variant: "flat",
+        description: "Giriş başarılı.",
+        color: "success",
+      });
+      router.push("/dashboard");
+    } catch (error) {
+      addToast({
+        title: "Giriş başarısız",
+        description: mapAuthError(error),
+        color: "danger",
+      });
+    }
   };
 
-  if (isError) {
-    return (
-      <AuthMessage
-        variant="error"
-        title="Bir şeyler ters gitti"
-        message={error.message}
-        reset={reset}
-        backHref={authRoutes.login}
-        backText="Giriş Sayfasına Dön"
-      />
-    );
-  }
   return (
     <div className="space-y-8">
       <AuthHeader

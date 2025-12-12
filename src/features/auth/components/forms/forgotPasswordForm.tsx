@@ -16,13 +16,13 @@ import { AuthMessage } from "../shared/authMessage";
 import AuthHeader from "../shared/header";
 
 export default function ForgotPasswordForm() {
-  const { mutate, status, error, reset, isPending } = useForgotPassword();
+  const { mutateAsync, status, error, reset, isPending } = useForgotPassword();
   const form = useForm<ForgotPasswordRequest>({
     resolver: zodResolver(forgotPasswordSchema),
   });
 
   const onSubmit = async (req: ForgotPasswordRequest) => {
-    mutate(req);
+    await mutateAsync(req);
   };
 
   switch (status) {

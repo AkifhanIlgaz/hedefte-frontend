@@ -11,8 +11,6 @@ import { Input } from "@heroui/input";
 
 import { useRegister } from "@/src/lib/queries/useRegister";
 import { Link } from "@heroui/link";
-import { addToast } from "@heroui/toast";
-import { useRouter } from "next/navigation";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
 import { RegisterRequest, registerSchema } from "../../schemas";
@@ -22,28 +20,16 @@ import AuthHeader from "../shared/header";
 import SignInWithGoogle from "../shared/signInWithGoogle";
 
 export default function RegisterForm() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { mutate, status, error, reset } = useRegister();
+  const { mutateAsync, status, error, reset } = useRegister();
 
   const form = useForm<RegisterRequest>({
     resolver: zodResolver(registerSchema),
   });
 
   const onSubmit = async (req: RegisterRequest) => {
-    mutate(req, {
-      onSuccess: () => {
-        addToast({
-          shouldShowTimeoutProgress: true,
-          title: "Hoşgeldiniz!",
-          variant: "flat",
-          description: "Giriş başarılı.",
-          color: "success",
-        });
-        router.push("/dashboard");
-      },
-    });
+    await mutateAsync(req);
   };
 
   switch (status) {
@@ -64,7 +50,7 @@ export default function RegisterForm() {
         <AuthMessage
           variant="error"
           title="Bir şeyler ters gitti"
-          message={error.message}
+          message={error.message ?? "Beklenmeyen bir hata oluştu."}
           reset={reset}
           backHref={authRoutes.login}
           backText="Giriş Sayfasına Dön"
