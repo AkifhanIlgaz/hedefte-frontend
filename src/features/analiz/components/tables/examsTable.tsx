@@ -1,3 +1,4 @@
+import { useDeleteExam } from "@/src/lib/queries/useDeleteExam";
 import { useExams } from "@/src/lib/queries/useExams";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
@@ -11,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/table";
+import { addToast } from "@heroui/toast";
 import { CircleAlert, Trash2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { Exam, ExamResponse } from "../../types";
@@ -31,6 +33,25 @@ export default function ExamsTable({ exam, timeInterval }: ExamsTableProps) {
     rowsPerPage,
     timeInterval,
   });
+  const { mutateAsync: deleteExam, isPending: isDeleting } = useDeleteExam();
+
+  const handleDeleteExam = async (examId: string) => {
+    try {
+      await deleteExam(examId);
+      addToast({
+        title: "İşlem Başarılı !",
+        description: "Sınav başarıyla silindi.",
+        color: "success",
+      });
+    } catch (error) {
+      addToast({
+        title: "İşlem Başarısız !",
+        description: "Sınav silinirken bir hata oluştu.",
+        color: "danger",
+      });
+    }
+  };
+
   const loadingState = isLoading ? "loading" : "idle";
 
   const pages = useMemo(() => {
@@ -66,7 +87,6 @@ export default function ExamsTable({ exam, timeInterval }: ExamsTableProps) {
     );
   }, []);
 
-  console.log("data", data);
   const renderCell = useCallback(
     (exam: ExamResponse, columnKey: keyof ExamResponse | "actions") => {
       console.log(columnKey);
@@ -117,12 +137,13 @@ export default function ExamsTable({ exam, timeInterval }: ExamsTableProps) {
               aria-label="Denemeyi sil"
               startContent={<Trash2 className="size-3" />}
               className="flex "
+              disabled={isDeleting}
+              isLoading={isDeleting}
               onPress={() => {
-                // TODO: wire delete when endpoint is ready
-                console.log("Sil", exam);
+                handleDeleteExam(exam.id);
               }}
             >
-              Sil
+              {isDeleting ? "Siliniyor..." : "Sil"}
             </Button>
           );
         case "lessons":

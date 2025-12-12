@@ -41,6 +41,13 @@ class ExamService {
 
     return res.data;
   }
+
+  async deleteExam(id: string): Promise<void> {
+    const res = await api.delete<GeneralResponse<null>>(`/exams/${id}`);
+
+    if (!res.data.success)
+      throw new Error(`Deneme silme başarısız: ${res.data.message}`);
+  }
 }
 
 export default new ExamService();
