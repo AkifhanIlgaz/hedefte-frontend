@@ -110,3 +110,25 @@ export type LessonResponse = {
   time: number;
   result: number;
 };
+
+export type ExamAnalytics = {
+  examCount: number;
+  maxResult: number;
+  averageResult: number;
+  resultSeries: ResultSeries[];
+};
+
+export type LessonAnalytics = ExamAnalytics & {
+  resultSeries: LessonResultSeries[];
+  averageTime: number;
+};
+
+export type ResultSeries = {
+  date: Date;
+  name: string;
+  result: number;
+};
+
+export type LessonResultSeries = ResultSeries & {
+  time: number;
+};
