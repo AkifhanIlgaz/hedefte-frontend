@@ -1,9 +1,11 @@
 "use client";
 
 import { Card, CardBody } from "@heroui/card";
+import { Spinner } from "@heroui/spinner";
 import { ApexOptions } from "apexcharts";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
+import { AlertTriangle } from "lucide-react";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
@@ -13,12 +15,16 @@ import { LessonResultSeries, ResultSeries } from "../../types";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface GeneralChartProps {
+  isPending?: boolean;
+  isError?: boolean;
   averageResult: number;
   averageTime?: number;
   resultSeries: ResultSeries[] | LessonResultSeries[];
 }
 
 export default function GeneralChart({
+  isPending = false,
+  isError = false,
   averageResult,
   averageTime,
   resultSeries,
@@ -326,6 +332,33 @@ export default function GeneralChart({
     },
     colors: hasTimeSeries ? [accentColor, timeColor] : [accentColor],
   };
+
+  if (isError) {
+    return (
+      <Card>
+        <CardBody className="flex items-center justify-center text-danger text-sm gap-1">
+          <AlertTriangle className="size-6" />
+          Deneme analizleri yüklenirken bir sorun oluştu.
+        </CardBody>
+      </Card>
+    );
+  }
+  if (isPending) {
+    return (
+      <Card>
+        <CardBody className="flex items-center justify-center">
+          <Spinner
+            label="Deneme analizleri yükleniyor ..."
+            color="primary"
+            labelColor="secondary"
+            classNames={{
+              label: "text-sm",
+            }}
+          />
+        </CardBody>
+      </Card>
+    );
+  }
 
   return (
     <Card>

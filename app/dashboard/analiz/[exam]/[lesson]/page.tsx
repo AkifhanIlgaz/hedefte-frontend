@@ -23,8 +23,6 @@ export default function LessonPage({
 
   const { data: lessonData } = useAnalyticsOfLesson(exam, lesson, timeInterval);
 
-  console.log(lessonData);
-
   return (
     <div className="flex flex-col gap-6 min-h-screen">
       <div className="flex items-center justify-between">

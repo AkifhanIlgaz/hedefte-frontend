@@ -102,6 +102,8 @@ export default function Page({
           <GeneralChart
             resultSeries={examData?.resultSeries ?? []}
             averageResult={examData?.averageResult ?? 0}
+            isError={isExamAnalyticsError}
+            isPending={isExamAnalyticsPending}
           />
           <LessonGeneralChart
             lessons={lessonData ?? []}
