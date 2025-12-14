@@ -88,6 +88,7 @@ export default function GeneralChart({
   const xValues = mappedSeries.map((item) => item.x);
   const xMin = xValues.length ? Math.min(...xValues) : undefined;
   const xMax = xValues.length ? Math.max(...xValues) : undefined;
+  const hasData = resultSeries.length > 0;
   const hasTimeSeries = resultSeries.some(
     (item) =>
       typeof (item as LessonResultSeries).time === "number" &&
@@ -129,6 +130,17 @@ export default function GeneralChart({
 
   // ApexCharts için yapılandırma
   const chartOptions: ApexOptions = {
+    noData: {
+      text: "Henüz bir deneme eklemediniz !",
+      align: "center",
+      verticalAlign: "middle",
+
+      style: {
+        color: "#374151",
+        fontSize: "14px",
+        fontFamily: "Outfit",
+      },
+    },
     chart: {
       type: "line",
       zoom: {
@@ -142,6 +154,7 @@ export default function GeneralChart({
       max: xMax,
       labels: {
         style: { fontSize: "12px", colors: axisColor, fontFamily: "Outfit" },
+        show: hasData,
         showDuplicates: false,
 
         formatter: (value) =>
@@ -149,6 +162,8 @@ export default function GeneralChart({
             locale: tr,
           }),
       },
+      axisBorder: { show: hasData, color: axisColor },
+      axisTicks: { show: hasData, color: axisColor },
     },
     title: {
       text: "Tüm Denemelerim",
@@ -163,17 +178,20 @@ export default function GeneralChart({
     yaxis: hasTimeSeries
       ? [
           {
+            show: hasData,
             title: {
               text: "Toplam Net",
               style: { color: axisColor, fontFamily: "Outfit" },
             },
             min: 0,
             labels: {
+              show: hasData,
               style: { colors: [axisColor], fontFamily: "Outfit" },
               formatter: (val: number) => val.toFixed(2),
             },
           },
           {
+            show: hasData,
             title: {
               text: "Süre (dk)",
               style: { color: axisColor, fontFamily: "Outfit" },
@@ -181,18 +199,21 @@ export default function GeneralChart({
             opposite: true,
             min: 0,
             labels: {
+              show: hasData,
               style: { colors: [axisColor], fontFamily: "Outfit" },
               formatter: (val: number) => val.toFixed(2),
             },
           },
         ]
       : {
+          show: hasData,
           title: {
             text: "Toplam Net",
             style: { color: axisColor, fontFamily: "Outfit" },
           },
           min: 0,
           labels: {
+            show: hasData,
             style: { colors: [axisColor], fontFamily: "Outfit" },
             formatter: (val: number) => val.toFixed(2),
           },
@@ -203,6 +224,7 @@ export default function GeneralChart({
           y: averageResult,
           borderColor: annotationColor,
           strokeDashArray: 6,
+
           label: {
             borderColor: annotationColor,
             style: {
@@ -292,7 +314,13 @@ export default function GeneralChart({
         `;
       },
     },
+    grid: {
+      show: hasData,
+      borderColor: isDark ? "#374151" : "#e5e7eb",
+      strokeDashArray: 3,
+    },
     stroke: {
+      show: hasData,
       curve: "straight",
       width: hasTimeSeries ? [3, 2] : 3,
     },

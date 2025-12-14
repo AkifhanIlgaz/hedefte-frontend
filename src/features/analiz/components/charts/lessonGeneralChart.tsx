@@ -1,7 +1,9 @@
 "use client";
 
 import { Card, CardBody } from "@heroui/card";
+import { Spinner } from "@heroui/spinner";
 import { ApexOptions } from "apexcharts";
+import { AlertTriangle } from "lucide-react";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { LessonAnalytics } from "../../types";
@@ -10,10 +12,14 @@ import { LessonAnalytics } from "../../types";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface LessonGeneralChartProps {
+  isPending?: boolean;
+  isError?: boolean;
   lessons: LessonAnalytics[];
 }
 
 export default function LessonGeneralChart({
+  isPending = false,
+  isError = false,
   lessons,
 }: LessonGeneralChartProps) {
   const theme = useTheme();
@@ -42,6 +48,8 @@ export default function LessonGeneralChart({
     Number(safeFixed(lesson.averageTime ?? 0)),
   );
 
+  const hasData = lessons?.length > 0;
+
   const series = [
     {
       name: "En Fazla Net",
@@ -58,6 +66,17 @@ export default function LessonGeneralChart({
   ];
 
   const options: ApexOptions = {
+    noData: {
+      text: "Henüz bir deneme eklemediniz !",
+      align: "center",
+      verticalAlign: "middle",
+
+      style: {
+        color: "#374151",
+        fontSize: "14px",
+        fontFamily: "Outfit",
+      },
+    },
     chart: {
       type: "bar",
       height: chartHeight,
@@ -75,35 +94,40 @@ export default function LessonGeneralChart({
       enabled: false,
     },
     stroke: {
-      show: true,
+      show: hasData,
       width: 1,
       colors: ["transparent"],
     },
     yaxis: {
+      show: hasData,
       labels: {
+        show: hasData,
         style: {
           colors: Array(lessons.length).fill(axisColor),
           fontSize: "12px",
           fontFamily: "Outfit",
         },
       },
-      axisBorder: { color: axisColor },
-      axisTicks: { color: axisColor },
+      axisBorder: { color: axisColor, show: hasData },
+      axisTicks: { color: axisColor, show: hasData },
     },
     xaxis: {
       categories: lessons.map((lesson) => lesson.lesson),
-
       min: 0,
       labels: {
+        show: hasData,
         style: { colors: [axisColor], fontFamily: "Outfit" },
         formatter: (val: number | string) => safeFixed(val),
       },
+
       title: {
         text: "Net / Süre",
         style: { color: axisColor, fontFamily: "Outfit" },
+        offsetX: 0,
+        offsetY: 15,
       },
-      axisBorder: { color: axisColor },
-      axisTicks: { color: axisColor },
+      axisBorder: { color: axisColor, show: hasData },
+      axisTicks: { color: axisColor, show: hasData },
     },
     title: {
       text: "Ders Bazlı Analiz",
@@ -118,7 +142,9 @@ export default function LessonGeneralChart({
 
     legend: {
       position: "bottom",
+      show: hasData,
       labels: { colors: labelColor },
+      fontFamily: "Outfit",
     },
     colors: [accentColor, secondaryColor, tertiaryColor],
     tooltip: {
@@ -133,6 +159,7 @@ export default function LessonGeneralChart({
       },
     },
     grid: {
+      show: hasData,
       borderColor: isDark ? "#374151" : "#e5e7eb",
       strokeDashArray: 3,
     },
@@ -161,6 +188,32 @@ export default function LessonGeneralChart({
       },
     ],
   };
+  if (isError) {
+    return (
+      <Card>
+        <CardBody className="flex items-center justify-center text-danger text-sm gap-1">
+          <AlertTriangle className="size-6" />
+          Deneme analizleri yüklenirken bir sorun oluştu.
+        </CardBody>
+      </Card>
+    );
+  }
+  if (isPending) {
+    return (
+      <Card>
+        <CardBody className="flex items-center justify-center">
+          <Spinner
+            label="Deneme analizleri yükleniyor ..."
+            color="primary"
+            labelColor="secondary"
+            classNames={{
+              label: "text-sm",
+            }}
+          />
+        </CardBody>
+      </Card>
+    );
+  }
 
   return (
     <Card>

@@ -30,8 +30,16 @@ export default function Page({
   const examName = exam.split("_").join(" ");
   const lessons = allLessons[exam];
 
-  const { data: examData } = useExamAnalytics(exam, timeInterval);
-  const { data: lessonData } = useLessonAnalytics(exam, timeInterval);
+  const {
+    data: examData,
+    isError: isExamAnalyticsError,
+    isPending: isExamAnalyticsPending,
+  } = useExamAnalytics(exam, timeInterval);
+  const {
+    data: lessonData,
+    isError: isLessonAnalyticsError,
+    isPending: isLessonAnalyticsPending,
+  } = useLessonAnalytics(exam, timeInterval);
 
   return (
     <div className="flex flex-col gap-6  ">
@@ -58,19 +66,16 @@ export default function Page({
             <SelectItem key={"-1"}>Tüm Zamanlar</SelectItem>
           </Select>
 
-          <Link
-            className="flex-1 md:flex-none"
-            href={`/dashboard/deneme/ekle?exam=${exam}`}
+          <Button
+            as={Link}
+            href={`/dashboard/analiz/${exam.toLowerCase()}/ekle`}
+            className="w-full md:w-auto"
+            color="primary"
+            variant="shadow"
+            startContent={<Plus className="size-4" />}
           >
-            <Button
-              className="w-full md:w-auto"
-              color="primary"
-              variant="shadow"
-              startContent={<Plus className="size-4" />}
-            >
-              {exam.split("_")[0]} Analiz Ekle
-            </Button>
-          </Link>
+            {exam.split("_")[0]} Analiz Ekle
+          </Button>
         </div>
       </div>
 
@@ -98,7 +103,11 @@ export default function Page({
             resultSeries={examData?.resultSeries ?? []}
             averageResult={examData?.averageResult ?? 0}
           />
-          <LessonGeneralChart lessons={lessonData ?? []} />
+          <LessonGeneralChart
+            lessons={lessonData ?? []}
+            isError={isLessonAnalyticsError}
+            isPending={isLessonAnalyticsPending}
+          />
         </div>
       </div>
 
@@ -111,7 +120,7 @@ export default function Page({
           </div>
         </Tab>
         <Tab key="photos" title="Tüm Denemeler">
-          <ExamsTable exam={"TYT"} timeInterval={timeInterval} />
+          <ExamsTable exam={exam} timeInterval={timeInterval} />
         </Tab>
       </Tabs>
     </div>

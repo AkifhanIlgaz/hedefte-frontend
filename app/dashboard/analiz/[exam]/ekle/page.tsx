@@ -11,12 +11,17 @@ import { useAddExam } from "@/src/lib/queries/useAddExam";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { addToast } from "@heroui/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { use } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
-export default function Page() {
-  const searchParams = useSearchParams();
-  const exam = searchParams.get("exam") as Exam;
+export default function Page({
+  params,
+}: {
+  params: Promise<{ exam: string }>;
+}) {
+  const { exam: encodedExam } = use(params);
+  const exam = encodedExam.toUpperCase() as Exam;
   const { mutateAsync } = useAddExam();
   const router = useRouter();
 
@@ -39,10 +44,8 @@ export default function Page() {
         color: "success",
       });
 
-      // TODO: analiz basariyla kaydedildiyse analytics e redirect et veya toast icinde button ekle
-      // TODO: cache invalidate
       form.reset();
-      router.push("/dashboard");
+      router.push(`/dashboard/analiz/${exam.toLowerCase()}`);
     } catch (error) {
       addToast({
         title: "Bir hata oluştu.",

@@ -33,7 +33,7 @@ export default function GeneralExamInfoCard({
             type="text"
             label="Sınav"
             labelPlacement="outside-top"
-            value={exam}
+            value={exam.split("_").join(" ")}
             isReadOnly
             classNames={{
               label: "text-xs font-semibold",

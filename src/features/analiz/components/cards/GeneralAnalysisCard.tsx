@@ -18,7 +18,7 @@ export default function GeneralAnalysisCard({
         <Icon className="size-5 text-muted-foreground" />
         {title}
       </CardHeader>
-      <CardBody>
+      <CardBody className="w-full h-full">
         <h1 className="text-7xl font-bold text-foreground text-center ">
           {value}
         </h1>
