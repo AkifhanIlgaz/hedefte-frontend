@@ -5,7 +5,7 @@ import { Exam } from "@/src/features/analiz/types";
 import { useAnalyticsOfLesson } from "@/src/lib/queries/useAnalytics";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Select, SelectItem } from "@heroui/select";
-import { BarChart3 } from "lucide-react";
+import { ClipboardCheck, Hourglass, TrendingUp, Trophy } from "lucide-react";
 import { use, useState } from "react";
 
 export default function LessonPage({
@@ -51,20 +51,25 @@ export default function LessonPage({
       </div>
 
       <div className="flex flex-col gap-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <GeneralAnalysisCard
             title="Çözülen Deneme Sayısı"
-            icon={BarChart3}
+            icon={ClipboardCheck}
             value={lessonData?.examCount ?? 0}
           />
           <GeneralAnalysisCard
             title="Ortalama Net"
-            icon={BarChart3}
+            icon={TrendingUp}
             value={lessonData?.averageResult.toFixed(2) ?? 0}
           />
           <GeneralAnalysisCard
+            title="Ortalama Süre"
+            icon={Hourglass}
+            value={(lessonData?.averageTime ?? 0) + ` dk`}
+          />
+          <GeneralAnalysisCard
             title="Maksimum Net"
-            icon={BarChart3}
+            icon={Trophy}
             value={lessonData?.maxResult.toFixed(2) ?? 0}
           />
         </div>

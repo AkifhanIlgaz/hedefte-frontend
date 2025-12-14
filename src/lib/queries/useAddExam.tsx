@@ -15,7 +15,7 @@ export function useAddExam() {
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["analytics", "exam", examType],
+        queryKey: ["analytics", "exams", examType],
       });
 
       queryClient.invalidateQueries({

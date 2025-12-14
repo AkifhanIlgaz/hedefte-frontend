@@ -33,9 +33,17 @@ export default function ExamsTable({ exam, timeInterval }: ExamsTableProps) {
     rowsPerPage,
     timeInterval,
   });
-  const { mutateAsync: deleteExam, isPending: isDeleting } = useDeleteExam();
+  const { mutateAsync: deleteExam, isPending: isDeleting } =
+    useDeleteExam(exam);
 
   const handleDeleteExam = async (examId: string) => {
+    addToast({
+      title: "Lütfen bekleyin !",
+      description: "Sınav siliniyor.",
+      color: "warning",
+      endContent: <Spinner size="sm" color="warning" />,
+    });
+
     try {
       await deleteExam(examId);
       addToast({
@@ -89,7 +97,6 @@ export default function ExamsTable({ exam, timeInterval }: ExamsTableProps) {
 
   const renderCell = useCallback(
     (exam: ExamResponse, columnKey: keyof ExamResponse | "actions") => {
-      console.log(columnKey);
       if (columnKey.startsWith("lesson:")) {
         const lessonName = columnKey.replace("lesson:", "");
         const lesson = exam.lessons.find((l) => l.name === lessonName);

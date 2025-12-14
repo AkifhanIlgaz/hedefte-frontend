@@ -16,7 +16,7 @@ import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { Select, SelectItem } from "@heroui/select";
 import { Tab, Tabs } from "@heroui/tabs";
-import { BarChart3, Plus } from "lucide-react";
+import { ClipboardCheck, Plus, TrendingUp, Trophy } from "lucide-react";
 import { use, useState } from "react";
 
 export default function Page({
@@ -83,17 +83,17 @@ export default function Page({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <GeneralAnalysisCard
             title="Çözülen Deneme Sayısı"
-            icon={BarChart3}
+            icon={ClipboardCheck}
             value={examData?.examCount}
           />
           <GeneralAnalysisCard
             title="Ortalama Net"
-            icon={BarChart3}
+            icon={TrendingUp}
             value={examData?.averageResult.toFixed(2)}
           />
           <GeneralAnalysisCard
             title="Maksimum Net"
-            icon={BarChart3}
+            icon={Trophy}
             value={examData?.maxResult.toFixed(2)}
           />
         </div>

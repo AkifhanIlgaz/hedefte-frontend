@@ -15,7 +15,7 @@ export default function GeneralAnalysisCard({
   return (
     <Card className="border border-border bg-card shadow-sm ">
       <CardHeader className="flex flex-row items-center justify-center gap-2">
-        <Icon className="size-5 text-muted-foreground" />
+        <Icon className="size-4 text-muted-foreground" />
         {title}
       </CardHeader>
       <CardBody className="w-full h-full">

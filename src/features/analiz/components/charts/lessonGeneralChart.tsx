@@ -48,7 +48,7 @@ export default function LessonGeneralChart({
     Number(safeFixed(lesson.averageTime ?? 0)),
   );
 
-  const hasData = lessons?.length > 0;
+  const hasData = lessons.length > 0;
 
   const series = [
     {
