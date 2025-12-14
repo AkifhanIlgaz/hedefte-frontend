@@ -11,6 +11,16 @@ class ExamService {
 
   async addExam(req: AddExamRequest): Promise<void> {
     const lessons = Object.entries(req.lessons).map(([name, val]) => {
+      val.topicMistakes = val.topicMistakes.map((mistake) => {
+        return {
+          ...mistake,
+          date: req.date,
+          examType: req.examType,
+          lesson: name,
+          isSolved: false,
+        };
+      });
+
       return {
         ...val,
         name: name,

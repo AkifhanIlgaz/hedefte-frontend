@@ -77,6 +77,13 @@ export default function LessonGeneralChart({
         fontFamily: "Outfit",
       },
     },
+    states: {
+      active: {
+        filter: {
+          type: "none",
+        },
+      },
+    },
     chart: {
       type: "bar",
       height: chartHeight,

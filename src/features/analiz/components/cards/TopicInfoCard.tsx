@@ -65,7 +65,7 @@ export default function TopicInfoCard({
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const form = useFormContext();
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: `lessons.${lessonName}.topicMistakes`,
   });
@@ -76,8 +76,8 @@ export default function TopicInfoCard({
     (form.watch(`lessons.${lessonName}.topicMistakes`) as TopicMistake[]) ?? [];
   const topicMistakesByTopic = topicMistakes.reduce(
     (acc, mistake) => {
-      if (!mistake.topicName) return acc;
-      acc[mistake.topicName] = (acc[mistake.topicName] || 0) + 1;
+      if (!mistake.topic) return acc;
+      acc[mistake.topic] = (acc[mistake.topic] || 0) + 1;
       return acc;
     },
     {} as Record<string, number>,
@@ -145,8 +145,9 @@ export default function TopicInfoCard({
           append({
             imageUrl: data.publicUrl,
             filePath: fileName,
+            lesson: lessonName,
             date: form.getValues("date"),
-            topicName: "",
+            topic: "",
           });
         }),
       );
@@ -205,7 +206,7 @@ export default function TopicInfoCard({
   const handleNextImage = () => {
     if (topicMistakes.length === 0) return;
     const idx = (currentImageIndex + 1) % topicMistakes.length;
-    setSelectedTopic(topicMistakes[idx].topicName);
+    setSelectedTopic(topicMistakes[idx].topic);
     setCurrentImageIndex((prev) => (prev + 1) % topicMistakes.length);
   };
 
@@ -213,7 +214,7 @@ export default function TopicInfoCard({
     if (topicMistakes.length === 0) return;
     const idx =
       (currentImageIndex - 1 + topicMistakes.length) % topicMistakes.length;
-    setSelectedTopic(topicMistakes[idx].topicName);
+    setSelectedTopic(topicMistakes[idx].topic);
     setCurrentImageIndex(
       (prev) => (prev - 1 + topicMistakes.length) % topicMistakes.length,
     );
@@ -323,14 +324,14 @@ export default function TopicInfoCard({
             </div>
           ) : (
             <div className="grid w-full grid-cols-1 gap-3">
-              {topicMistakeEntries.map(([topicName, count]) => (
+              {topicMistakeEntries.map(([topic, count]) => (
                 <div
-                  key={topicName}
+                  key={topic}
                   className="flex items-center justify-between rounded-xl border border-default-200/80 bg-default-50 px-3 py-3 shadow-sm"
                 >
                   <div className="flex flex-col">
                     <span className="text-sm font-semibold text-default-800">
-                      {topicName}
+                      {topic}
                     </span>
                   </div>
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger-600">
@@ -358,10 +359,10 @@ export default function TopicInfoCard({
                   className="z-0 h-full w-full object-center"
                   src={topicMistakes[currentImageIndex]?.imageUrl}
                 />
-                {topicMistakes[currentImageIndex]?.topicName && (
+                {topicMistakes[currentImageIndex]?.topic && (
                   <CardFooter className="absolute bottom-0 z-10 flex w-full items-center justify-center px-3 py-2">
                     <span className="text-xs font-semibold text-white line-clamp-1">
-                      {topicMistakes[currentImageIndex].topicName}
+                      {topicMistakes[currentImageIndex].topic}
                     </span>
                   </CardFooter>
                 )}
@@ -423,7 +424,7 @@ export default function TopicInfoCard({
                 selectedTopic ? new Set([selectedTopic]) : new Set<string>()
               }
               onChange={(e) => {
-                topicMistakes[currentImageIndex].topicName = e.target.value;
+                topicMistakes[currentImageIndex].topic = e.target.value;
                 setSelectedTopic(e.target.value);
               }}
               isLoading={isGuessing}

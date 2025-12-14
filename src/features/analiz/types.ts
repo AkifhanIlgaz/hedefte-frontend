@@ -43,7 +43,7 @@ export interface TopicMistake {
   examType: string;
   lesson: string;
   filePath: string;
-  topicName: string;
+  topic: string;
   isSolved: boolean;
   imageUrl: string;
 }
