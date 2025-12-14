@@ -5,7 +5,7 @@ import { Logo } from "@/src/shared/components/icons";
 import { Button } from "@heroui/react";
 import clsx from "clsx";
 import { ChevronsLeft, ChevronsRight, Menu } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 import SidebarLink from "./sidebarLink";
 
@@ -19,13 +19,15 @@ export default function Sidebar({
   setIsSidebarOpenAction,
 }: SidebarProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const fullUrl = `${pathname}?${searchParams.toString()}`;
 
   const isRouteActive = (href: string) => {
     if (!pathname) return false;
     if (href === "/") {
       return pathname === href;
     }
-    return pathname === href;
+    return fullUrl === href;
   };
 
   return (

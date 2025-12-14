@@ -3,7 +3,6 @@ import {
   ExamAnalytics,
   GeneralResponse,
   LessonAnalytics,
-  LessonName,
 } from "@/src/features/analiz/types";
 import api from "../axios";
 
@@ -25,12 +24,11 @@ class AnalyticsService {
 
   async getLessonAnalytics(
     exam: Exam,
-    lesson: LessonName,
     timeInterval: number,
-  ): Promise<LessonAnalytics> {
-    const res = await api.get<GeneralResponse<LessonAnalytics>>(
+  ): Promise<LessonAnalytics[]> {
+    const res = await api.get<GeneralResponse<LessonAnalytics[]>>(
       "/analytics/lessons",
-      { params: { exam, lesson, timeInterval } },
+      { params: { exam, timeInterval } },
     );
 
     if (!res.data.success)

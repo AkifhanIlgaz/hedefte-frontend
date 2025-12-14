@@ -2,49 +2,54 @@
 
 import { Card, CardBody } from "@heroui/card";
 import { ApexOptions } from "apexcharts";
+import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
-import { LessonName } from "../../types";
+import { LessonAnalytics } from "../../types";
 
 // Chart bileşenini dinamik olarak yükle ve SSR'yi devre dışı bırak
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface LessonGeneralChartProps {
-  lessons?: Record<
-    LessonName,
-    {
-      averageNet: number;
-      maxNet: number;
-      averageTime: number;
-    }
-  >;
+  lessons: LessonAnalytics[];
 }
 
 export default function LessonGeneralChart({
   lessons,
 }: LessonGeneralChartProps) {
-  const sortedLessons = Object.entries(lessons ?? {}).sort(
-    ([, a], [, b]) => b.averageNet - a.averageNet,
-  ); // Büyükten küçüğe sıralama
-  const chartHeight = Math.max(320, sortedLessons.length * 48);
+  const theme = useTheme();
+  const isDark = theme.theme === "dark";
 
-  const averageNets = sortedLessons.map(([_, lesson]) =>
-    Number(lesson.averageNet.toFixed(2)),
+  const axisColor = isDark ? "#e5e7eb" : "#111827";
+  const labelColor = isDark ? "#e5e7eb" : "#111827";
+  const accentColor = "#ef7c00";
+  const secondaryColor = isDark ? "#38bdf8" : "#0ea5e9";
+  const tertiaryColor = isDark ? "#a855f7" : "#7c3aed";
+
+  const safeFixed = (value: unknown, fraction = 2) => {
+    const num = Number(value);
+    return Number.isFinite(num) ? num.toFixed(fraction) : "0.00";
+  };
+
+  const chartHeight = Math.max(320, lessons.length * 52);
+
+  const averageResults = lessons.map((lesson) =>
+    Number(safeFixed(lesson.averageResult ?? 0)),
   );
-  const maxNets = sortedLessons.map(([_, lesson]) =>
-    Number(lesson.maxNet.toFixed(2)),
+  const maxResults = lessons.map((lesson) =>
+    Number(safeFixed(lesson.maxResult ?? 0)),
   );
-  const averageTimes = sortedLessons.map(([_, lesson]) =>
-    Number(lesson.averageTime.toFixed(2)),
+  const averageTimes = lessons.map((lesson) =>
+    Number(safeFixed(lesson.averageTime ?? 0)),
   );
 
-  const series: ApexAxisChartSeries = [
+  const series = [
     {
       name: "En Fazla Net",
-      data: maxNets,
+      data: maxResults,
     },
     {
       name: "Ortalama Net",
-      data: averageNets,
+      data: averageResults,
     },
     {
       name: "Ortalama Süre",
@@ -57,11 +62,13 @@ export default function LessonGeneralChart({
       type: "bar",
       height: chartHeight,
       toolbar: { show: false },
+      stacked: false,
     },
     plotOptions: {
       bar: {
-        horizontal: false,
-        borderRadius: 5,
+        horizontal: true,
+        borderRadius: 6,
+        barHeight: "60%",
       },
     },
     dataLabels: {
@@ -69,48 +76,85 @@ export default function LessonGeneralChart({
     },
     stroke: {
       show: true,
-      width: 2,
+      width: 1,
       colors: ["transparent"],
     },
-
-    xaxis: {
-      categories: sortedLessons.map(([lessonName, _]) => lessonName),
-    },
     yaxis: {
+      labels: {
+        style: {
+          colors: Array(lessons.length).fill(axisColor),
+          fontSize: "12px",
+          fontFamily: "Outfit",
+        },
+      },
+      axisBorder: { color: axisColor },
+      axisTicks: { color: axisColor },
+    },
+    xaxis: {
+      categories: lessons.map((lesson) => lesson.lesson),
+
       min: 0,
+      labels: {
+        style: { colors: [axisColor], fontFamily: "Outfit" },
+        formatter: (val: number | string) => safeFixed(val),
+      },
+      title: {
+        text: "Net / Süre",
+        style: { color: axisColor, fontFamily: "Outfit" },
+      },
+      axisBorder: { color: axisColor },
+      axisTicks: { color: axisColor },
     },
     title: {
       text: "Ders Bazlı Analiz",
       align: "left",
-      style: { fontSize: "16px", fontWeight: "bold" },
+      style: {
+        fontSize: "16px",
+        fontWeight: "bold",
+        color: labelColor,
+        fontFamily: "Outfit",
+      },
     },
 
-    fill: {
-      opacity: 1,
-    },
     legend: {
       position: "bottom",
+      labels: { colors: labelColor },
     },
-    tooltip: {},
+    colors: [accentColor, secondaryColor, tertiaryColor],
+    tooltip: {
+      theme: isDark ? "dark" : "light",
+      y: {
+        formatter: (val: number, opts) =>
+          opts.seriesIndex === 2 ? `${safeFixed(val)} dk` : safeFixed(val),
+      },
+      style: {
+        fontSize: "12px",
+        fontFamily: "Outfit",
+      },
+    },
+    grid: {
+      borderColor: isDark ? "#374151" : "#e5e7eb",
+      strokeDashArray: 3,
+    },
     responsive: [
       {
         breakpoint: 960,
         options: {
           chart: {
-            height: Math.max(280, sortedLessons.length * 56),
+            height: Math.max(280, lessons.length * 64),
           },
           plotOptions: {
             bar: {
-              horizontal: true,
-              barHeight: "60%",
+              barHeight: "70%",
             },
           },
-          legend: {
-            position: "bottom",
-          },
-          xaxis: {
+          yaxis: {
             labels: {
-              rotate: 0,
+              style: {
+                fontSize: "11px",
+                colors: Array(lessons.length).fill(axisColor),
+                fontFamily: "Outfit",
+              },
             },
           },
         },
@@ -121,12 +165,7 @@ export default function LessonGeneralChart({
   return (
     <Card>
       <CardBody>
-        <Chart
-          options={options}
-          series={series}
-          type="bar"
-          height={chartHeight}
-        ></Chart>
+        <Chart options={options} series={series} type="bar" height={"100%"} />
       </CardBody>
     </Card>
   );

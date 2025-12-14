@@ -112,6 +112,7 @@ export type LessonResponse = {
 };
 
 export type ExamAnalytics = {
+  lesson: string;
   examCount: number;
   maxResult: number;
   averageResult: number;
