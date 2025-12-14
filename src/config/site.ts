@@ -22,17 +22,17 @@ export const siteConfig = {
     },
     {
       label: "TYT Analizlerim",
-      href: "/dashboard/analiz?exam=TYT",
+      href: "/dashboard/analiz/tyt",
       icon: ChartArea,
     },
     {
       label: "AYT SAY Analizlerim",
-      href: "/dashboard/analiz?exam=AYT_SAY",
+      href: "/dashboard/analiz/ayt_say",
       icon: ChartNoAxesCombined,
     },
     {
       label: "AYT EA Analizlerim",
-      href: "/dashboard/analiz?exam=AYT_EA",
+      href: "/dashboard/analiz/ayt_ea",
       icon: ChartBar,
     },
 

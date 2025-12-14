@@ -17,19 +17,21 @@ import { Link } from "@heroui/link";
 import { Select, SelectItem } from "@heroui/select";
 import { Tab, Tabs } from "@heroui/tabs";
 import { BarChart3, Plus } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { use, useState } from "react";
 
-export default function Page() {
+export default function Page({
+  params,
+}: {
+  params: Promise<{ exam: string }>;
+}) {
   const [timeInterval, setTimeInterval] = useState(-1);
-  const searchParams = useSearchParams();
-  const exam = searchParams.get("exam") as Exam;
+  const { exam: encodedExam } = use(params);
+  const exam = encodedExam.toUpperCase() as Exam;
   const examName = exam.split("_").join(" ");
   const lessons = allLessons[exam];
+
   const { data: examData } = useExamAnalytics(exam, timeInterval);
   const { data: lessonData } = useLessonAnalytics(exam, timeInterval);
-
-  console.log(lessonData);
 
   return (
     <div className="flex flex-col gap-6  ">
@@ -58,7 +60,7 @@ export default function Page() {
 
           <Link
             className="flex-1 md:flex-none"
-            href={`/dashboard/deneme-ekle?exam=${exam}`}
+            href={`/dashboard/deneme/ekle?exam=${exam}`}
           >
             <Button
               className="w-full md:w-auto"

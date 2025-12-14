@@ -6,19 +6,19 @@ import { useAnalyticsOfLesson } from "@/src/lib/queries/useAnalytics";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Select, SelectItem } from "@heroui/select";
 import { BarChart3 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { use, useState } from "react";
 
 export default function LessonPage({
   params,
 }: {
-  params: Promise<{ lesson: string }>;
+  params: Promise<{ lesson: string; exam: string }>;
 }) {
-  const searchParams = useSearchParams();
-  const exam = searchParams.get("exam") as Exam;
+  const { lesson: encodedLesson, exam: encodedExam } = use(params);
+  const lesson =
+    decodeURIComponent(encodedLesson).slice(0, 1).toUpperCase() +
+    decodeURIComponent(encodedLesson).slice(1);
+  const exam = encodedExam.toUpperCase() as Exam;
   const examName = exam.split("_").join(" ");
-  const { lesson: encodedLesson } = use(params);
-  const lesson = decodeURIComponent(encodedLesson);
   const [timeInterval, setTimeInterval] = useState(-1);
 
   const { data: lessonData } = useAnalyticsOfLesson(exam, lesson, timeInterval);
