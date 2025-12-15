@@ -11,6 +11,8 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Radio,
+  RadioGroup,
   Select,
   SelectItem,
   Tooltip,
@@ -87,6 +89,23 @@ export default function TopicInfoCard({
     (a, b) => b[1] - a[1],
   );
   const hasTopicMistakes = topicMistakeEntries.length > 0;
+
+  const radioOptions = [
+    { value: "A", label: "A" },
+    { value: "B", label: "B" },
+    { value: "C", label: "C" },
+    { value: "D", label: "D" },
+    { value: "E", label: "E" },
+  ];
+
+  const radioClasses = {
+    base: "m-0 p-0 relative",
+    wrapper:
+      "w-10 h-10 rounded-full border-2 border-default-200  bg-default-100 text-foreground/70 data-[selected=true]:border-success data-[selected=true]:bg-success data-[selected=true]:text-success-foreground flex items-center justify-center",
+    control: "hidden",
+    labelWrapper: "absolute inset-0 flex items-center justify-center ",
+    label: "text-sm font-semibold ",
+  };
 
   const handleImagesSelected = async (event: ChangeEvent<HTMLInputElement>) => {
     setIsUploading(true);
@@ -414,26 +433,51 @@ export default function TopicInfoCard({
                 </Button>
               </Tooltip>
             </div>
-            <Select
-              variant="bordered"
-              aria-label="Konu seçin"
-              isDisabled={topics.length === 0}
-              selectionMode="single"
-              disabled={isGuessing}
-              selectedKeys={
-                selectedTopic ? new Set([selectedTopic]) : new Set<string>()
-              }
-              onChange={(e) => {
-                topicMistakes[currentImageIndex].topic = e.target.value;
-                setSelectedTopic(e.target.value);
-              }}
-              isLoading={isGuessing}
-              placeholder="Lütfen yanlış yaptığınız konuyu seçiniz."
-            >
-              {topics.map((topic) => (
-                <SelectItem key={topic}>{topic}</SelectItem>
-              ))}
-            </Select>
+            <div className="flex flex-col items-center gap-4">
+              <Select
+                variant="bordered"
+                aria-label="Konu seçin"
+                isDisabled={topics.length === 0}
+                selectionMode="single"
+                disabled={isGuessing}
+                selectedKeys={
+                  selectedTopic ? new Set([selectedTopic]) : new Set<string>()
+                }
+                onChange={(e) => {
+                  topicMistakes[currentImageIndex].topic = e.target.value;
+                  setSelectedTopic(e.target.value);
+                }}
+                isLoading={isGuessing}
+                placeholder="Lütfen yanlış yaptığınız konuyu seçiniz."
+              >
+                {topics.map((topic) => (
+                  <SelectItem key={topic}>{topic}</SelectItem>
+                ))}
+              </Select>
+              <RadioGroup
+                value={topicMistakes[currentImageIndex]?.correctAnswer}
+                onChange={(e) => {
+                  e.preventDefault();
+                  topicMistakes[currentImageIndex].correctAnswer =
+                    e.target.value;
+                }}
+                orientation="horizontal"
+                color="success"
+                classNames={{
+                  wrapper: "gap-3",
+                }}
+              >
+                {radioOptions.map((option) => (
+                  <Radio
+                    key={option.value}
+                    value={option.value}
+                    classNames={radioClasses}
+                  >
+                    {option.label}
+                  </Radio>
+                ))}
+              </RadioGroup>
+            </div>
           </ModalFooter>
         </ModalContent>
       </Modal>

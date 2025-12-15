@@ -3,6 +3,7 @@ import z from "zod";
 export const topicMistakesSchema = z.object({
   imageUrl: z.url("Lütfen geçerli bir URL giriniz."),
   filePath: z.string().min(1, "Lütfen dosya yolunu giriniz.").max(255),
+  correctAnswer: z.string().min(1, "Lütfen doğru cevabı giriniz.").max(1),
   topic: z.string().min(1, "Lütfen konu adını giriniz.").max(50),
 });
 

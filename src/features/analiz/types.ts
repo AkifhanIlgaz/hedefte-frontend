@@ -44,6 +44,7 @@ export interface TopicMistake {
   lesson: string;
   filePath: string;
   topic: string;
+  correctAnswer: string;
   isSolved: boolean;
   imageUrl: string;
 }
