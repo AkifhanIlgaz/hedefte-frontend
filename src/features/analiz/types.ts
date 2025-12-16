@@ -134,3 +134,8 @@ export type ResultSeries = {
 export type LessonResultSeries = ResultSeries & {
   time: number;
 };
+
+export type TopicWrongCount = {
+  topic: string;
+  count: number;
+};

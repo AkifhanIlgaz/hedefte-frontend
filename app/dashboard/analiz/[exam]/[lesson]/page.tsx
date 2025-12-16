@@ -3,9 +3,17 @@ import GeneralAnalysisCard from "@/src/features/analiz/components/cards/GeneralA
 import GeneralChart from "@/src/features/analiz/components/charts/generalChart";
 import { Exam } from "@/src/features/analiz/types";
 import { useAnalyticsOfLesson } from "@/src/lib/queries/useAnalytics";
+import { useTopicWrongCounts } from "@/src/lib/queries/useTopicWrongCounts";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
+import { Card, CardBody } from "@heroui/card";
 import { Select, SelectItem } from "@heroui/select";
-import { ClipboardCheck, Hourglass, TrendingUp, Trophy } from "lucide-react";
+import {
+  AlertCircle,
+  ClipboardCheck,
+  Hourglass,
+  TrendingUp,
+  Trophy,
+} from "lucide-react";
 import { use, useState } from "react";
 
 export default function LessonPage({
@@ -22,6 +30,12 @@ export default function LessonPage({
   const [timeInterval, setTimeInterval] = useState(-1);
 
   const { data: lessonData } = useAnalyticsOfLesson(exam, lesson, timeInterval);
+
+  const { data: topicWrongCounts } = useTopicWrongCounts(
+    exam,
+    lesson,
+    timeInterval,
+  );
 
   return (
     <div className="flex flex-col gap-6 min-h-screen">
@@ -80,9 +94,49 @@ export default function LessonPage({
             averageResult={lessonData?.averageResult ?? 0}
             averageTime={lessonData?.averageTime ?? 0}
           />
-          {/*<TopicMistakeChart
-            topicMistakes={topicMistakes?.data.payload ?? []}
-          />*/}
+          <Card className="p-3">
+            <CardBody
+              className={
+                topicWrongCounts
+                  ? "flex flex-col gap-3 items-start justify-start"
+                  : "flex flex-col items-center justify-center"
+              }
+            >
+              {topicWrongCounts?.length === 0 ? (
+                <div className="flex w-full flex-col items-center justify-center gap-2 p-6 text-center">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-default-100 text-danger">
+                    <AlertCircle className="h-6 w-6 text-danger" />
+                  </span>
+                  <p className="text-sm font-semibold text-default-700">
+                    Henüz konu seçilmedi
+                  </p>
+                  <p className="text-xs text-default-500">
+                    Yanlış yaptığın soruların konuları burada listelenecek.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid w-full grid-cols-1 gap-3">
+                  {topicWrongCounts?.map((val) => (
+                    <div
+                      key={val.topic}
+                      className="flex items-center justify-between rounded-xl border border-default-200/80 bg-default-50 px-3 py-3 shadow-sm"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-default-800">
+                          {val.topic}
+                        </span>
+                      </div>
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger-600">
+                        <span className="text-sm font-semibold">
+                          {val.count}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardBody>
+          </Card>
         </div>
       </div>
     </div>
