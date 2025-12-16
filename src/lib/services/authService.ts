@@ -7,14 +7,14 @@ import {
 import {
   AuthApiError,
   SignUpWithPasswordCredentials,
-} from "@supabase/supabase-js";
+} from "@supabase/supabase-js/dist/module/index";
+
 import { createClient } from "../supabase/client";
 
 class AuthService {
-  private supabase = createClient();
-
   async login(req: LoginRequest): Promise<void> {
-    const { error } = await this.supabase.auth.signInWithPassword({
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({
       email: req.email,
       password: req.password,
     });
@@ -38,8 +38,9 @@ class AuthService {
         emailRedirectTo: `${window.location.origin}/dashboard`,
       },
     };
+    const supabase = createClient();
 
-    const res = await this.supabase.auth.signUp(credentials);
+    const res = await supabase.auth.signUp(credentials);
     if (res.error) throw res.error;
 
     if (res.data.user?.identities?.length === 0)
@@ -47,18 +48,17 @@ class AuthService {
   }
 
   async forgotPassword(req: ForgotPasswordRequest): Promise<void> {
-    const { error } = await this.supabase.auth.resetPasswordForEmail(
-      req.email,
-      {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
-      },
-    );
+    const supabase = createClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(req.email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
 
     if (error) throw error;
   }
 
   async resetPassword(req: ResetPasswordRequest): Promise<void> {
-    const { error } = await this.supabase.auth.updateUser({
+    const supabase = createClient();
+    const { error } = await supabase.auth.updateUser({
       password: req.password,
     });
 
@@ -66,13 +66,15 @@ class AuthService {
   }
 
   async logout(): Promise<void> {
-    const { error } = await this.supabase.auth.signOut({ scope: "local" });
+    const supabase = createClient();
+    const { error } = await supabase.auth.signOut({ scope: "local" });
 
     if (error) throw error;
   }
 
   async getUser() {
-    const { data } = await this.supabase.auth.getUser();
+    const supabase = createClient();
+    const { data } = await supabase.auth.getUser();
 
     return data?.user;
   }
