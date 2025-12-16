@@ -128,7 +128,7 @@ export default function LessonPage({
                       </div>
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger-600">
                         <span className="text-sm font-semibold">
-                          {val.count}
+                          {val.count}w
                         </span>
                       </div>
                     </div>
