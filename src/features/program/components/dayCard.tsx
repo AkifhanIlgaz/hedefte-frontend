@@ -1,21 +1,21 @@
-import { useSessions } from "@/src/queries/useSessions";
+import { useSessionsOfDay } from "@/src/lib/queries/useSessions";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { useDisclosure } from "@heroui/modal";
 import { Spinner } from "@heroui/spinner";
 import clsx from "clsx";
-import { format, isSameDay } from "date-fns";
+import { endOfWeek, format, isSameDay, startOfWeek } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Calendar, Plus } from "lucide-react";
 import AddSessionModal from "./addSessionModal";
 import SessionItem from "./sessionItem";
 
 export default function DayCard({ date }: { date: Date }) {
-  const isToday = isSameDay(date, new Date());
+  const isToday = isSameDay(date!, new Date());
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { sessions, isLoading } = useSessions({
-    date,
-  });
+  const start = startOfWeek(date, { weekStartsOn: 1 });
+  const end = endOfWeek(date, { weekStartsOn: 1 });
+  const { data: sessions, isPending } = useSessionsOfDay(date, start, end);
 
   return (
     <Card
@@ -26,10 +26,10 @@ export default function DayCard({ date }: { date: Date }) {
       <CardHeader className="flex flex-row items-center justify-between  border-b-2 ">
         <div>
           <span className="text-lg font-bold text-secondary">
-            {format(date, "EEEE", { locale: tr })}
+            {format(date!, "EEEE", { locale: tr })}
           </span>
           <div className="text-xs text-default-500 font-medium">
-            {format(date, "d MMMM", { locale: tr })}
+            {format(date!, "d MMMM", { locale: tr })}
           </div>
         </div>
 
@@ -42,18 +42,23 @@ export default function DayCard({ date }: { date: Date }) {
           <Plus className="h-4 w-4" />
         </Button>
         <AddSessionModal
-          date={date}
+          date={date!}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
         />
       </CardHeader>
 
       <CardBody className="pt-4">
-        {isLoading ? (
+        {isPending ? (
           <div className="flex flex-col items-center justify-center text-slate-400 text-sm">
             <Spinner className="h-8 w-8 mb-2" />{" "}
             {/* Replace Loader with Spinner */}
             Oturumlar yükleniyor...
+          </div>
+        ) : sessions?.length === 0 ? (
+          <div className="flex flex-col h-fit items-center justify-center text-slate-400 text-sm ">
+            <Calendar className="h-8 w-8 mb-2 opacity-20" />
+            Henüz oturum eklenmedi.
           </div>
         ) : (
           <div className="space-y-3">
@@ -61,14 +66,8 @@ export default function DayCard({ date }: { date: Date }) {
               ?.slice() // Orijinal diziyi değiştirmemek için bir kopya oluştur
               .sort((a, b) => Number(a.isCompleted) - Number(b.isCompleted)) // Tamamlanmamışlar üstte, tamamlanmışlar altta
               .map((session) => (
-                <SessionItem key={session.id} session={session} date={date} />
+                <SessionItem key={session.id} session={session} date={date!} />
               ))}
-          </div>
-        )}
-        {!isLoading && sessions.length === 0 && (
-          <div className="flex flex-col h-fit items-center justify-center text-slate-400 text-sm ">
-            <Calendar className="h-8 w-8 mb-2 opacity-20" />
-            Henüz oturum eklenmedi.
           </div>
         )}
       </CardBody>

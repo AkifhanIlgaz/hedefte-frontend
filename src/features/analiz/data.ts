@@ -700,4 +700,5 @@ export const allLessons = {
   TYT: tytLessons,
   AYT_SAY: sayLessons,
   AYT_EA: eaLessons,
+  AYT: { ...sayLessons, ...eaLessons },
 };

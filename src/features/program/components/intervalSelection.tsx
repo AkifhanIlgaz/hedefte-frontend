@@ -1,44 +1,23 @@
 "use client";
 
 import { Button } from "@heroui/button";
-import {
-  addDays,
-  eachDayOfInterval,
-  endOfWeek,
-  format,
-  startOfDay,
-  startOfWeek,
-  subDays,
-} from "date-fns";
+import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
-import { useEffect, useState } from "react";
 
 interface IntervalSelectionProps {
+  handlePrevWeek: () => void;
+  handleNextWeek: () => void;
+  handleToday: () => void;
   weekDays: Date[];
-  weekDaysAction: (days: Date[]) => void;
 }
 
 export default function IntervalSelection({
+  handlePrevWeek,
+  handleNextWeek,
+  handleToday,
   weekDays,
-  weekDaysAction,
 }: IntervalSelectionProps) {
-  const [startDate, setStartDate] = useState(startOfDay(new Date()));
-
-  useEffect(() => {
-    const start = startOfWeek(startDate, { weekStartsOn: 1 });
-    const end = endOfWeek(startDate, { weekStartsOn: 1 });
-    const days = eachDayOfInterval({ start, end });
-
-    weekDaysAction(days);
-  }, [startDate]);
-
-  const handlePrevWeek = () =>
-    setStartDate((date) => subDays(startOfWeek(date, { weekStartsOn: 1 }), 7));
-  const handleNextWeek = () =>
-    setStartDate((date) => addDays(startOfWeek(date, { weekStartsOn: 1 }), 7));
-  const handleToday = () => setStartDate(startOfDay(new Date()));
-
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-slate-200 shadow-sm dark:border-slate-700 bg-neutral">
       <div className="flex items-center gap-2">

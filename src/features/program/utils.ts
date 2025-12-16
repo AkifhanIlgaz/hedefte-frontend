@@ -49,7 +49,9 @@ export const getLessonStyles = (exam: Exam, lessonName: string) => {
   return bgClass + iconColor;
 };
 
-export const getTopics = (exam?: Exam, lessonName?: LessonName) => {
+export const getTopics = (exam?: Exam | "AYT", lessonName?: LessonName) => {
+  if (!lessonName || !exam) return [];
+
   switch (exam) {
     case "TYT":
       return allLessons.TYT[lessonName as keyof typeof allLessons.TYT].topics;
@@ -61,7 +63,13 @@ export const getTopics = (exam?: Exam, lessonName?: LessonName) => {
     case "AYT_EA":
       return allLessons.AYT_EA[lessonName as keyof typeof allLessons.AYT_EA]
         .topics;
+
+    case "AYT":
+      return allLessons.AYT[lessonName as keyof typeof allLessons.AYT].topics;
     default:
       return [];
   }
 };
+
+export const toDateKey = (d: string | Date) =>
+  new Date(d).toISOString().split("T")[0];

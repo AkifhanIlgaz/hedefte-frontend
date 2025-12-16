@@ -53,7 +53,6 @@ export default function AddSessionModal({
   onOpenChange,
 }: AddSessionModalProps) {
   const [lessonNames, setLessonNames] = useState<LessonName[]>([]);
-
   const queryClient = useQueryClient();
   const form = useForm<AddSessionRequest>({
     resolver: zodResolver(addSessionSchema),
@@ -126,6 +125,7 @@ export default function AddSessionModal({
                   placeholder="Lütfen çalışacağınız sınavı seçiniz."
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     form.setValue("exam", e.target.value);
+
                     switch (e.target.value) {
                       case "TYT":
                         setLessonNames([...TytLessonNames]);
@@ -141,7 +141,6 @@ export default function AddSessionModal({
                         setLessonNames([]);
                         break;
                     }
-
                     form.trigger("exam");
                   }}
                   errorMessage={form.formState.errors.exam?.message}
@@ -177,7 +176,7 @@ export default function AddSessionModal({
                   isVirtualized
                   selectionMode="single"
                   disallowEmptySelection
-                  maxListboxHeight={160}
+                  maxListboxHeight={192}
                   placeholder="Lütfen hangi tür çalışma yapacağınızı seçiniz."
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     form.setValue("type", e.target.value);
@@ -205,8 +204,8 @@ export default function AddSessionModal({
                   isInvalid={!!form.formState.errors.topic}
                 >
                   {getTopics(
-                    form.watch("exam", undefined) as Exam,
-                    form.watch("lesson", undefined) as LessonName,
+                    form.watch("exam") as Exam | "AYT",
+                    form.watch("lesson") as LessonName,
                   ).map((topic) => (
                     <AutocompleteItem key={topic}>{topic}</AutocompleteItem>
                   ))}

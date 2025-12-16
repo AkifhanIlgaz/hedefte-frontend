@@ -194,6 +194,7 @@ export default function SessionDetailsModal({
                   disallowEmptySelection
                   placeholder="Lütfen çalışma yapacağınız dersi seçiniz."
                   {...form.register("lesson")}
+                  value={form.watch("lesson")}
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     form.setValue("lesson", e.target.value);
                     form.trigger("lesson");
