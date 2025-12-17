@@ -68,7 +68,7 @@ export default function Sidebar({
         )}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between h-[3rem] px-4 border-b border-default-500/50">
+        <div className="flex items-center justify-between h-12 px-4 border-b border-default-500/50">
           {isSidebarOpen && (
             <div className="flex items-center gap-2">
               <Logo />

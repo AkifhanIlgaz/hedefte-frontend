@@ -4,11 +4,11 @@ import {
   RegisterRequest,
   ResetPasswordRequest,
 } from "@/src/features/auth/schemas";
+
 import {
   AuthApiError,
   SignUpWithPasswordCredentials,
-} from "@supabase/supabase-js/dist/module/index";
-
+} from "@supabase/supabase-js";
 import { createClient } from "../supabase/client";
 
 class AuthService {

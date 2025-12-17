@@ -311,7 +311,7 @@ export default function GeneralChart({
             : null;
 
         return `
-          <div class="flex min-w-[180px] flex-col gap-1 px-2.5 py-2">
+          <div class="flex min-w-45 flex-col gap-1 px-2.5 py-2">
             <span class="text-xs ${dateTextClass}">${formattedDate}</span>
             <span class="text-sm font-semibold ${nameTextClass}">${nameLabel}</span>
             ${netLabel ? `<span class="text-sm ${netTextClass}">Toplam Net: ${netLabel}</span>` : ""}

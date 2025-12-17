@@ -1,4 +1,4 @@
-import { isAuthApiError } from "@supabase/supabase-js/dist/module/index";
+import { isAuthApiError } from "@supabase/supabase-js";
 
 export function mapAuthError(error: unknown): string {
   if (isAuthApiError(error)) {
