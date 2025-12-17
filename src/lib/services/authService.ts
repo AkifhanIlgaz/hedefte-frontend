@@ -35,7 +35,7 @@ class AuthService {
           },
           examInfo: {},
         },
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     };
     const supabase = createClient();
