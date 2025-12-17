@@ -12,8 +12,8 @@ import {
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Hedefte",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "Zozakademi",
+  description: "Zozakademi",
   dashboardNavItems: [
     {
       label: "Anasayfa",
