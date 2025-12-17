@@ -6,6 +6,8 @@ import { Providers } from "./providers";
 
 import { fontOutfit } from "@/src/config/fonts";
 import { siteConfig } from "@/src/config/site";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: {
@@ -40,6 +42,8 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+          <SpeedInsights />
+          <Analytics />
           <div className="relative flex flex-col overflow-x-auto">
             {children}
           </div>
