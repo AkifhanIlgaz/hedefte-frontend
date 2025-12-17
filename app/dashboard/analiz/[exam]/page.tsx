@@ -50,7 +50,7 @@ export default function Page({
         />
         <div className="flex w-full md:w-auto gap-2">
           <Select
-            className="flex-1 md:w-[200px]"
+            className="flex-1 md:w-50"
             selectionMode="single"
             defaultSelectedKeys={new Set([timeInterval.toString()])}
             onChange={(event) => {

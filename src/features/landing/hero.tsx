@@ -15,7 +15,7 @@ export default function Hero() {
             <span className="text-primary">var mısın</span>?
           </h1>
           <p className="opacity-100 transform-none text-lg md:text-xl text-muted-foreground text-pretty max-w-2xl mx-auto">
-            <span className="text-primary font-bold">HEDEFTE</span> ile
+            <span className="text-primary font-bold">ZoZakademi</span> ile
             eksiklerini analiz et, planını oluştur, hızını artır — hepsi tek
             platformda. Çünkü senin hedefin, bizim önceliğimiz.
           </p>

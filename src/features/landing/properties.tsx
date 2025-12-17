@@ -87,7 +87,7 @@ export default function Properties() {
           </h2>
           <p className="text-lg text-muted-foreground text-pretty">
             <span className="text-pretty text-primary font-semibold">
-              HEDEFTE
+              ZoZakademi
             </span>{" "}
             , sınav sürecinde seni analizlerle, planlamayla ve verimli çalışma
             alışkanlıklarıyla destekler.

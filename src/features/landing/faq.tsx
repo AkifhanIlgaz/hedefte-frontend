@@ -26,7 +26,7 @@ export default function FAQ() {
               title="Denemelerimi nasıl analiz edebilirim?"
               className="text-sm text-muted-foreground"
             >
-              HEDEFTE sayesinde deneme netlerinizi analiz edebilir, güçlü ve
+              ZoZakademi sayesinde deneme netlerinizi analiz edebilir, güçlü ve
               zayıf yönlerinizi görebilirsiniz.
             </AccordionItem>
 

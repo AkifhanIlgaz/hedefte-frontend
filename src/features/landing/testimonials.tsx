@@ -8,7 +8,7 @@ export default function Testimonials() {
       name: "Ayşe Yılmaz",
       field: "SAY Öğrencisi",
       comment:
-        "Ben sayısal öğrencisiyim ve HEDEFTE’yi kullanmaya başladığımdan beri netlerim ciddi şekilde arttı. Analizlerde yanlış yaptığım konuları hemen görebiliyorum, ilerleme grafikleri hangi konularda eksik olduğumu gösteriyor. Eksik konularımı çalışma programıma eklemek çok kolay, hızlı okuma egzersizleriyle de sınav hızımı geliştirdim. Artık çalışmak hem daha verimli hem de daha eğlenceli!",
+        "Ben sayısal öğrencisiyim ve ZoZakademi’yi kullanmaya başladığımdan beri netlerim ciddi şekilde arttı. Analizlerde yanlış yaptığım konuları hemen görebiliyorum, ilerleme grafikleri hangi konularda eksik olduğumu gösteriyor. Eksik konularımı çalışma programıma eklemek çok kolay, hızlı okuma egzersizleriyle de sınav hızımı geliştirdim. Artık çalışmak hem daha verimli hem de daha eğlenceli!",
     },
     {
       initials: "MK",
@@ -29,14 +29,14 @@ export default function Testimonials() {
     //   name: "Fatma Erdoğan",
     //   field: "SAY Öğrencisi",
     //   comment:
-    //     "Ben sayısal öğrencisiyim ve HEDEFTE’yi kullanmaya başladığımdan beri netlerim ciddi şekilde arttı. Özellikle konu bazlı analizler ve eksik konuların gösterilmesi hayatımı kurtardı. Çalışma programımı eksiklerime göre ayarlamak çok kolay. Hızlı okuma egzersizleri de fark yaratıyor; artık paragraf sorularını daha hızlı ve doğru çözebiliyorum. Platformu kullanmak sınav hazırlığını çok daha organize ve verimli hale getirdi.",
+    //     "Ben sayısal öğrencisiyim ve ZoZakademi’yi kullanmaya başladığımdan beri netlerim ciddi şekilde arttı. Özellikle konu bazlı analizler ve eksik konuların gösterilmesi hayatımı kurtardı. Çalışma programımı eksiklerime göre ayarlamak çok kolay. Hızlı okuma egzersizleri de fark yaratıyor; artık paragraf sorularını daha hızlı ve doğru çözebiliyorum. Platformu kullanmak sınav hazırlığını çok daha organize ve verimli hale getirdi.",
     // },
     // {
     //   initials: "SM",
     //   name: "Selin Mutlu",
     //   field: "SÖZ Öğrencisi",
     //   comment:
-    //     "Platformu kullanmaya başladığımdan beri çalışma düzenim tamamen değişti. Deneme analizleri sayesinde eksik konularımı net görebiliyorum ve çalışma planımı ona göre şekillendirebiliyorum. Konu takibi ve hatırlatıcılar sayesinde hiçbir şeyi unutamıyorum. Hızlı okuma modülü sınavda zamandan tasarruf etmemi sağlıyor. Forum sayesinde diğer öğrencilerle deneyim paylaşmak motivasyonumu artırıyor. HEDEFTE sayesinde hem daha düzenli çalışıyorum hem de gelişimimi anlık takip edebiliyorum.",
+    //     "Platformu kullanmaya başladığımdan beri çalışma düzenim tamamen değişti. Deneme analizleri sayesinde eksik konularımı net görebiliyorum ve çalışma planımı ona göre şekillendirebiliyorum. Konu takibi ve hatırlatıcılar sayesinde hiçbir şeyi unutamıyorum. Hızlı okuma modülü sınavda zamandan tasarruf etmemi sağlıyor. Forum sayesinde diğer öğrencilerle deneyim paylaşmak motivasyonumu artırıyor. ZoZakademi sayesinde hem daha düzenli çalışıyorum hem de gelişimimi anlık takip edebiliyorum.",
     // },
     // {
     //   initials: "ZD",
@@ -50,7 +50,7 @@ export default function Testimonials() {
     //   name: "Mustafa Yılmaz",
     //   field: "SAY Öğrencisi",
     //   comment:
-    //     "HEDEFTE benim için gerçek bir fark yarattı. Deneme analizleri ve ilerleme grafikleri sayesinde hangi konularda iyi olduğumu ve hangi konularda eksik kaldığımı net görebiliyorum. Eksik konuları çalışma planıma eklemek çok kolay ve hatırlatıcılar sayesinde hiçbir şeyi unutamıyorum. Hızlı okuma egzersizleriyle paragraf sorularını çok daha hızlı çözebiliyorum. Forumda diğer öğrencilerin deneyimlerini görmek ve paylaşmak da motivasyonumu artırıyor. Artık sınava hazırlanmak daha planlı ve keyifli bir hâl aldı.",
+    //     "ZoZakademi benim için gerçek bir fark yarattı. Deneme analizleri ve ilerleme grafikleri sayesinde hangi konularda iyi olduğumu ve hangi konularda eksik kaldığımı net görebiliyorum. Eksik konuları çalışma planıma eklemek çok kolay ve hatırlatıcılar sayesinde hiçbir şeyi unutamıyorum. Hızlı okuma egzersizleriyle paragraf sorularını çok daha hızlı çözebiliyorum. Forumda diğer öğrencilerin deneyimlerini görmek ve paylaşmak da motivasyonumu artırıyor. Artık sınava hazırlanmak daha planlı ve keyifli bir hâl aldı.",
     // },
   ];
 

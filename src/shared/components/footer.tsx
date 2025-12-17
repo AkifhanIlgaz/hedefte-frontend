@@ -10,7 +10,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 ">
               <Logo />
-              <span className="font-bold text-lg">HEDEFTE</span>
+              <span className="font-bold text-lg">ZoZakademi</span>
             </div>
             <p className="text-sm opacity-80">
               Hedefe giden yolda yanınızdayız.
@@ -32,7 +32,7 @@ export default function Footer() {
                   href={"mailto:info@bridal.org"}
                   className="footer-nav-link"
                 >
-                  info@hedefte.org
+                  info@zozakademi.com
                 </Link>
               </li>
 
@@ -76,7 +76,7 @@ export default function Footer() {
 
         <div className="w-full flex  items-center justify-center gap-1 ">
           <span className="text-default-600">
-            © 2025 <span className="text-primary">Hedefte</span>
+            © 2025 <span className="text-primary">ZoZakademi</span>
           </span>
           <span className="text-default-600">|</span>
 
