@@ -11,5 +11,6 @@ export interface Session {
   notes: string;
   date: Date | string;
   duration: number;
+  questionCount?: number;
   isCompleted: boolean;
 }

@@ -40,6 +40,14 @@ export const getLessonStyles = (exam: Exam, lessonName: string) => {
         allLessons.AYT_EA[lessonName as keyof typeof allLessons.AYT_EA]
           .iconColor;
       break;
+    case "AYT":
+      bgClass = { ...allLessons.AYT_EA, ...allLessons.AYT_SAY }[
+        lessonName as keyof typeof allLessons.AYT_EA
+      ].bgClass;
+      iconColor = { ...allLessons.AYT_EA, ...allLessons.AYT_SAY }[
+        lessonName as keyof typeof allLessons.AYT_EA
+      ].iconColor;
+      break;
     default:
       bgClass = "bg-gray-100";
       iconColor = "text-gray-700";

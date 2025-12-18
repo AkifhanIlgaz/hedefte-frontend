@@ -17,7 +17,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Check, Moon } from "lucide-react";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   AytEaLessonNames,
@@ -63,14 +63,15 @@ export default function SessionDetailsModal({
     resolver: zodResolver(updateSessionSchema),
     defaultValues: {
       id: session.id,
-      lesson: session.lesson,
       exam: session.exam,
+      lesson: session.lesson,
       type: session.type,
       topic: session.topic,
       duration: session.duration,
       notes: session.notes,
       date: date,
       goal: session.goal,
+      questionCount: session.questionCount,
       isCompleted: session.isCompleted,
     },
   });
@@ -110,6 +111,23 @@ export default function SessionDetailsModal({
     }
   };
 
+  useEffect(() => {
+    const exam = form.getValues("exam");
+    switch (exam) {
+      case "TYT":
+        setLessonNames([...TytLessonNames]);
+        break;
+      case "AYT":
+        setLessonNames(
+          Array.from(new Set([...AytEaLessonNames, ...AytMfLessonNames])),
+        );
+        break;
+      default:
+        setLessonNames([]);
+        break;
+    }
+  }, [form, isOpen, session.exam]);
+
   return (
     <Modal
       isOpen={isOpen}
@@ -118,15 +136,16 @@ export default function SessionDetailsModal({
       onClose={() => {
         form.reset({
           id: session.id,
-          lesson: session.lesson,
+          date: date,
           exam: session.exam,
+          lesson: session.lesson,
+          questionCount: session.questionCount,
           type: session.type,
           topic: session.topic,
+          isCompleted: session.isCompleted,
           duration: session.duration,
           notes: session.notes,
-          date: date,
           goal: session.goal,
-          isCompleted: session.isCompleted,
         });
         onOpenChange(false);
       }}
@@ -194,6 +213,7 @@ export default function SessionDetailsModal({
                   disallowEmptySelection
                   placeholder="Lütfen çalışma yapacağınız dersi seçiniz."
                   {...form.register("lesson")}
+                  value={form.watch(`lesson`)}
                   errorMessage={form.formState.errors.lesson?.message}
                   isInvalid={!!form.formState.errors.lesson}
                 >
