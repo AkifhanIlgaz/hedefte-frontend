@@ -10,12 +10,12 @@ export function useUpdateSession() {
     mutationFn: (req: UpdateSessionRequest) =>
       sessionService.updateSession(req),
 
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (data, variables) => {
+      await queryClient.invalidateQueries({
         queryKey: [
           "sessions",
-          startOfWeek(data.date, { weekStartsOn: 1 }).toISOString(),
-          endOfWeek(data.date, { weekStartsOn: 1 }).toISOString(),
+          startOfWeek(variables.date, { weekStartsOn: 1 }).toISOString(),
+          endOfWeek(variables.date, { weekStartsOn: 1 }).toISOString(),
         ],
       });
     },

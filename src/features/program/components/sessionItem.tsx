@@ -1,3 +1,4 @@
+import { useDeleteSession } from "@/src/lib/queries/sessions/useDeleteSession";
 import { Card, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import {
@@ -8,12 +9,9 @@ import {
 } from "@heroui/dropdown";
 import { useDisclosure } from "@heroui/modal";
 import { addToast } from "@heroui/toast";
-import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, EllipsisVertical, Info, Trash } from "lucide-react";
-import { GeneralResponse } from "../../analiz/types";
-import { fetcher } from "../../analiz/utils";
 import { Session } from "../types";
 import { getBadgeColor, getLessonStyles } from "../utils";
 import CompleteSessionModal from "./completeSessionModal";
@@ -26,40 +24,27 @@ export default function SessionItem({
   session: Session;
   date: Date;
 }) {
-  const queryClient = useQueryClient();
   const detailsModal = useDisclosure();
   const completeModal = useDisclosure();
-  const deleteSession = async () => {
-    try {
-      const response: GeneralResponse<any> = await fetcher(
-        `sessions/${session.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
 
-      if (response.success) {
-        addToast({
-          title: "Başarılı",
-          description: "Oturum başarıyla silindi.",
-          color: "success",
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["sessions", date.toISOString()],
-          exact: false,
-        });
-      } else {
-        throw new Error(response.message || "Oturum silinemedi.");
-      }
-    } catch (error: any) {
+  const { mutateAsync: deleteSession, isPending } = useDeleteSession(date);
+
+  const handleDeleteSession = async () => {
+    try {
+      await deleteSession(session.id);
       addToast({
-        title: "Hata",
-        description: error.message || "Bir hata oluştu.",
-        color: "danger",
+        title: "Başarılı",
+        description: "Oturum başarıyla silindi.",
+        color: "success",
       });
+    } catch (error) {
+      if (error instanceof Error) {
+        addToast({
+          title: "Hata",
+          description: error.message || "Bir hata oluştu.",
+          color: "danger",
+        });
+      }
     }
   };
 
@@ -87,7 +72,7 @@ export default function SessionItem({
               "flex-1 w-full shadow border border-default",
               session.isCompleted && "bg-success-50 border-success-500 ",
             )}
-            isPressable
+            isPressable={!isPending}
             onPress={() => {
               if (session.isCompleted) {
                 return;
@@ -124,7 +109,7 @@ export default function SessionItem({
                 </DropdownTrigger>
                 <DropdownMenu
                   onAction={(key) => {
-                    if (key === "delete") deleteSession();
+                    if (key === "delete") handleDeleteSession();
                     if (key === "details") detailsModal.onOpen();
                   }}
                 >
