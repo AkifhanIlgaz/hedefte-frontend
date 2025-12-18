@@ -1,5 +1,6 @@
 import { GeneralResponse } from "@/src/features/analiz/types";
 import { AddSessionRequest } from "@/src/features/program/schemas/add_session.schema";
+import { CompleteSessionRequest } from "@/src/features/program/schemas/complete_session.schema";
 import { UpdateSessionRequest } from "@/src/features/program/schemas/update_session.schema";
 import { Session } from "@/src/features/program/types";
 import api from "../axios";
@@ -23,8 +24,6 @@ class SessionService {
 
     if (!res.data?.success) throw new Error(res.data.message);
 
-    console.log(res.data.payload);
-
     return res.data.payload;
   }
 
@@ -46,6 +45,12 @@ class SessionService {
 
   async deleteSession(id: string): Promise<void> {
     const res = await api.delete<GeneralResponse<void>>(`sessions/${id}`);
+
+    if (!res.data?.success) throw new Error(res.data.message);
+  }
+
+  async completeSession(req: CompleteSessionRequest): Promise<void> {
+    const res = await api.post<GeneralResponse<void>>(`sessions/complete`, req);
 
     if (!res.data?.success) throw new Error(res.data.message);
   }

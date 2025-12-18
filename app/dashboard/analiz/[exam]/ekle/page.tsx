@@ -35,8 +35,6 @@ export default function Page({
     },
   });
 
-  console.log(form.formState.errors);
-
   const submitHandler = form.handleSubmit(async (data: AddExamRequest) => {
     try {
       await mutateAsync(data);

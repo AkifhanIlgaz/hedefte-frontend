@@ -6,15 +6,15 @@ export function useDeleteExam(exam: Exam) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (examId: string) => examService.deleteExam(examId),
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (data, variables) => {
+      await queryClient.invalidateQueries({
         queryKey: ["analytics", "lessons", exam],
       });
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["analytics", "exams", exam],
       });
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["exams", exam],
       });
     },

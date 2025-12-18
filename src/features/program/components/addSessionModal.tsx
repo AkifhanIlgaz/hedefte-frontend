@@ -1,5 +1,6 @@
 "use client";
 
+import { useAddSession } from "@/src/lib/queries/useSessions";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";
@@ -13,7 +14,6 @@ import {
 import { Select, SelectItem } from "@heroui/select";
 import { addToast } from "@heroui/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { ChangeEvent, Key, useState } from "react";
@@ -25,7 +25,6 @@ import {
   LessonName,
   TytLessonNames,
 } from "../../analiz/types";
-import { fetcher } from "../../analiz/utils";
 import {
   AddSessionRequest,
   addSessionSchema,
@@ -53,7 +52,6 @@ export default function AddSessionModal({
   onOpenChange,
 }: AddSessionModalProps) {
   const [lessonNames, setLessonNames] = useState<LessonName[]>([]);
-  const queryClient = useQueryClient();
   const form = useForm<AddSessionRequest>({
     resolver: zodResolver(addSessionSchema),
     defaultValues: {
@@ -62,33 +60,23 @@ export default function AddSessionModal({
     },
   });
 
+  const { mutateAsync, isPending } = useAddSession(date);
+
   const handleSubmit = async (data: AddSessionRequest) => {
     try {
-      const response = await fetcher("sessions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response?.success) {
-        addToast({
-          title: "Başarılı!",
-          description: "Oturum başarıyla eklendi.",
-          color: "success",
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["sessions", date.toISOString()],
-          exact: false,
-        });
-      } else {
-        throw new Error(response?.message || "Bilinmeyen bir hata oluştu.");
-      }
-    } catch (error: any) {
+      await mutateAsync(data);
       addToast({
-        title: "Hata!",
-        description: error.message || "Bir hata oluştu, lütfen tekrar deneyin.",
+        title: "Başarılı!",
+        description: "Oturum başarıyla eklendi.",
+        color: "success",
+      });
+    } catch (error) {
+      addToast({
+        title: "Bir hata oluştu.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Beklenmedik bir hata ile karşılaştık.",
         color: "danger",
       });
     } finally {
@@ -122,6 +110,7 @@ export default function AddSessionModal({
                   selectionMode="single"
                   disallowEmptySelection
                   maxListboxHeight={80}
+                  isDisabled={isPending}
                   placeholder="Lütfen çalışacağınız sınavı seçiniz."
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     form.setValue("exam", e.target.value);
@@ -156,6 +145,7 @@ export default function AddSessionModal({
                   labelPlacement="outside"
                   isVirtualized
                   selectionMode="single"
+                  isDisabled={isPending}
                   disallowEmptySelection
                   placeholder="Lütfen çalışma yapacağınız dersi seçiniz."
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
@@ -176,6 +166,7 @@ export default function AddSessionModal({
                   isVirtualized
                   selectionMode="single"
                   disallowEmptySelection
+                  isDisabled={isPending}
                   maxListboxHeight={192}
                   placeholder="Lütfen hangi tür çalışma yapacağınızı seçiniz."
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
@@ -195,6 +186,7 @@ export default function AddSessionModal({
                   label="Konu"
                   labelPlacement="outside"
                   isVirtualized
+                  isDisabled={isPending}
                   placeholder="Lütfen çalışma yapacağınız konuyu seçiniz."
                   onSelectionChange={(value: Key | null) => {
                     form.setValue("topic", value as string);
@@ -216,16 +208,22 @@ export default function AddSessionModal({
                   className="col-span-2"
                   label="Hedef & Amaç"
                   labelPlacement="outside"
+                  isDisabled={isPending}
                   placeholder="Her çalışmanın spesifik bir amacı ve hedefi olmalıdır. Örneğin, trigonometride toplam-fark formüllerinde takıldığım soru tiplerinin çözümünü izleyip, her soruyu hoca çözmeden önce kendim deneyerek 1 saatte bu eksiği kapatacağım."
                   {...form.register("goal")}
                 ></Textarea>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" onPress={onClose}>
+                <Button color="danger" onPress={onClose} isDisabled={isPending}>
                   İptal
                 </Button>
-                <Button color="primary" type="submit">
-                  Oturum Ekle
+                <Button
+                  color="primary"
+                  type="submit"
+                  isDisabled={isPending}
+                  isLoading={isPending}
+                >
+                  {isPending ? "Oturum ekleniyor ..." : "Oturum Ekle"}
                 </Button>
               </ModalFooter>
             </form>

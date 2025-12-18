@@ -194,11 +194,6 @@ export default function SessionDetailsModal({
                   disallowEmptySelection
                   placeholder="Lütfen çalışma yapacağınız dersi seçiniz."
                   {...form.register("lesson")}
-                  value={form.watch("lesson")}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                    form.setValue("lesson", e.target.value);
-                    form.trigger("lesson");
-                  }}
                   errorMessage={form.formState.errors.lesson?.message}
                   isInvalid={!!form.formState.errors.lesson}
                 >
@@ -257,7 +252,7 @@ export default function SessionDetailsModal({
                       <NumberInput
                         endContent={<span>dakika</span>}
                         labelPlacement="outside"
-                        value={field.value ?? 0}
+                        value={form.watch("duration")}
                         onValueChange={(val) => field.onChange(val ?? 0)}
                         min={0}
                         variant="flat"
@@ -291,7 +286,6 @@ export default function SessionDetailsModal({
                   label="Notlar"
                   labelPlacement="outside-top"
                   variant="bordered"
-                  value={form.watch(`notes`)}
                   classNames={{
                     input: "pt-1",
                   }}

@@ -1,3 +1,4 @@
+import { useCompleteSession } from "@/src/lib/queries/useSessions";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Textarea } from "@heroui/input";
@@ -8,12 +9,16 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/modal";
-import { addToast, NumberInput } from "@heroui/react";
-import { useQueryClient } from "@tanstack/react-query";
+import { NumberInput } from "@heroui/react";
+import { addToast } from "@heroui/toast";
+import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { BookOpen, Clock } from "lucide-react";
-import { GeneralResponse } from "../../analiz/types";
-import { fetcher } from "../../analiz/utils";
+import { useForm } from "react-hook-form";
+import {
+  CompleteSessionRequest,
+  completeSesssionSchema,
+} from "../schemas/complete_session.schema";
 import { Session } from "../types";
 import { getBadgeColor, getLessonStyles } from "../utils";
 
@@ -30,43 +35,42 @@ export default function CompleteSessionModal({
   isOpen,
   onOpenChange,
 }: CompleteModalProps) {
-  const queryClient = useQueryClient();
-  const toggleCompletion = async () => {
+  const form = useForm<CompleteSessionRequest>({
+    resolver: zodResolver(completeSesssionSchema),
+    defaultValues: {
+      id: session.id,
+    },
+  });
+  const { mutateAsync: completeSession, isPending } = useCompleteSession(date);
+
+  const handleSubmit = async (data: CompleteSessionRequest) => {
     try {
-      const response: GeneralResponse<any> = await fetcher(
-        `sessions/complete/${session.id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...session,
-            isCompleted: !session.isCompleted,
-          }),
-        },
-      );
-      if (response.success) {
-        queryClient.invalidateQueries({
-          queryKey: ["sessions", date.toISOString()],
-          exact: false,
-        });
-      } else {
-        throw new Error(response.message || "Oturum silinemedi.");
-      }
-    } catch (error: any) {
+      await completeSession(data);
       addToast({
-        title: "Hata",
-        description: error.message || "Bir hata oluştu.",
+        title: "Başarılı!",
+        description: "Oturum başarıyla tamamlandı.",
+        color: "success",
+      });
+    } catch (error) {
+      addToast({
+        title: "Bir hata oluştu.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Beklenmedik bir hata ile karşılaştık.",
         color: "danger",
       });
+    } finally {
+      form.reset();
+      onOpenChange(false);
     }
   };
+
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
       <ModalContent>
         {(onClose) => (
-          <>
+          <form onSubmit={form.handleSubmit(handleSubmit)}>
             <ModalHeader className="flex flex-col gap-1">
               Oturum Tamamla
             </ModalHeader>
@@ -111,16 +115,31 @@ export default function CompleteSessionModal({
                     <span>{new Date(session.date).toLocaleDateString()}</span>
                   </div>
                 </div>
+
                 <NumberInput
-                  endContent={<span className="">dakika</span>}
+                  endContent={<span>dakika</span>}
                   labelPlacement="outside"
                   variant="flat"
                   hideStepper
                   label="Süre"
+                  isDisabled={isPending}
+                  value={form.watch(`duration`)}
+                  errorMessage={
+                    form.formState.errors[`duration`]?.message as string
+                  }
+                  isInvalid={!!form.formState.errors[`duration`]}
+                  onInput={(e) => {
+                    form.setValue(
+                      `duration`,
+                      parseInt(e.currentTarget.value) || 0,
+                    );
+                    form.trigger(`duration`);
+                  }}
                   placeholder="Lütfen kaç dakika çalıştığınızı giriniz."
                 />
                 <Textarea
                   label="Hedef & Amaç"
+                  isDisabled={isPending}
                   labelPlacement="outside-top"
                   isReadOnly
                   variant="bordered"
@@ -133,6 +152,8 @@ export default function CompleteSessionModal({
                   label="Notlar"
                   labelPlacement="outside-top"
                   variant="bordered"
+                  isDisabled={isPending}
+                  {...form.register("notes")}
                   classNames={{
                     input: "pt-1",
                   }}
@@ -143,6 +164,19 @@ export default function CompleteSessionModal({
                     labelPlacement="outside"
                     placeholder="Lütfen çözülen soru adedini giriniz."
                     variant="bordered"
+                    isDisabled={isPending}
+                    value={form.watch(`questionCount`)}
+                    errorMessage={
+                      form.formState.errors[`questionCount`]?.message as string
+                    }
+                    isInvalid={!!form.formState.errors[`questionCount`]}
+                    onInput={(e) => {
+                      form.setValue(
+                        `questionCount`,
+                        parseInt(e.currentTarget.value) || 0,
+                      );
+                      form.trigger(`questionCount`);
+                    }}
                     classNames={{
                       input: "pt-1",
                     }}
@@ -154,16 +188,11 @@ export default function CompleteSessionModal({
               <Button color="danger" onPress={onClose}>
                 Kapat
               </Button>
-              <Button
-                color="primary"
-                onPress={() => {
-                  toggleCompletion().then(() => onClose());
-                }}
-              >
-                Tamamla
+              <Button color="primary" type="submit" isLoading={isPending}>
+                {isPending ? "Oturum tamamlanıyor ..." : "Oturumu Tamamla"}
               </Button>
             </ModalFooter>
-          </>
+          </form>
         )}
       </ModalContent>
     </Modal>

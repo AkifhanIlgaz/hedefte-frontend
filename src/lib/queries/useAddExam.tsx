@@ -7,18 +7,18 @@ export function useAddExam() {
 
   return useMutation({
     mutationFn: (req: AddExamRequest) => examService.addExam(req),
-    onSuccess: (data, variables) => {
+    onSuccess: async (data, variables) => {
       const { examType } = variables;
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["analytics", "lessons", examType],
       });
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["analytics", "exams", examType],
       });
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["exams", examType],
       });
     },

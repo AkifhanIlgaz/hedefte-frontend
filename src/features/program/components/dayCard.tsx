@@ -42,7 +42,7 @@ export default function DayCard({ date }: { date: Date }) {
           <Plus className="h-4 w-4" />
         </Button>
         <AddSessionModal
-          date={date!}
+          date={date}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
         />
@@ -55,7 +55,7 @@ export default function DayCard({ date }: { date: Date }) {
             {/* Replace Loader with Spinner */}
             Oturumlar yükleniyor...
           </div>
-        ) : sessions?.length === 0 ? (
+        ) : !sessions || sessions?.length === 0 ? (
           <div className="flex flex-col h-fit items-center justify-center text-slate-400 text-sm ">
             <Calendar className="h-8 w-8 mb-2 opacity-20" />
             Henüz oturum eklenmedi.
