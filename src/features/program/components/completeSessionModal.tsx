@@ -1,4 +1,4 @@
-import { useCompleteSession } from "@/src/lib/queries/useSessions";
+import { useCompleteSession } from "@/src/lib/queries/sessions/useCompleteSession";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Textarea } from "@heroui/input";

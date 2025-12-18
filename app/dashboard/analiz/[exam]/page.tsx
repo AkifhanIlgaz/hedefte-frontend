@@ -10,7 +10,7 @@ import { Exam } from "@/src/features/analiz/types";
 import {
   useExamAnalytics,
   useLessonAnalytics,
-} from "@/src/lib/queries/useAnalytics";
+} from "@/src/lib/queries/analytics/useAnalytics";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";

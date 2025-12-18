@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 
 import { Input } from "@heroui/input";
 
-import { useResetPassword } from "@/src/lib/queries/useResetPassword";
+import { useResetPassword } from "@/src/lib/queries/auth/useResetPassword";
 import { Link } from "@heroui/link";
 import { addToast } from "@heroui/toast";
 import { authRoutes } from "../../auth.routes";

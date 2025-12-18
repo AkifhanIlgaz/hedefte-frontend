@@ -1,6 +1,6 @@
 import { Exam } from "@/src/features/analiz/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import examService from "../services/examService";
+import examService from "../../services/examService";
 
 export function useDeleteExam(exam: Exam) {
   const queryClient = useQueryClient();

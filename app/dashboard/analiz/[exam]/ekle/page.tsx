@@ -7,7 +7,7 @@ import {
 } from "@/src/features/analiz/schemas/add_exam.schema";
 import { Exam } from "@/src/features/analiz/types";
 import { defaultLessonsForExam } from "@/src/features/analiz/utils";
-import { useAddExam } from "@/src/lib/queries/useAddExam";
+import { useAddExam } from "@/src/lib/queries/exams/useAddExam";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { addToast } from "@heroui/toast";
 import { zodResolver } from "@hookform/resolvers/zod";

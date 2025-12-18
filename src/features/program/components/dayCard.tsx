@@ -1,4 +1,4 @@
-import { useSessionsOfDay } from "@/src/lib/queries/useSessions";
+import { useSessionsOfDay } from "@/src/lib/queries/sessions/useSessions";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { useDisclosure } from "@heroui/modal";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useAddSession } from "@/src/lib/queries/useSessions";
+import { useAddSession } from "@/src/lib/queries/sessions/useAddSession";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";

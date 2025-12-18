@@ -2,7 +2,7 @@
 
 import DayCard from "@/src/features/program/components/dayCard";
 import IntervalSelection from "@/src/features/program/components/intervalSelection";
-import { useSessions } from "@/src/lib/queries/useSessions";
+import { useSessions } from "@/src/lib/queries/sessions/useSessions";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import {
   addDays,
