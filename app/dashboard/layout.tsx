@@ -2,7 +2,7 @@
 
 import MissingProfileInfoModal from "@/src/features/profil/components/MissingProfileInfoModal";
 import { PersonalInfo } from "@/src/features/profil/types";
-import { useLogout } from "@/src/lib/queries/useLogout";
+import { useLogout } from "@/src/lib/queries/auth/useLogout";
 import { createClient } from "@/src/lib/supabase/client";
 import { Logo } from "@/src/shared/components/icons";
 import Sidebar from "@/src/shared/components/sidebar";

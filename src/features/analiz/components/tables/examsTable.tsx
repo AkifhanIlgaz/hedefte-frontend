@@ -1,5 +1,5 @@
-import { useDeleteExam } from "@/src/lib/queries/useDeleteExam";
-import { useExams } from "@/src/lib/queries/useExams";
+import { useDeleteExam } from "@/src/lib/queries/exams/useDeleteExam";
+import { useExams } from "@/src/lib/queries/exams/useExams";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";

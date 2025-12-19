@@ -11,7 +11,7 @@ import { Button } from "@heroui/button";
 import { Checkbox } from "@heroui/checkbox";
 import { Input } from "@heroui/input";
 
-import { useLogin } from "@/src/lib/queries/useLogin";
+import { useLogin } from "@/src/lib/queries/auth/useLogin";
 import { Link } from "@heroui/link";
 import { addToast } from "@heroui/toast";
 import { authRoutes } from "../../auth.routes";

@@ -2,8 +2,8 @@
 import GeneralAnalysisCard from "@/src/features/analiz/components/cards/GeneralAnalysisCard";
 import GeneralChart from "@/src/features/analiz/components/charts/generalChart";
 import { Exam } from "@/src/features/analiz/types";
-import { useAnalyticsOfLesson } from "@/src/lib/queries/useAnalytics";
-import { useTopicWrongCounts } from "@/src/lib/queries/useTopicWrongCounts";
+import { useAnalyticsOfLesson } from "@/src/lib/queries/analytics/useAnalytics";
+import { useTopicWrongCounts } from "@/src/lib/queries/analytics/useTopicWrongCounts";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Card, CardBody } from "@heroui/card";
 import { Select, SelectItem } from "@heroui/select";

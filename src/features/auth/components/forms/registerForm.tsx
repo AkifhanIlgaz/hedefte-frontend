@@ -9,7 +9,7 @@ import { Button } from "@heroui/button";
 
 import { Input } from "@heroui/input";
 
-import { useRegister } from "@/src/lib/queries/useRegister";
+import { useRegister } from "@/src/lib/queries/auth/useRegister";
 import { Link } from "@heroui/link";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";

@@ -1,6 +1,6 @@
 import { Exam, LessonAnalytics, LessonName } from "@/src/features/analiz/types";
 import { useQuery } from "@tanstack/react-query";
-import analyticsService from "../services/analyticsService";
+import analyticsService from "../../services/analyticsService";
 
 export const useExamAnalytics = (exam: Exam, timeInterval: number) => {
   return useQuery({

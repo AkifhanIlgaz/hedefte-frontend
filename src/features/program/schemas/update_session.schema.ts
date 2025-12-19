@@ -12,6 +12,7 @@ export const updateSessionSchema = z
     goal: z.string("Lütfen geçerli bir hedef giriniz.").max(255).optional(),
     notes: z.string("Lütfen geçerli bir not giriniz.").max(255).optional(),
     duration: z.number("Lütfen geçerli bir süre giriniz.").min(0).optional(),
+    questionCount: z.number("Lütfen geçerli bir sayı giriniz.").optional(),
   })
   .strict();
 

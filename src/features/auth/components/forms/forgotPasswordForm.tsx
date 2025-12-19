@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 
-import { useForgotPassword } from "@/src/lib/queries/useForgotPassword";
+import { useForgotPassword } from "@/src/lib/queries/auth/useForgotPassword";
 import { Link } from "@heroui/link";
 import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";

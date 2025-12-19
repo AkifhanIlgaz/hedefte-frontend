@@ -2,7 +2,7 @@
 
 import DayCard from "@/src/features/program/components/dayCard";
 import IntervalSelection from "@/src/features/program/components/intervalSelection";
-import { useSessions } from "@/src/lib/queries/useSessions";
+import { useSessions } from "@/src/lib/queries/sessions/useSessions";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import {
   addDays,
@@ -24,7 +24,6 @@ export default function Page() {
     endOfWeek(startDate, { weekStartsOn: 1 }),
   );
   useSessions(weekStart, weekEnd);
-
   useEffect(() => {
     const start = startOfWeek(startDate, { weekStartsOn: 1 });
     const end = endOfWeek(startDate, { weekStartsOn: 1 });
@@ -42,7 +41,7 @@ export default function Page() {
   const handleToday = () => setStartDate(startOfDay(new Date()));
 
   return (
-    <div className="flex flex-col gap-6 min-h-screen">
+    <div className="flex flex-col gap-6 ">
       <DashboardHeader
         title="Haftalık Çalışma Programım"
         description={
@@ -56,7 +55,7 @@ export default function Page() {
         handleToday={handleToday}
         weekDays={weekDays}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-6 auto-rows-auto-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-6 ">
         {weekDays.map((day) => (
           <DayCard key={day.toString()} date={day} />
         ))}

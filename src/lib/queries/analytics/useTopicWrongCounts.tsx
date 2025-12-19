@@ -1,6 +1,6 @@
 import { Exam, LessonName } from "@/src/features/analiz/types";
 import { useQuery } from "@tanstack/react-query";
-import topicMistakeService from "../services/topicMistakeService";
+import topicMistakeService from "../../services/topicMistakeService";
 
 export const useTopicWrongCounts = (
   exam: Exam,

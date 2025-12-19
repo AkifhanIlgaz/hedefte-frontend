@@ -1,10 +1,10 @@
-import { useSessionsOfDay } from "@/src/lib/queries/useSessions";
+import { useSessionsOfDay } from "@/src/lib/queries/sessions/useSessions";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { useDisclosure } from "@heroui/modal";
 import { Spinner } from "@heroui/spinner";
 import clsx from "clsx";
-import { endOfWeek, format, isSameDay, startOfWeek } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Calendar, Plus } from "lucide-react";
 import AddSessionModal from "./addSessionModal";
@@ -13,9 +13,7 @@ import SessionItem from "./sessionItem";
 export default function DayCard({ date }: { date: Date }) {
   const isToday = isSameDay(date!, new Date());
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const start = startOfWeek(date, { weekStartsOn: 1 });
-  const end = endOfWeek(date, { weekStartsOn: 1 });
-  const { data: sessions, isPending } = useSessionsOfDay(date, start, end);
+  const { data: sessions, isPending } = useSessionsOfDay(date);
 
   return (
     <Card
@@ -42,7 +40,7 @@ export default function DayCard({ date }: { date: Date }) {
           <Plus className="h-4 w-4" />
         </Button>
         <AddSessionModal
-          date={date!}
+          date={date}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
         />
@@ -55,7 +53,7 @@ export default function DayCard({ date }: { date: Date }) {
             {/* Replace Loader with Spinner */}
             Oturumlar yükleniyor...
           </div>
-        ) : sessions?.length === 0 ? (
+        ) : !sessions || sessions?.length === 0 ? (
           <div className="flex flex-col h-fit items-center justify-center text-slate-400 text-sm ">
             <Calendar className="h-8 w-8 mb-2 opacity-20" />
             Henüz oturum eklenmedi.
@@ -63,7 +61,6 @@ export default function DayCard({ date }: { date: Date }) {
         ) : (
           <div className="space-y-3">
             {sessions
-              ?.slice() // Orijinal diziyi değiştirmemek için bir kopya oluştur
               .sort((a, b) => Number(a.isCompleted) - Number(b.isCompleted)) // Tamamlanmamışlar üstte, tamamlanmışlar altta
               .map((session) => (
                 <SessionItem key={session.id} session={session} date={date!} />

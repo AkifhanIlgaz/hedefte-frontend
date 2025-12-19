@@ -1,3 +1,4 @@
+import { useUpdateSession } from "@/src/lib/queries/sessions/useUpdateSession";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";
@@ -13,11 +14,10 @@ import { Select, SelectItem } from "@heroui/select";
 import { addToast } from "@heroui/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Key } from "@react-types/shared";
-import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Check, Moon } from "lucide-react";
-import { ChangeEvent, useState } from "react";
+import { Check, X } from "lucide-react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   AytEaLessonNames,
@@ -26,7 +26,6 @@ import {
   LessonName,
   TytLessonNames,
 } from "../../analiz/types";
-import { fetcher } from "../../analiz/utils";
 import {
   UpdateSessionRequest,
   updateSessionSchema,
@@ -57,58 +56,63 @@ export default function SessionDetailsModal({
   onOpenChange,
 }: SessionDetailsModalProps) {
   const [lessonNames, setLessonNames] = useState<LessonName[]>([]);
+  const { mutateAsync: updateSession, isPending } = useUpdateSession();
 
-  const queryClient = useQueryClient();
   const form = useForm<UpdateSessionRequest>({
     resolver: zodResolver(updateSessionSchema),
     defaultValues: {
       id: session.id,
-      lesson: session.lesson,
       exam: session.exam,
+      lesson: session.lesson,
       type: session.type,
       topic: session.topic,
       duration: session.duration,
       notes: session.notes,
       date: date,
       goal: session.goal,
+      questionCount: session.questionCount,
       isCompleted: session.isCompleted,
     },
   });
 
   const handleSubmit = async (data: UpdateSessionRequest) => {
     try {
-      const response = await fetcher("sessions", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      await updateSession(data);
 
-      if (response?.success) {
-        addToast({
-          title: "Başarılı!",
-          description: "Oturum başarıyla güncellendi.",
-          color: "success",
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["sessions", date.toISOString()],
-          exact: false,
-        });
-      } else {
-        throw new Error(response?.message || "Bilinmeyen bir hata oluştu.");
-      }
+      addToast({
+        title: "Başarılı!",
+        description: "Oturum başarıyla güncellendi.",
+        color: "success",
+      });
+      form.reset(data);
     } catch (error: any) {
       addToast({
         title: "Hata!",
         description: error.message || "Bir hata oluştu, lütfen tekrar deneyin.",
         color: "danger",
       });
-    } finally {
       form.reset();
+    } finally {
       onOpenChange(false);
     }
   };
+
+  useEffect(() => {
+    const exam = form.getValues("exam");
+    switch (exam) {
+      case "TYT":
+        setLessonNames([...TytLessonNames]);
+        break;
+      case "AYT":
+        setLessonNames(
+          Array.from(new Set([...AytEaLessonNames, ...AytMfLessonNames])),
+        );
+        break;
+      default:
+        setLessonNames([]);
+        break;
+    }
+  }, [form, isOpen, session.exam]);
 
   return (
     <Modal
@@ -118,15 +122,16 @@ export default function SessionDetailsModal({
       onClose={() => {
         form.reset({
           id: session.id,
-          lesson: session.lesson,
+          date: date,
           exam: session.exam,
+          lesson: session.lesson,
+          questionCount: session.questionCount,
           type: session.type,
           topic: session.topic,
+          isCompleted: session.isCompleted,
           duration: session.duration,
           notes: session.notes,
-          date: date,
           goal: session.goal,
-          isCompleted: session.isCompleted,
         });
         onOpenChange(false);
       }}
@@ -194,11 +199,7 @@ export default function SessionDetailsModal({
                   disallowEmptySelection
                   placeholder="Lütfen çalışma yapacağınız dersi seçiniz."
                   {...form.register("lesson")}
-                  value={form.watch("lesson")}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                    form.setValue("lesson", e.target.value);
-                    form.trigger("lesson");
-                  }}
+                  value={form.watch(`lesson`)}
                   errorMessage={form.formState.errors.lesson?.message}
                   isInvalid={!!form.formState.errors.lesson}
                 >
@@ -249,7 +250,7 @@ export default function SessionDetailsModal({
                     <AutocompleteItem key={topic}>{topic}</AutocompleteItem>
                   ))}
                 </Autocomplete>
-                <div className="flex items-end justify-between">
+                <div className="flex  items-end justify-between gap-4">
                   <Controller
                     control={form.control}
                     name="duration"
@@ -257,13 +258,14 @@ export default function SessionDetailsModal({
                       <NumberInput
                         endContent={<span>dakika</span>}
                         labelPlacement="outside"
-                        value={field.value ?? 0}
+                        value={form.watch("duration")}
                         onValueChange={(val) => field.onChange(val ?? 0)}
                         min={0}
                         variant="flat"
                         hideStepper
+                        size="sm"
                         label="Süre"
-                        className="w-1/2"
+                        className="w-full h-full"
                         placeholder="Lütfen kaç dakika çalıştığınızı giriniz."
                       />
                     )}
@@ -271,11 +273,11 @@ export default function SessionDetailsModal({
                   <Switch
                     color="success"
                     size="sm"
-                    endContent={<Moon></Moon>}
+                    endContent={<X />}
                     {...form.register("isCompleted")}
                     startContent={<Check />}
                   >
-                    Tamamlandi
+                    Tamamlandı
                   </Switch>
                 </div>
 
@@ -291,7 +293,6 @@ export default function SessionDetailsModal({
                   label="Notlar"
                   labelPlacement="outside-top"
                   variant="bordered"
-                  value={form.watch(`notes`)}
                   classNames={{
                     input: "pt-1",
                   }}
@@ -299,16 +300,11 @@ export default function SessionDetailsModal({
                 />
               </ModalBody>
               <ModalFooter>
-                <Button
-                  color="danger"
-                  onPress={() => {
-                    onClose();
-                  }}
-                >
+                <Button color="danger" onPress={onClose} isDisabled={isPending}>
                   İptal
                 </Button>
-                <Button color="primary" type="submit">
-                  Kaydet
+                <Button color="primary" type="submit" isLoading={isPending}>
+                  {isPending ? "Oturum güncelleniyor ..." : "Oturumu güncelle"}
                 </Button>
               </ModalFooter>
             </form>

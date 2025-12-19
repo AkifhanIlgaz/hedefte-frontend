@@ -1,6 +1,6 @@
 import { Exam } from "@/src/features/analiz/types";
 import { useQuery } from "@tanstack/react-query";
-import examService from "../services/examService";
+import examService from "../../services/examService";
 
 interface UseExamsParams {
   exam: Exam;
