@@ -54,7 +54,9 @@
   --radius: 0.625rem;
 
   /* GitHub contribution heatmap colors (light) */
-  --contribution-default-bgColor-0: #ebedf0; /* GitHub light empty */
+  --contribution-default-bgColor-0: oklch(
+    0.91 0.01 90
+  ); /* GitHub light empty */
   --contribution-default-bgColor-1: #9be9a8;
   --contribution-default-bgColor-2: #40c463;
   --contribution-default-bgColor-3: #30a14e;
@@ -103,7 +105,7 @@
   --chart-5: oklch(0.55 0.12 30);
 
   /* GitHub contribution heatmap colors (dark) */
-  --contribution-default-bgColor-0: #151b23;
+  --contribution-default-bgColor-0: oklch(0.28 0 0);
   --contribution-default-bgColor-1: #006d32;
   --contribution-default-bgColor-2: #26a641;
   --contribution-default-bgColor-3: #39d353;

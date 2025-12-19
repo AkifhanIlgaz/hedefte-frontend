@@ -1,6 +1,7 @@
 import { Chip, Tooltip } from "@heroui/react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
+import { Flag } from "lucide-react";
 import { DailyActivity } from "../types";
 import { getColor } from "../utils";
 
@@ -52,12 +53,14 @@ export default function ActivityTooltip({ activity }: ActivityTooltipProps) {
       content={isExamDay ? examDayContent : dayContent}
     >
       <div
-        className={`size-4 rounded ${
+        className={`size-4 rounded flex items-center justify-center  ${
           isExamDay
-            ? "bg-danger-600 dark:bg-danger-700  "
+            ? "bg-rose-600 dark:bg-rose-700  "
             : getColor(activity.activity)
         }`}
-      />
+      >
+        {isExamDay && <Flag className="size-3 text-white font-extrabold" />}
+      </div>
     </Tooltip>
   );
 }
