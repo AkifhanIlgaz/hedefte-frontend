@@ -22,6 +22,11 @@ export interface ActivityData {
 }
 
 export interface Heatmap {
-  data: Record<string, ActivityData>;
+  activities: Record<string, ActivityData>;
   currentStreak: number;
+}
+
+export interface DailyActivity {
+  date: string;
+  activity: ActivityData;
 }

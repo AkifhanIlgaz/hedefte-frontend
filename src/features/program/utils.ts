@@ -1,5 +1,8 @@
+import { eachDayOfInterval, format } from "date-fns";
 import { allLessons } from "../analiz/data";
 import { Exam, LessonName } from "../analiz/types";
+import { heatmapEnd, heatmapStart } from "./data";
+import { DailyActivity, Heatmap } from "./types";
 
 export const getBadgeColor = (type: string) => {
   switch (type) {
@@ -77,6 +80,54 @@ export const getTopics = (exam?: Exam | "AYT", lessonName?: LessonName) => {
     default:
       return [];
   }
+};
+
+export const getColor = (activity: {
+  sessions: number;
+  duration: number;
+  questions: number;
+}) => {
+  const score =
+    activity.sessions * 1 + activity.duration * 0.02 + activity.questions * 0.5;
+  if (score <= 0) return "bg-activity-0";
+  if (score <= 2) return "bg-activity-1";
+  if (score <= 4) return "bg-activity-2";
+  if (score <= 6) return "bg-activity-3";
+  return "bg-activity-4";
+};
+
+export const getWeeks = (heatmap: Heatmap) => {
+  const allDays = eachDayOfInterval({ start: heatmapStart, end: heatmapEnd });
+
+  const weeks: DailyActivity[][] = [];
+  let currentWeek: DailyActivity[] = [];
+
+  const startDay = heatmapStart.getDay();
+  const leadingPad = (startDay + 6) % 7;
+  for (let i = 0; i < leadingPad; i++) {
+    currentWeek.push({
+      date: `pad-${i}`,
+      activity: { sessions: 0, duration: 0, questions: 0 },
+    });
+  }
+
+  allDays.forEach((day) => {
+    const dayString = format(day, "yyyy-MM-dd");
+    const activity = heatmap.activities[dayString];
+
+    const dayData: DailyActivity = {
+      date: dayString,
+      activity: activity ?? { sessions: 0, duration: 0, questions: 0 },
+    };
+    currentWeek.push(dayData);
+
+    if (day.getDay() === 0) {
+      weeks.push(currentWeek);
+      currentWeek = [];
+    }
+  });
+
+  return weeks;
 };
 
 export const toDateKey = (d: string | Date) =>

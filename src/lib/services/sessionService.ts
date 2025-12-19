@@ -32,8 +32,6 @@ class SessionService {
 
     if (!res.data?.success) throw new Error(res.data.message);
 
-    console.log(res.data.payload);
-
     return res.data.payload;
   }
 
