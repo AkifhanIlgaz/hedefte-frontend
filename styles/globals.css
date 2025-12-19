@@ -52,6 +52,20 @@
   --chart-5: oklch(0.65 0.15 30); /* Alt accent - sarı ton */
 
   --radius: 0.625rem;
+
+  /* GitHub contribution heatmap colors (light) */
+  --contribution-default-bgColor-0: #ebedf0; /* GitHub light empty */
+  --contribution-default-bgColor-1: #9be9a8;
+  --contribution-default-bgColor-2: #40c463;
+  --contribution-default-bgColor-3: #30a14e;
+  --contribution-default-bgColor-4: #216e39;
+
+  /* Optional alias for activity levels */
+  --activity-0: var(--contribution-default-bgColor-0);
+  --activity-1: var(--contribution-default-bgColor-1);
+  --activity-2: var(--contribution-default-bgColor-2);
+  --activity-3: var(--contribution-default-bgColor-3);
+  --activity-4: var(--contribution-default-bgColor-4);
 }
 
 .dark {
@@ -87,6 +101,20 @@
   --chart-3: var(--accent);
   --chart-4: oklch(0.6 0.1 280);
   --chart-5: oklch(0.55 0.12 30);
+
+  /* GitHub contribution heatmap colors (dark) */
+  --contribution-default-bgColor-0: #151b23;
+  --contribution-default-bgColor-1: #006d32;
+  --contribution-default-bgColor-2: #26a641;
+  --contribution-default-bgColor-3: #39d353;
+  --contribution-default-bgColor-4: #7ee787;
+
+  /* Optional alias for activity levels */
+  --activity-0: var(--contribution-default-bgColor-0);
+  --activity-1: var(--contribution-default-bgColor-1);
+  --activity-2: var(--contribution-default-bgColor-2);
+  --activity-3: var(--contribution-default-bgColor-3);
+  --activity-4: var(--contribution-default-bgColor-4);
 }
 
 @theme inline {
@@ -156,6 +184,23 @@
     &:hover::after {
       @apply w-full;
     }
+  }
+
+  /* Utility classes for GitHub-like activity heatmap */
+  .bg-activity-0 {
+    background-color: var(--activity-0);
+  }
+  .bg-activity-1 {
+    background-color: var(--activity-1);
+  }
+  .bg-activity-2 {
+    background-color: var(--activity-2);
+  }
+  .bg-activity-3 {
+    background-color: var(--activity-3);
+  }
+  .bg-activity-4 {
+    background-color: var(--activity-4);
   }
 }
 
