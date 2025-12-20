@@ -10,26 +10,37 @@ import { Calendar, Plus } from "lucide-react";
 import AddSessionModal from "./addSessionModal";
 import SessionItem from "./sessionItem";
 
-export default function DayCard({ date }: { date: Date }) {
+export default function DayCard({
+  date,
+  title,
+}: {
+  date: Date;
+  title?: string;
+}) {
   const isToday = isSameDay(date!, new Date());
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { data: sessions, isPending } = useSessionsOfDay(date);
 
+  console.log(date);
   return (
     <Card
-      className={clsx("max-h-fit ", {
+      className={clsx("max-h-fit", {
         "shadow-lg shadow-success-500": isToday,
       })}
     >
       <CardHeader className="flex flex-row items-center justify-between  border-b-2 ">
-        <div>
-          <span className="text-lg font-bold text-secondary">
-            {format(date!, "EEEE", { locale: tr })}
-          </span>
-          <div className="text-xs text-default-500 font-medium">
-            {format(date!, "d MMMM", { locale: tr })}
+        {title ? (
+          <span className="text-lg font-bold text-secondary">{title}</span>
+        ) : (
+          <div>
+            <span className="text-lg font-bold text-secondary">
+              {format(date!, "EEEE", { locale: tr })}
+            </span>
+            <div className="text-xs text-default-500 font-medium">
+              {format(date!, "d MMMM", { locale: tr })}
+            </div>
           </div>
-        </div>
+        )}
 
         <Button
           isIconOnly

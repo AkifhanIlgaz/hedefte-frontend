@@ -29,6 +29,8 @@ export default function Page() {
     const end = endOfWeek(startDate, { weekStartsOn: 1 });
     const days = eachDayOfInterval({ start, end });
 
+    console.log(days);
+
     setWeekStart(start);
     setWeekEnd(end);
     setWeekDays(days);

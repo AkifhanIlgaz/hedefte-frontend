@@ -12,12 +12,12 @@ export default function ActivityHeatmap({ heatmap }: ActivityHeatmapProps) {
   const weeks = getWeeks(heatmap);
 
   return (
-    <Card className="p-2 ">
+    <Card className="p-2 max-w-6xl">
       <CardHeader>
         <h1 className="text-xl font-bold mb-2">Çalışın Gardaş</h1>
       </CardHeader>
-      <CardBody>
-        <div className="flex max-w-7xl ">
+      <CardBody className="flex items-center">
+        <div className="flex ">
           <div className="flex flex-col justify-end gap-1 mr-4 text-xs">
             {weekDays.map((day) => (
               <span key={day}>{day}</span>
@@ -45,7 +45,7 @@ export default function ActivityHeatmap({ heatmap }: ActivityHeatmapProps) {
       </CardBody>
 
       <CardFooter>
-        <div className="flex max-w-7xl  items-center justify-center text-xs  gap-1 ml-auto ">
+        <div className="flex  items-center justify-center text-xs  gap-1 ml-auto ">
           Az
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className={`size-3 rounded bg-activity-${i}`} />
