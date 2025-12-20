@@ -1,15 +1,21 @@
 "use client";
 
+import { Link } from "@heroui/link";
+
 export default function LoginPage() {
   return (
     <div className="flex flex-col text-center">
       <span>Sitemiz şu an için beta test aşamasındadır.</span>
       <span>
         Test kullanıcısı olmak için lütfen{" "}
-        <span className="text-pretty text-primary font-bold underline">
-          akifhanilgazz@gmail.com{" "}
-        </span>
-        ile iletişime geçiniz.
+        <Link
+          isExternal
+          href="https://forms.gle/mdBgZTKm28xU78sh9"
+          className="text-pretty text-primary font-bold underline"
+        >
+          formumuzu{" "}
+        </Link>
+        doldurun.
       </span>
     </div>
   );
