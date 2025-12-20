@@ -7,17 +7,6 @@ import { Session } from "../types";
 import AddSessionModal from "./addSessionModal";
 import SessionItem from "./sessionItem";
 
-function completionStateText(state: CompletionState) {
-  switch (state) {
-    case "empty":
-      return "ekle gardas";
-    case "none-accomplished":
-      return "biraz calis aq bisi yapmadin";
-    case "all-accomplished":
-      return "eri lan ozgur";
-  }
-}
-
 export default function DailyActivityCard({
   date,
   title,
