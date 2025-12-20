@@ -6,6 +6,7 @@ import { Session } from "@/src/features/program/types";
 import { useHeatmap } from "@/src/lib/queries/sessions/useHeatmap";
 import { useSessionsOfDay } from "@/src/lib/queries/sessions/useSessions";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
+import { Spinner } from "@heroui/spinner";
 import { Clock, FireExtinguisher, TrendingUp } from "lucide-react";
 import { useMemo } from "react";
 
@@ -55,7 +56,11 @@ export default function DashboardHomePage() {
   }, [sessions]);
 
   if (isPending) {
-    return <span>Lutfen bekleyın</span>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner label="Verileriniz yükleniyor. Lütfen bekleyin ..." />
+      </div>
+    );
   }
 
   return (
