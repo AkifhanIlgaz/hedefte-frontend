@@ -7,7 +7,7 @@ import { useHeatmap } from "@/src/lib/queries/sessions/useHeatmap";
 import { useSessionsOfDay } from "@/src/lib/queries/sessions/useSessions";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Spinner } from "@heroui/spinner";
-import { Clock, FireExtinguisher, TrendingUp } from "lucide-react";
+import { Clock, Flame, TrendingUp } from "lucide-react";
 import { useMemo } from "react";
 
 function emptyContentForNotCompletedSessions(
@@ -18,11 +18,11 @@ function emptyContentForNotCompletedSessions(
     completedSessions.length + notCompletedSessions.length;
 
   if (totalSessionCount === 0) {
-    return "Henuz oturum eklenmedi";
+    return "Henüz oturum eklenmedi.";
   }
 
   if (completedSessions.length == totalSessionCount) {
-    return "eri lan ozgur";
+    return "Bugün tamamlanacak oturum kalmadı. Tebrikler!";
   }
 }
 
@@ -34,11 +34,11 @@ function emptyContentForCompletedSessions(
     completedSessions.length + notCompletedSessions.length;
 
   if (totalSessionCount === 0) {
-    return "Henuz oturum eklenmedi";
+    return "Henüz oturum eklenmedi.";
   }
 
   if (notCompletedSessions.length == totalSessionCount) {
-    return "biraz calis dayi daha bisi yapmadin";
+    return "Bugün henüz tamamlanmış oturum yok.";
   }
 }
 
@@ -67,7 +67,7 @@ export default function DashboardHomePage() {
     <div className="flex flex-col gap-6 min-h-screen">
       <DashboardHeader
         title="Anasayfa"
-        description="Genel bilgilerinizi gorebilirsiniz"
+        description="Genel performansınızı ve günlük aktivitelerinizi görüntüleyin."
       />
 
       <div className="flex flex-col  gap-8">
@@ -84,7 +84,7 @@ export default function DashboardHomePage() {
           />
           <GeneralAnalysisCard
             title="Current Streak"
-            icon={FireExtinguisher}
+            icon={Flame}
             value={heatmap?.currentStreak + ` gün`}
           />
         </div>
