@@ -14,3 +14,19 @@ export interface Session {
   questionCount?: number;
   isCompleted: boolean;
 }
+
+export interface ActivityData {
+  sessions: number;
+  duration: number; // minutes
+  questions: number;
+}
+
+export interface Heatmap {
+  activities: Record<string, ActivityData>;
+  currentStreak: number;
+}
+
+export interface DailyActivity {
+  date: string;
+  activity: ActivityData;
+}

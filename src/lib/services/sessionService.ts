@@ -2,7 +2,7 @@ import { GeneralResponse } from "@/src/features/analiz/types";
 import { AddSessionRequest } from "@/src/features/program/schemas/add_session.schema";
 import { CompleteSessionRequest } from "@/src/features/program/schemas/complete_session.schema";
 import { UpdateSessionRequest } from "@/src/features/program/schemas/update_session.schema";
-import { Session } from "@/src/features/program/types";
+import { Heatmap, Session } from "@/src/features/program/types";
 import api from "../axios";
 
 export type SessionsOfInterval = {
@@ -21,6 +21,14 @@ class SessionService {
         },
       },
     );
+
+    if (!res.data?.success) throw new Error(res.data.message);
+
+    return res.data.payload;
+  }
+
+  async getHeatmap(): Promise<Heatmap> {
+    const res = await api.get<GeneralResponse<Heatmap>>(`sessions/heatmap`);
 
     if (!res.data?.success) throw new Error(res.data.message);
 
