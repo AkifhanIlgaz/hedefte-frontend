@@ -45,7 +45,9 @@ export default function DashboardHomePage() {
         <DayCard date={new Date()} title="Tamamladığım Oturumlar" />
       </div>
 
-      {heatmap && <ActivityHeatmap heatmap={heatmap} />}
+      <div className="flex items-center justify-center text-center">
+        {heatmap && <ActivityHeatmap heatmap={heatmap} />}
+      </div>
     </div>
   );
 }
