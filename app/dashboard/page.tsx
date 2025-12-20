@@ -75,12 +75,12 @@ export default function DashboardHomePage() {
           <GeneralAnalysisCard
             title="Günlük Çalışma Süresi"
             icon={Clock}
-            value={todayData?.duration + ` dk`}
+            value={(todayData?.duration ?? 0) + ` dk`}
           />
           <GeneralAnalysisCard
             title="Bugün Çözülen Soru"
             icon={TrendingUp}
-            value={todayData?.questions + " soru"}
+            value={(todayData?.questions ?? 0) + " soru"}
           />
           <GeneralAnalysisCard
             title="Current Streak"
