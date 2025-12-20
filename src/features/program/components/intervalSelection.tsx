@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@heroui/button";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { tr } from "date-fns/locale";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 
@@ -18,6 +18,8 @@ export default function IntervalSelection({
   handleToday,
   weekDays,
 }: IntervalSelectionProps) {
+  const isInWeek = weekDays.some((d) => isSameDay(d, new Date()));
+
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-slate-200 shadow-sm dark:border-slate-700 bg-neutral">
       <div className="flex items-center gap-2">
@@ -44,12 +46,14 @@ export default function IntervalSelection({
             </span>
           </div>
         </div>
-        <Button
-          onPress={handleNextWeek}
-          className="h-9 w-9 bg-transparent dark:bg-transparent"
-        >
-          <ChevronsRight className="h-4 w-4 text-secondary" />
-        </Button>
+        {!isInWeek && (
+          <Button
+            onPress={handleNextWeek}
+            className="h-9 w-9 bg-transparent dark:bg-transparent"
+          >
+            <ChevronsRight className="h-4 w-4 text-secondary" />
+          </Button>
+        )}
       </div>
       <Button color="primary" onPress={handleToday} variant="solid">
         Bugüne Dön
