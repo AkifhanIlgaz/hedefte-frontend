@@ -13,8 +13,8 @@ export default function LoginPage() {
           href="https://forms.gle/mdBgZTKm28xU78sh9"
           className="text-pretty text-primary font-bold underline"
         >
-          formumuzu{" "}
-        </Link>
+          formumuzu
+        </Link>{" "}
         doldurun.
       </span>
     </div>
