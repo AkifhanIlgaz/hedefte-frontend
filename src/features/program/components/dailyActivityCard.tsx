@@ -1,45 +1,42 @@
-import { useSessionsOfDay } from "@/src/lib/queries/sessions/useSessions";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { useDisclosure } from "@heroui/modal";
 import { Spinner } from "@heroui/spinner";
-import clsx from "clsx";
-import { format, isSameDay } from "date-fns";
-import { tr } from "date-fns/locale";
-import { Calendar, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { Session } from "../types";
 import AddSessionModal from "./addSessionModal";
 import SessionItem from "./sessionItem";
 
-export default function DayCard({
+function completionStateText(state: CompletionState) {
+  switch (state) {
+    case "empty":
+      return "ekle gardas";
+    case "none-accomplished":
+      return "biraz calis aq bisi yapmadin";
+    case "all-accomplished":
+      return "eri lan ozgur";
+  }
+}
+
+export default function DailyActivityCard({
   date,
   title,
+  sessions,
+  isPending,
+  emptyContent,
 }: {
   date: Date;
-  title?: string;
+  title: string;
+  isPending: boolean;
+  sessions: Session[];
+  emptyContent?: string;
 }) {
-  const isToday = isSameDay(date!, new Date());
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  let { data: sessions, isPending } = useSessionsOfDay(date);
 
   return (
-    <Card
-      className={clsx("max-h-fit", {
-        "shadow-lg shadow-success-500": isToday,
-      })}
-    >
+    <Card className="">
       <CardHeader className="flex flex-row items-center justify-between  border-b-2 ">
-        {title ? (
-          <span className="text-lg font-bold text-secondary">{title}</span>
-        ) : (
-          <div>
-            <span className="text-lg font-bold text-secondary">
-              {format(date!, "EEEE", { locale: tr })}
-            </span>
-            <div className="text-xs text-default-500 font-medium">
-              {format(date!, "d MMMM", { locale: tr })}
-            </div>
-          </div>
-        )}
+        <span className="text-lg font-bold text-secondary">{title}</span>
 
         <Button
           isIconOnly
@@ -56,15 +53,14 @@ export default function DayCard({
         />
       </CardHeader>
 
-      <CardBody className="pt-4">
+      <CardBody className="pt-4 ">
         {isPending ? (
           <div className="flex flex-col items-center justify-center text-slate-400 text-sm">
             <Spinner className="h-8 w-8 mb-2" /> Oturumlar yükleniyor...
           </div>
-        ) : !sessions || sessions?.length === 0 ? (
-          <div className="flex flex-col h-fit items-center justify-center text-slate-400 text-sm ">
-            <Calendar className="h-8 w-8 mb-2 opacity-20" />
-            Henüz oturum eklenmedi.
+        ) : emptyContent ? (
+          <div className="flex flex-col h-full items-center justify-center text-slate-400 text-sm ">
+            {emptyContent}
           </div>
         ) : (
           <div className="space-y-3">
