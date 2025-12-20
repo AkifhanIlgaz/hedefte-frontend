@@ -10,11 +10,12 @@ class ExamService {
   constructor() {}
 
   async addExam(req: AddExamRequest): Promise<void> {
+    const dateOnly = req.date.toLocaleDateString().split("T")[0];
     const lessons = Object.entries(req.lessons).map(([name, val]) => {
       val.topicMistakes = val.topicMistakes.map((mistake) => {
         return {
           ...mistake,
-          date: req.date,
+          date: dateOnly,
           examType: req.examType,
           lesson: name,
           isSolved: false,
@@ -29,6 +30,7 @@ class ExamService {
 
     const res = await api.post<GeneralResponse<any>>("/exams", {
       ...req,
+      date: dateOnly,
       lessons,
     });
 

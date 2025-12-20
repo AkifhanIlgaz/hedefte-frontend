@@ -131,4 +131,4 @@ export const getWeeks = (heatmap: Heatmap) => {
 };
 
 export const toDateKey = (d: string | Date) =>
-  new Date(d).toISOString().split("T")[0];
+  new Date(d).toLocaleDateString().split("T")[0];

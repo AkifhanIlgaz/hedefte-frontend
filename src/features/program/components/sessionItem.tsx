@@ -12,6 +12,7 @@ import { addToast } from "@heroui/toast";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, EllipsisVertical, Info, Trash } from "lucide-react";
+import type { MouseEvent } from "react";
 import { Session } from "../types";
 import { getBadgeColor, getLessonStyles } from "../utils";
 import CompleteSessionModal from "./completeSessionModal";
@@ -69,7 +70,7 @@ export default function SessionItem({
         >
           <Card
             className={clsx(
-              "flex-1 w-full shadow border border-default",
+              "flex-1 w-full shadow border border-default ",
               session.isCompleted && "bg-success-50 border-success-500 ",
             )}
             isPressable={!isPending}
@@ -81,7 +82,7 @@ export default function SessionItem({
             }}
           >
             <CardHeader className="flex items-center justify-between gap-2">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-1 min-w-0 flex-col gap-2">
                 <div className="flex items-center justify-start gap-2">
                   <Chip size="sm" className={clsx(getBadgeColor(session.exam))}>
                     {session.exam}
@@ -95,16 +96,18 @@ export default function SessionItem({
                     {session.lesson}
                   </Chip>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-default-500">
-                  <span className="flex items-center gap-1 text-ellipsis">
+                <div className="flex min-w-0 items-center gap-2 text-xs text-default-500">
+                  <span className="flex min-w-0 flex-1 items-center gap-1 truncate">
                     <BookOpen className="h-3 w-3" />
                     {session.type}
                   </span>
                 </div>
               </div>
 
-              <Dropdown className=" border-default-200">
-                <DropdownTrigger>
+              <Dropdown className="border-default-200 shrink-0">
+                <DropdownTrigger
+                  onClick={(e: MouseEvent) => e.stopPropagation()}
+                >
                   <EllipsisVertical className="text-default-400 size-5" />
                 </DropdownTrigger>
                 <DropdownMenu

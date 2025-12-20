@@ -36,7 +36,12 @@ class SessionService {
   }
 
   async addSession(req: AddSessionRequest): Promise<Session> {
-    const res = await api.post<GeneralResponse<Session>>(`sessions`, req);
+    const dateOnly = req.date.toLocaleDateString().split("T")[0];
+
+    const res = await api.post<GeneralResponse<Session>>(`sessions`, {
+      ...req,
+      date: dateOnly,
+    });
 
     if (!res.data?.success) throw new Error(res.data.message);
 
@@ -44,7 +49,11 @@ class SessionService {
   }
 
   async updateSession(req: UpdateSessionRequest): Promise<Session> {
-    const res = await api.put<GeneralResponse<Session>>(`sessions`, req);
+    const dateOnly = req.date.toLocaleDateString().split("T")[0];
+    const res = await api.put<GeneralResponse<Session>>(`sessions`, {
+      ...req,
+      date: dateOnly,
+    });
 
     if (!res.data?.success) throw new Error(res.data.message);
 
