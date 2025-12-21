@@ -3,12 +3,12 @@ import {
   BookOpen,
   Brain,
   Calculator,
+  Dna,
   Earth,
   FlaskConical,
   Infinity,
   Lightbulb,
   Swords,
-  Trees,
 } from "lucide-react";
 import {
   AytEaLessonName,
@@ -277,7 +277,7 @@ export const tytLessons: Record<TytLessonName, Lesson> = {
   Biyoloji: {
     name: "Biyoloji",
     totalQuestions: 6,
-    icon: Trees,
+    icon: Dna,
     bgClass: "bg-fuchsia-100 dark:bg-fuchsia-900/40",
     iconColor: "text-fuchsia-700 dark:text-fuchsia-500",
     topics: [
@@ -667,7 +667,7 @@ export const sayLessons: Record<AytMfLessonName, Lesson> = {
   Biyoloji: {
     name: "Biyoloji",
     totalQuestions: 13,
-    icon: Trees,
+    icon: Dna,
     bgClass: "bg-fuchsia-100 dark:bg-fuchsia-900/40",
     iconColor: "text-fuchsia-700 dark:text-fuchsia-500",
     topics: [

@@ -18,9 +18,7 @@ import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
 import { mapAuthError } from "../../auth.utils";
 import { LoginRequest, loginSchema } from "../../schemas";
-import AuthDivider from "../shared/divider";
 import AuthHeader from "../shared/header";
-import SignInWithGoogle from "../shared/signInWithGoogle";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -57,8 +55,7 @@ export default function LoginForm() {
         title={authText.welcomeBack}
         subtitle={authText.signInSubtitle}
       />
-      <SignInWithGoogle />
-      <AuthDivider />
+
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Input
           type="email"

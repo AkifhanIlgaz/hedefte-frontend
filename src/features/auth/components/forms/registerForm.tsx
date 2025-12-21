@@ -15,9 +15,7 @@ import { authRoutes } from "../../auth.routes";
 import { authText } from "../../auth.text";
 import { RegisterRequest, registerSchema } from "../../schemas";
 import { AuthMessage } from "../shared/authMessage";
-import AuthDivider from "../shared/divider";
 import AuthHeader from "../shared/header";
-import SignInWithGoogle from "../shared/signInWithGoogle";
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -64,8 +62,6 @@ export default function RegisterForm() {
         title={authText.registerTitle}
         subtitle={authText.registerSubtitle}
       />
-      <SignInWithGoogle />
-      <AuthDivider />
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
