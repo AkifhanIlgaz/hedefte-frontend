@@ -5,7 +5,7 @@ import { Exam } from "@/src/features/analiz/types";
 import { useAnalyticsOfLesson } from "@/src/lib/queries/analytics/useAnalytics";
 import { useTopicWrongCounts } from "@/src/lib/queries/analytics/useTopicWrongCounts";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
-import { Card, CardBody } from "@heroui/card";
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Select, SelectItem } from "@heroui/select";
 import {
   AlertCircle,
@@ -22,9 +22,10 @@ export default function LessonPage({
   params: Promise<{ lesson: string; exam: string }>;
 }) {
   const { lesson: encodedLesson, exam: encodedExam } = use(params);
-  const lesson =
-    decodeURIComponent(encodedLesson).slice(0, 1).toUpperCase() +
-    decodeURIComponent(encodedLesson).slice(1);
+  const lesson = decodeURIComponent(encodedLesson)
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
   const exam = encodedExam.toUpperCase() as Exam;
   const examName = exam.split("_").join(" ");
   const [timeInterval, setTimeInterval] = useState(-1);
@@ -54,7 +55,7 @@ export default function LessonPage({
               setTimeInterval(selectedKey);
             }}
             disallowEmptySelection={true}
-            color="primary"
+            color="default"
           >
             <SelectItem key={"1"}>Son 1 Ay</SelectItem>
             <SelectItem key={"3"}>Son 3 Ay</SelectItem>
@@ -94,7 +95,10 @@ export default function LessonPage({
             averageResult={lessonData?.averageResult ?? 0}
             averageTime={lessonData?.averageTime ?? 0}
           />
-          <Card className="p-3">
+          <Card>
+            <CardHeader className="flex items-center justify-between">
+              <h3 className="text-[16px] font-bold">Konular</h3>
+            </CardHeader>
             <CardBody
               className={
                 topicWrongCounts
@@ -126,9 +130,9 @@ export default function LessonPage({
                           {val.topic}
                         </span>
                       </div>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger-600">
+                      <div className="flex p-2 items-center justify-center rounded-lg bg-danger/10 text-danger-600">
                         <span className="text-sm font-semibold">
-                          {val.count}w
+                          {val.count} yanlış
                         </span>
                       </div>
                     </div>
