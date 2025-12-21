@@ -44,12 +44,10 @@ export const getLessonStyles = (exam: Exam, lessonName: string) => {
           .iconColor;
       break;
     case "AYT":
-      bgClass = { ...allLessons.AYT_EA, ...allLessons.AYT_SAY }[
-        lessonName as keyof typeof allLessons.AYT_EA
-      ].bgClass;
-      iconColor = { ...allLessons.AYT_EA, ...allLessons.AYT_SAY }[
-        lessonName as keyof typeof allLessons.AYT_EA
-      ].iconColor;
+      bgClass =
+        allLessons.AYT[lessonName as keyof typeof allLessons.AYT].bgClass;
+      iconColor =
+        allLessons.AYT[lessonName as keyof typeof allLessons.AYT].iconColor;
       break;
     default:
       bgClass = "bg-gray-100";
@@ -57,7 +55,7 @@ export const getLessonStyles = (exam: Exam, lessonName: string) => {
       break;
   }
 
-  return bgClass + iconColor;
+  return `${bgClass} ${iconColor}`;
 };
 
 export const getTopics = (exam?: Exam | "AYT", lessonName?: LessonName) => {
