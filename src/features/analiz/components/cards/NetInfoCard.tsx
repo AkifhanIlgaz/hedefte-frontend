@@ -3,7 +3,7 @@ import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { NumberInput } from "@heroui/react";
 import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
-import { useFormContext } from "react-hook-form";
+import { FieldError, useFormContext } from "react-hook-form";
 import { LessonName } from "../../types";
 
 interface NetInfoCardProps {
@@ -17,6 +17,12 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
   const wrong = form.watch(`lessons.${lessonName}.wrong`) as number;
   const empty = form.watch(`lessons.${lessonName}.empty`) as number;
   const net = (correct ?? 0) - (wrong ?? 0) * 0.25;
+
+  const lessonErrors = form.formState.errors.lessons as Record<
+    LessonName,
+    FieldError
+  >;
+  const errorMessage = lessonErrors?.[lessonName]?.message;
 
   return (
     <Card className="p-3 ">
@@ -65,7 +71,7 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
         />
       </CardBody>
       <CardFooter className="pt-0">
-        {form.formState.errors[lessonName] && (
+        {errorMessage && (
           <motion.p
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
@@ -75,11 +81,11 @@ export default function NetInfoCard({ lessonName }: NetInfoCardProps) {
                flex items-center gap-2 text-sm
               text-danger-600 dark:text-danger-400
               bg-danger-50 dark:bg-danger-950/40
-              p-2 rounded-lg
+              p-2 rounded-lg w-full
             "
           >
-            <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
-            {form.formState.errors[lessonName]?.message as string}
+            <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" />
+            {errorMessage}
           </motion.p>
         )}
       </CardFooter>
