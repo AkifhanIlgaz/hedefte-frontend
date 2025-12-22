@@ -452,6 +452,7 @@ export default function TopicInfoCard({
                   color="primary"
                   className="text-xs"
                   onPress={handleAIGuess}
+                  isDisabled={isPending}
                   endContent={<Sparkle className="size-4" />}
                 >
                   bi' abine sor
