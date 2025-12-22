@@ -17,6 +17,10 @@ export function useCompleteSession(date: Date) {
           endOfWeek(date, { weekStartsOn: 1 }).toISOString(),
         ],
       });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["sessions", "heatmap"],
+      });
     },
   });
 }

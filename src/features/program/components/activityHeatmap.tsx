@@ -14,7 +14,7 @@ export default function ActivityHeatmap({ heatmap }: ActivityHeatmapProps) {
   return (
     <Card className="p-2 max-w-6xl">
       <CardHeader>
-        <h1 className="text-xl font-bold mb-2">Çalışın Gardaş</h1>
+        <h1 className="text-xl font-bold mb-2">Çalışma Haritam</h1>
       </CardHeader>
       <CardBody className="flex items-center">
         <div className="flex ">

@@ -7,6 +7,7 @@ import { useHeatmap } from "@/src/lib/queries/sessions/useHeatmap";
 import { useSessionsOfDay } from "@/src/lib/queries/sessions/useSessions";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Spinner } from "@heroui/spinner";
+import confetti from "canvas-confetti";
 import { Clock, Flame, TrendingUp } from "lucide-react";
 import { useMemo } from "react";
 
