@@ -40,7 +40,7 @@ export interface TopicMistake {
   date: Date; // time.Time -> string (ISO date)
   examId: string; // bson.ObjectID -> string
   userId: string;
-  examType: string;
+  examType: Exam;
   lesson: string;
   filePath: string;
   topic: string;
@@ -138,4 +138,18 @@ export type LessonResultSeries = ResultSeries & {
 export type TopicWrongCount = {
   topic: string;
   count: number;
+};
+
+export type AskTopicMistakeResponse = {
+  topic: string;
+  errorMessage: string;
+  confidence: number;
+  quota: QuotaResponse;
+};
+
+export type QuotaResponse = {
+  dailyLimit: number;
+  dailyRemaining: number;
+  resetsAt: string;
+  hoursUntilReset: number;
 };
