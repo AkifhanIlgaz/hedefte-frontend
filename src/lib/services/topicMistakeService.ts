@@ -1,4 +1,5 @@
 import {
+  AskTopicMistakeResponse,
   Exam,
   GeneralResponse,
   LessonName,
@@ -19,6 +20,27 @@ class TopicMistakeService {
 
     if (!res.data.success) {
       throw new Error("Failed to fetch wrong counts");
+    }
+
+    return res.data.payload;
+  }
+
+  async ask(
+    exam: Exam,
+    lesson: LessonName,
+    imageUrl: string,
+  ): Promise<AskTopicMistakeResponse> {
+    const res = await api.post<GeneralResponse<AskTopicMistakeResponse>>(
+      "/topic-mistakes/ask",
+      {
+        exam: exam.split("_")[0],
+        lesson,
+        imageUrl,
+      },
+    );
+
+    if (!res.data.success) {
+      throw new Error("Bir hata oluştu. Lütfen tekrar deneyin.");
     }
 
     return res.data.payload;

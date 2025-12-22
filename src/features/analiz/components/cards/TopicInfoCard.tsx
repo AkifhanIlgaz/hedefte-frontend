@@ -1,5 +1,6 @@
 "use client";
 
+import useAskTopicMistake from "@/src/lib/queries/topicMistakes/useAskTopicMistake";
 import { createClient } from "@/src/lib/supabase/client";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter } from "@heroui/card";
@@ -24,7 +25,7 @@ import {
   CircleChevronLeft,
   CircleChevronRight,
   Info,
-  ZapIcon,
+  Sparkle,
 } from "lucide-react";
 import { ChangeEvent, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
@@ -60,8 +61,8 @@ export default function TopicInfoCard({
 }: TopicInfoCardProps) {
   const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3 MB
   const [selectedTopic, setSelectedTopic] = useState<string>("");
-  const [isGuessing, setIsGuessing] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+
   const myModal = useDisclosure();
 
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
@@ -90,6 +91,8 @@ export default function TopicInfoCard({
   );
   const hasTopicMistakes = topicMistakeEntries.length > 0;
 
+  const { mutateAsync: askTopicMistake, isPending } = useAskTopicMistake();
+
   const radioOptions = [
     { value: "A", label: "A" },
     { value: "B", label: "B" },
@@ -97,15 +100,6 @@ export default function TopicInfoCard({
     { value: "D", label: "D" },
     { value: "E", label: "E" },
   ];
-
-  const radioClasses = {
-    base: "m-0 p-0 relative",
-    wrapper:
-      "w-10 h-10 rounded-full border-2 border-default-200  bg-default-100 text-foreground/70 data-[selected=true]:border-success data-[selected=true]:bg-success data-[selected=true]:text-success-foreground flex items-center justify-center",
-    control: "hidden",
-    labelWrapper: "absolute inset-0 flex items-center justify-center ",
-    label: "text-sm font-semibold ",
-  };
 
   const handleImagesSelected = async (event: ChangeEvent<HTMLInputElement>) => {
     setIsUploading(true);
@@ -216,10 +210,41 @@ export default function TopicInfoCard({
     }
   };
 
-  const handleAIGuess = () => {
-    setIsGuessing(true);
+  const handleAIGuess = async () => {
+    try {
+      const topicMistake = topicMistakes[currentImageIndex];
 
-    // TODO: Implement AI guess logic
+      if (!topicMistake) return;
+
+      const data = await askTopicMistake({
+        exam: form.getValues("examType"),
+        lesson: topicMistake.lesson,
+        imageUrl: topicMistake.imageUrl,
+      });
+
+      update(currentImageIndex, {
+        ...topicMistake,
+        topic: data.topic,
+      });
+      setSelectedTopic(data.topic);
+
+      addToast({
+        title: "Başarılı !",
+        description: `Bugünlük ${data.quota.dailyRemaining} hakkınız kaldı. ${data.quota.hoursUntilReset} saat sonra yeniden 100 kullanım hakkınız sıfırlanacaktır.`,
+        color: "success",
+      });
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "AI tahmin ederken bir sorun oluştu. Lütfen tekrar deneyin.";
+      addToast({
+        title: "Hata",
+        description: errorMessage,
+        color: "danger",
+      });
+    }
   };
 
   const handleNextImage = () => {
@@ -427,7 +452,7 @@ export default function TopicInfoCard({
                   color="primary"
                   className="text-xs"
                   onPress={handleAIGuess}
-                  endContent={<ZapIcon className="size-4" />}
+                  endContent={<Sparkle className="size-4" />}
                 >
                   bi' abine sor
                 </Button>
@@ -439,7 +464,7 @@ export default function TopicInfoCard({
                 aria-label="Konu seçin"
                 isDisabled={topics.length === 0}
                 selectionMode="single"
-                disabled={isGuessing}
+                disabled={isPending}
                 selectedKeys={
                   selectedTopic ? new Set([selectedTopic]) : new Set<string>()
                 }
@@ -447,7 +472,7 @@ export default function TopicInfoCard({
                   topicMistakes[currentImageIndex].topic = e.target.value;
                   setSelectedTopic(e.target.value);
                 }}
-                isLoading={isGuessing}
+                isLoading={isPending}
                 placeholder="Lütfen yanlış yaptığınız konuyu seçiniz."
               >
                 {topics.map((topic) => (
@@ -455,11 +480,15 @@ export default function TopicInfoCard({
                 ))}
               </Select>
               <RadioGroup
-                value={topicMistakes[currentImageIndex]?.correctAnswer}
+                value={form.watch(
+                  `lessons.${lessonName}.topicMistakes.${currentImageIndex}.correctAnswer`,
+                )}
                 onChange={(e) => {
                   e.preventDefault();
-                  topicMistakes[currentImageIndex].correctAnswer =
-                    e.target.value;
+                  update(currentImageIndex, {
+                    ...topicMistakes[currentImageIndex],
+                    correctAnswer: e.target.value,
+                  });
                 }}
                 orientation="horizontal"
                 color="success"
@@ -468,11 +497,7 @@ export default function TopicInfoCard({
                 }}
               >
                 {radioOptions.map((option) => (
-                  <Radio
-                    key={option.value}
-                    value={option.value}
-                    classNames={radioClasses}
-                  >
+                  <Radio key={option.value} value={option.value}>
                     {option.label}
                   </Radio>
                 ))}
