@@ -8,5 +8,7 @@ export const useTopicMistakes = (req: Partial<GetTopicMistakesRequest>) => {
     queryFn: () =>
       topicMistakeService.getTopicMistakes(req as GetTopicMistakesRequest),
     enabled: Boolean(req.exam),
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
 };
