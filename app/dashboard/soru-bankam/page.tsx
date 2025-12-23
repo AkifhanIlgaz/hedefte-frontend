@@ -137,7 +137,9 @@ export default function Page() {
     <div className="flex flex-col gap-6 ">
       <DashboardHeader
         title="Soru Bankam"
-        description={"Cozemedigin sorulari burada bulabilirsiniz."}
+        description={
+          "Yanlış yaptığın soruları konu ve derse göre listeleyebilirsin."
+        }
       />
       <form className="flex flex-col gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start ">

@@ -4,6 +4,7 @@ import {
   ChartBar,
   ChartNoAxesCombined,
   Home,
+  Landmark,
   ListChecks,
   User,
   Zap,
@@ -45,6 +46,11 @@ export const siteConfig = {
       label: "Çalışma Programı",
       href: "/dashboard/program",
       icon: Calendar,
+    },
+    {
+      label: "Soru Bankam",
+      href: "/dashboard/soru-bankam",
+      icon: Landmark,
     },
 
     {
