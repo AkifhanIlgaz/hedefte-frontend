@@ -141,6 +141,9 @@ export default function Page() {
     const duration = 5 * 1000;
     const end = Date.now() + duration;
 
+    // Kar tanesi emoji'sini şekle çevir
+    const snowflake = confetti.shapeFromText({ text: "❄️", scalar: 2 });
+
     (function frame() {
       confetti({
         particleCount: 1,
@@ -150,11 +153,11 @@ export default function Page() {
           x: Math.random(),
           y: 0,
         },
-        colors: ["#ffffff"],
-        shapes: ["circle"],
+        colors: ["#ffffff", "#e6f2ff", "#cce5ff"],
+        shapes: [snowflake],
         gravity: 0.4,
-        scalar: 0.8,
-        drift: Math.random() - 0.5,
+        scalar: Math.random() * 1 + 0.5, // Rastgele boyut
+        drift: Math.random() - 0.5, // Yanlara sallanma
       });
 
       if (Date.now() < end) {
@@ -523,7 +526,7 @@ export default function Page() {
         particleCount: 5,
         angle: 90,
         spread: 30,
-        origin: { x: pos / 100, y: 0.5 },
+        origin: { x: pos / 100, y: 1 },
         colors: ["#00ffff", "#ff00ff", "#ffff00"],
         ticks: 50,
         gravity: 0.8,
