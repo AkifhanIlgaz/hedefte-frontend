@@ -50,7 +50,7 @@ class TopicMistakeService {
 
   async getTopicMistakes(
     req: GetTopicMistakesRequest,
-  ): Promise<TopicMistake[]> {
+  ): Promise<GeneralResponse<TopicMistake[]>> {
     const res = await api.get<GeneralResponse<TopicMistake[]>>(
       "/topic-mistakes",
       {
@@ -59,6 +59,8 @@ class TopicMistakeService {
           lesson: req.lesson,
           topic: req.topic,
           timeInterval: req.timeInterval,
+          page: req.page,
+          rowsPerPage: req.rowsPerPage,
         },
       },
     );
@@ -67,7 +69,7 @@ class TopicMistakeService {
       throw new Error("Failed to fetch topic mistakes");
     }
 
-    return res.data.payload;
+    return res.data;
   }
 }
 

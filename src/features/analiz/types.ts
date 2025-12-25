@@ -45,7 +45,7 @@ export interface TopicMistake {
   filePath: string;
   topic: string;
   correctAnswer: string;
-  isSolved: boolean;
+  confidence: number;
   imageUrl: string;
 }
 

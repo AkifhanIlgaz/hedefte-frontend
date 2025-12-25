@@ -9,17 +9,28 @@ import {
   TytLessonNames,
 } from "@/src/features/analiz/types";
 import { getTopics } from "@/src/features/program/utils";
+import SolveModal from "@/src/features/soru-bankam/components/solveModal";
 import { getTopicMistakesSchema } from "@/src/features/soru-bankam/schemas/get_topic_mistakes.schema";
 import { useTopicMistakes } from "@/src/lib/queries/topicMistakes/useTopicMistakes";
 import DashboardHeader from "@/src/shared/components/dashboardHeader";
 import { Chip } from "@heroui/chip";
-import { Modal, ModalBody, ModalContent } from "@heroui/modal";
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@heroui/modal";
+import { Pagination } from "@heroui/pagination";
 import {
   Autocomplete,
   AutocompleteItem,
+  Button,
   Image,
   Select,
+  Selection,
   SelectItem,
+  useDisclosure,
 } from "@heroui/react";
 import { Spinner } from "@heroui/spinner";
 import {
@@ -31,41 +42,101 @@ import {
   TableRow,
 } from "@heroui/table";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleAlert } from "lucide-react";
-import { ChangeEvent, Key, useCallback, useMemo, useState } from "react";
+import {
+  CheckCheck,
+  CircleAlert,
+  CircleChevronLeft,
+  CircleChevronRight,
+  CircleQuestionMark,
+  LucideIcon,
+  X,
+} from "lucide-react";
+import {
+  ChangeEvent,
+  Key,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import { useDebounce } from "use-debounce";
 
 const EXAM_TYPES = ["TYT", "AYT_SAY", "AYT_EA"];
 
+const confidenceOptions: {
+  [key: number]: {
+    label: string;
+    icon: LucideIcon;
+    color:
+      | "danger"
+      | "warning"
+      | "success"
+      | "primary"
+      | "secondary"
+      | "default"
+      | undefined;
+  };
+} = {
+  0: { label: "Çözemedim", icon: X, color: "danger" },
+  1: {
+    label: "Arada Kaldım",
+    icon: CircleQuestionMark,
+    color: "warning",
+  },
+  2: { label: "Rahat Çözdüm", icon: CheckCheck, color: "success" },
+};
 export default function Page() {
   const [lessonNames, setLessonNames] = useState<LessonName[]>([]);
   const [timeInterval, setTimeInterval] = useState(-1);
-  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+  const [currentTestIndex, setCurrentTestIndex] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const testModal = useDisclosure();
   const form = useForm({
     resolver: zodResolver(getTopicMistakesSchema),
     defaultValues: {
       timeInterval,
+      page,
+      rowsPerPage,
     },
   });
 
-  const [debouncedFilters] = useDebounce(form.watch(), 600);
+  const examValue = form.watch("exam");
+  const lessonValue = form.watch("lesson");
+  const topicValue = form.watch("topic");
+  const timeIntervalValue = form.watch("timeInterval");
+  const [debouncedFilters] = useDebounce(form.watch(), 250);
 
-  const {
-    data: topicMistakes,
-    isFetching,
-    isFetched,
-  } = useTopicMistakes(debouncedFilters);
+  const { data, isFetching } = useTopicMistakes(debouncedFilters);
+
+  const keyForItem = useCallback((item: TopicMistake) => {
+    return item.id ?? item.imageUrl;
+  }, []);
+
+  const selectedItems = useMemo(() => {
+    if (selectedKeys === "all") {
+      return data?.payload ?? [];
+    }
+    if (selectedKeys.size === 0) {
+      return [];
+    }
+    return (data?.payload ?? []).filter((item) =>
+      selectedKeys.has(keyForItem(item)),
+    );
+  }, [data?.payload, keyForItem, selectedKeys]);
 
   const columns = useMemo(
     () => [
-      { key: "imageUrl", label: "Görsel" },
+      { key: "imageUrl", label: "Soru" },
       { key: "date", label: "Tarih" },
       { key: "examType", label: "Sınav" },
       { key: "lesson", label: "Ders" },
       { key: "topic", label: "Konu" },
-      { key: "correctAnswer", label: "Doğru" },
-      { key: "isSolved", label: "Durum" },
+      { key: "confidence", label: "Güven Skoru" },
+      { key: "solve", label: "" },
     ],
     [],
   );
@@ -86,34 +157,34 @@ export default function Page() {
             {item.correctAnswer}
           </Chip>
         );
-      case "isSolved":
+      case "confidence":
+        const options =
+          confidenceOptions[item.confidence as keyof typeof confidenceOptions];
+
         return (
-          <Chip size="sm" color={item.isSolved ? "success" : "warning"}>
-            {item.isSolved ? "Çözüldü" : "Çözülmedi"}
+          <Chip
+            size="sm"
+            color={options.color}
+            variant="bordered"
+            startContent={<options.icon className="size-4" />}
+          >
+            {options.label}
           </Chip>
         );
       case "imageUrl":
-        return item.imageUrl ? (
+        return (
           <div className="flex w-full justify-center">
-            <button
-              type="button"
-              onClick={() => setSelectedImageUrl(item.imageUrl)}
-              className="cursor-pointer"
-            >
-              <Image
-                src={item.imageUrl}
-                alt="Soru görseli"
-                width={64}
-                height={64}
-                className="rounded-md"
-              />
-            </button>
-          </div>
-        ) : (
-          <div className="flex w-full justify-center">
-            <span className="text-default-400">Yok</span>
+            <Image
+              src={item.imageUrl}
+              alt="Soru görseli"
+              width={64}
+              height={64}
+              className="rounded-md"
+            />
           </div>
         );
+      case "solve":
+        return <SolveModal topicMistake={item} />;
       default:
         const value = item[columnKey as keyof TopicMistake];
         return <span className="text-sm">{String(value ?? "")}</span>;
@@ -121,6 +192,85 @@ export default function Page() {
   }, []);
 
   const loadingState = isFetching ? "loading" : "idle";
+
+  useEffect(() => {
+    setPage(1);
+    form.setValue("page", 1);
+  }, [examValue, lessonValue, topicValue, timeIntervalValue, form]);
+
+  useEffect(() => {
+    setSelectedKeys(new Set());
+    setCurrentTestIndex(0);
+    setShowAnswer(false);
+  }, [data?.payload]);
+
+  useEffect(() => {
+    if (!testModal.isOpen) {
+      setShowAnswer(false);
+    }
+  }, [testModal.isOpen]);
+
+  const topContent = useMemo(() => {
+    return (
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Select
+          label="Sayfa Başına"
+          labelPlacement="outside"
+          selectionMode="single"
+          isDisabled={isFetching}
+          className="w-full sm:max-w-45"
+          selectedKeys={new Set([String(rowsPerPage)])}
+          onChange={(event) => {
+            const selectedValue = parseInt(event.target.value, 10);
+            setRowsPerPage(selectedValue);
+            setPage(1);
+            form.setValue("rowsPerPage", selectedValue);
+            form.setValue("page", 1);
+            form.trigger("rowsPerPage");
+          }}
+          variant="faded"
+        >
+          <SelectItem key="2">2</SelectItem>
+          <SelectItem key="10">10</SelectItem>
+          <SelectItem key="20">20</SelectItem>
+          <SelectItem key="50">50</SelectItem>
+        </Select>
+        <Button
+          color="primary"
+          variant="shadow"
+          className="w-full sm:w-auto"
+          isDisabled={selectedItems.length === 0}
+          onPress={() => {
+            setCurrentTestIndex(0);
+            setShowAnswer(false);
+            testModal.onOpen();
+          }}
+        >
+          Test Oluştur
+        </Button>
+      </div>
+    );
+  }, [form, isFetching, rowsPerPage, selectedItems.length, testModal.onOpen]);
+
+  const bottomContent = useMemo(() => {
+    return (
+      <div className="flex w-full justify-center">
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          page={page}
+          total={data?.meta?.totalPages ?? 0}
+          onChange={(nextPage) => {
+            setPage(nextPage);
+            form.setValue("page", nextPage);
+            form.trigger("page");
+          }}
+        />
+      </div>
+    );
+  }, [data?.meta?.totalPages, form, page]);
 
   const emptyContent = useMemo(() => {
     return (
@@ -144,7 +294,7 @@ export default function Page() {
       <form className="flex flex-col gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start ">
           <Select
-            variant="bordered"
+            variant="faded"
             label="Sınav"
             labelPlacement="outside"
             isVirtualized
@@ -181,7 +331,7 @@ export default function Page() {
             ))}
           </Select>
           <Select
-            variant="bordered"
+            variant="faded"
             label="Ders"
             labelPlacement="outside"
             isVirtualized
@@ -200,7 +350,7 @@ export default function Page() {
             ))}
           </Select>
           <Autocomplete
-            variant="bordered"
+            variant="faded"
             label="Konu"
             labelPlacement="outside"
             isVirtualized
@@ -221,7 +371,7 @@ export default function Page() {
             ))}
           </Autocomplete>
           <Select
-            label="Ders"
+            label="Zaman Aralığı"
             labelPlacement="outside"
             selectionMode="single"
             defaultSelectedKeys={new Set([timeInterval.toString()])}
@@ -232,7 +382,7 @@ export default function Page() {
               form.trigger("timeInterval");
             }}
             disallowEmptySelection={true}
-            color="primary"
+            variant="faded"
           >
             <SelectItem key={"1"}>Son 1 Ay</SelectItem>
             <SelectItem key={"3"}>Son 3 Ay</SelectItem>
@@ -245,7 +395,14 @@ export default function Page() {
         aria-label="Soru Bankam hata listesi"
         isCompact
         isHeaderSticky
+        isStriped
+        selectionMode="multiple"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
         topContentPlacement="outside"
+        topContent={topContent}
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
         className="max-w-screen"
       >
         <TableHeader columns={columns}>
@@ -256,13 +413,13 @@ export default function Page() {
           )}
         </TableHeader>
         <TableBody
-          items={topicMistakes ?? []}
+          items={data?.payload ?? []}
           loadingContent={<Spinner />}
           emptyContent={emptyContent}
           loadingState={loadingState}
         >
           {(item: TopicMistake) => (
-            <TableRow key={item.imageUrl}>
+            <TableRow key={keyForItem(item)}>
               {(columnKey) => (
                 <TableCell>{renderCell(item, columnKey as string)}</TableCell>
               )}
@@ -270,28 +427,73 @@ export default function Page() {
           )}
         </TableBody>
       </Table>
+
       <Modal
-        isOpen={!!selectedImageUrl}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedImageUrl(null);
-          }
-        }}
-        size="3xl"
+        isOpen={testModal.isOpen}
+        onOpenChange={testModal.onOpenChange}
+        size="full"
         placement="center"
       >
         <ModalContent>
+          <ModalHeader>Test</ModalHeader>
           <ModalBody>
-            {selectedImageUrl ? (
-              <div className="flex w-full justify-center py-2">
+            <div className="relative flex h-full w-full items-center justify-center">
+              {selectedItems[currentTestIndex]?.imageUrl ? (
                 <Image
-                  src={selectedImageUrl}
+                  src={selectedItems[currentTestIndex].imageUrl}
                   alt="Soru görseli"
                   className="max-h-[80vh] w-auto rounded-lg"
                 />
-              </div>
-            ) : null}
+              ) : (
+                <span className="text-default-400">Görsel bulunamadı</span>
+              )}
+              {selectedItems.length > 1 && (
+                <>
+                  <Button
+                    isIconOnly
+                    className="absolute left-2 top-1/2 -translate-y-1/2"
+                    variant="faded"
+                    onPress={() => {
+                      const idx =
+                        (currentTestIndex - 1 + selectedItems.length) %
+                        selectedItems.length;
+                      setCurrentTestIndex(idx);
+                      setShowAnswer(false);
+                    }}
+                  >
+                    <CircleChevronLeft />
+                  </Button>
+                  <Button
+                    isIconOnly
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                    variant="faded"
+                    onPress={() => {
+                      const idx = (currentTestIndex + 1) % selectedItems.length;
+                      setCurrentTestIndex(idx);
+                      setShowAnswer(false);
+                    }}
+                  >
+                    <CircleChevronRight />
+                  </Button>
+                </>
+              )}
+            </div>
           </ModalBody>
+          <ModalFooter className="flex items-center justify-center">
+            {showAnswer ? (
+              <span className="text-sm font-semibold text-success">
+                Cevap: {selectedItems[currentTestIndex]?.correctAnswer ?? "-"}
+              </span>
+            ) : (
+              <Button
+                color="success"
+                variant="shadow"
+                onPress={() => setShowAnswer(true)}
+              >
+                Cevabı Göster
+              </Button>
+            )}
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </div>
