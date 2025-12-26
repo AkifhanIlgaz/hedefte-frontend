@@ -85,6 +85,18 @@ class TopicMistakeService {
 
     return res.data;
   }
+
+  async delete(id: string): Promise<GeneralResponse<void>> {
+    const res = await api.delete<GeneralResponse<void>>(
+      `/topic-mistakes/${id}`,
+    );
+
+    if (!res.data.success) {
+      throw new Error("Failed to delete topic mistake");
+    }
+
+    return res.data;
+  }
 }
 
 export default new TopicMistakeService();

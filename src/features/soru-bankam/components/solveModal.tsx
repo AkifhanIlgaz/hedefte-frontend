@@ -118,6 +118,21 @@ export default function SolveModal({ topicMistake }: SolveModalProps) {
   const confidenceColor =
     confidence === 0 ? "danger" : confidence === 1 ? "warning" : "success";
 
+  const resetFormState = () => {
+    form.reset({
+      id: topicMistake.id ?? "",
+      confidence: topicMistake.confidence,
+    });
+    setShowAnswer(false);
+  };
+
+  const handleModalOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      resetFormState();
+    }
+    onOpenChange();
+  };
+
   const handleSubmit = async (data: SolveTopicMistakeRequest) => {
     try {
       await solveTopicMistake(data);
@@ -147,7 +162,7 @@ export default function SolveModal({ topicMistake }: SolveModalProps) {
 
       <Modal
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        onOpenChange={handleModalOpenChange}
         size="3xl"
         placement="center"
         className="p-3"
@@ -218,7 +233,13 @@ export default function SolveModal({ topicMistake }: SolveModalProps) {
                   </div>
                 </ModalBody>
                 <ModalFooter className="flex items-center">
-                  <Button color="danger" onPress={onClose}>
+                  <Button
+                    color="danger"
+                    onPress={() => {
+                      resetFormState();
+                      onClose();
+                    }}
+                  >
                     İptal
                   </Button>
                   <Button

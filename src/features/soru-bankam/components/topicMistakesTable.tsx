@@ -25,6 +25,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { GeneralResponse, TopicMistake } from "../../analiz/types";
+import DeleteModal from "./deleteModal";
 import SolveModal from "./solveModal";
 
 const confidenceOptions: {
@@ -161,7 +162,12 @@ export default function TopicMistakesTable({
         );
 
       case "solve":
-        return <SolveModal topicMistake={item} />;
+        return (
+          <div className="flex gap-2 items-center justify-center">
+            <SolveModal topicMistake={item} />
+            <DeleteModal id={item.id ?? ""} />
+          </div>
+        );
       default:
         const value = item[columnKey as keyof TopicMistake];
         return <span className="text-sm">{String(value ?? "")}</span>;
