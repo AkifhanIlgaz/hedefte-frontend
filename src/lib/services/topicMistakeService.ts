@@ -7,6 +7,7 @@ import {
   TopicWrongCount,
 } from "@/src/features/analiz/types";
 import { GetTopicMistakesRequest } from "@/src/features/soru-bankam/schemas/get_topic_mistakes.schema";
+import { SolveTopicMistakeRequest } from "@/src/features/soru-bankam/schemas/solve_topic_mistake.schema";
 import api from "../axios";
 
 class TopicMistakeService {
@@ -67,6 +68,19 @@ class TopicMistakeService {
 
     if (!res.data.success) {
       throw new Error("Failed to fetch topic mistakes");
+    }
+
+    return res.data;
+  }
+
+  async solve(req: SolveTopicMistakeRequest): Promise<GeneralResponse<void>> {
+    const res = await api.post<GeneralResponse<void>>(
+      "/topic-mistakes/solve",
+      req,
+    );
+
+    if (!res.data.success) {
+      throw new Error("Failed to solve topic mistake");
     }
 
     return res.data;
