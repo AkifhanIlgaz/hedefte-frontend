@@ -1,5 +1,7 @@
 "use client";
 
+import { Link } from "@heroui/link";
+
 export default function LoginPage() {
   return (
     <div className="flex flex-col text-center">
