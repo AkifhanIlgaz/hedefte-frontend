@@ -28,6 +28,12 @@ class ExamService {
       };
     });
 
+    console.log({
+      ...req,
+      date: dateOnly,
+      lessons,
+    });
+
     const res = await api.post<GeneralResponse<any>>("/exams", {
       ...req,
       date: dateOnly,
