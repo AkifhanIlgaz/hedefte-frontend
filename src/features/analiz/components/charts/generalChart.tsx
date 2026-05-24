@@ -106,7 +106,10 @@ export default function GeneralChart({
       : null;
   const hasAverageTime = hasTimeSeries && averageTimeValue !== null;
 
-  const series: ApexAxisChartSeries = [
+  const series: {
+    name: string;
+    data: { x: number; y: number; [key: string]: unknown }[];
+  }[] = [
     {
       name: "Toplam Net",
       data: mappedSeries.map((pt) => ({
