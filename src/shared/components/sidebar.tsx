@@ -1,12 +1,15 @@
 "use client";
 
-import { siteConfig } from "@/src/config/site";
-import { Logo } from "@/src/shared/components/icons";
-import { Button } from "@heroui/react";
 import clsx from "clsx";
 import { ChevronsLeft, ChevronsRight, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
+
+import { Button } from "@heroui/react";
+
+import { siteConfig } from "@/src/config/site";
+import { Logo } from "@/src/shared/components/icons";
+
 import SidebarLink from "./sidebarLink";
 
 interface SidebarProps {
@@ -22,9 +25,11 @@ export default function Sidebar({
 
   const isRouteActive = (href: string) => {
     if (!pathname) return false;
+
     if (href === "/") {
       return pathname === href;
     }
+
     return pathname === href;
   };
 
@@ -39,8 +44,8 @@ export default function Sidebar({
       >
         <Button
           isIconOnly
-          size="sm"
           className="bg-transparent"
+          size="sm"
           onPress={() => setIsSidebarOpenAction(true)}
         >
           <Menu className="size-5" />
@@ -51,7 +56,14 @@ export default function Sidebar({
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          role="button"
+          tabIndex={0}
           onClick={() => setIsSidebarOpenAction(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              setIsSidebarOpenAction(false);
+            }
+          }}
         />
       )}
 
@@ -92,10 +104,10 @@ export default function Sidebar({
               <SidebarLink
                 key={item.href}
                 href={item.href}
-                label={item.label}
                 icon={item.icon}
-                isSidebarOpen={isSidebarOpen}
                 isActive={isRouteActive(item.href)}
+                isSidebarOpen={isSidebarOpen}
+                label={item.label}
               />
             ))}
           </ul>
